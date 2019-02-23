@@ -8,7 +8,7 @@ import coyote.loader.log.Log;
 /**
  * This is a base class for all services; handling much of the infrastructure.
  */
-public abstract class AbstractService extends AbstractLoader implements CoyoteService {
+public abstract class AbstractService extends AbstractLoader implements KestrelService {
 
   private static volatile boolean running = true;
 

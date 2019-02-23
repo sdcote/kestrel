@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * This is a class of static methods to perform protocol related functions.
  */
-public class CoyoteProtocol {
+public class KestrelProtocol {
 
   // Standardized field names
   public static final String IDENTIFIER_FIELD = "MID"; // transport specific message identifier
@@ -41,7 +41,7 @@ public class CoyoteProtocol {
   private static final String[] priorityNames = new String[]{"Lowest", "Very Low", "Low", "Below Normal", "Normal", "Above Normal", "High", "Very High", "Highest"};
 
 
-  private CoyoteProtocol() {
+  private KestrelProtocol() {
   }
 
 

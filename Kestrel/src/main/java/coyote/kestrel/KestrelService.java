@@ -2,7 +2,7 @@ package coyote.kestrel;
 
 import coyote.loader.cfg.ConfigurationException;
 
-public interface CoyoteService {
+public interface KestrelService {
 
   /**
    * Called after the base class has been configured with the expectation the
@@ -18,7 +18,9 @@ public interface CoyoteService {
   /**
    * Process received packets.
    *
-   * @param packet
+   * <p>This is where the service is implemented.</p>
+   *
+   * @param packet the data received from the transport.
    */
   void process(Packet packet);
 

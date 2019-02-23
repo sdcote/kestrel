@@ -3,7 +3,7 @@ package coyote.kestrel;
 
 import coyote.loader.log.LogMsg;
 
-public class ProfileService extends AbstractService implements CoyoteService {
+public class ProfileService extends AbstractService implements KestrelService {
 
 
   public static final LogMsg.BundleBaseName MSG;
