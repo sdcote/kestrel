@@ -1,0 +1,8 @@
+{
+  "Class": "coyote.accipiter.ProfileService",
+
+  "Transport": {
+    "Broker": "amqp://[#$env.username#]:[#$env.password#]@[#$env.hostname#]:[#$env.port#]/[#$env.broker#]",
+    "AutoAck": true
+  }
+}

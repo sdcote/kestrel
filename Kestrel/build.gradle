@@ -1,0 +1,7 @@
+
+defaultTasks 'clean', 'build'
+
+dependencies {
+    compile("coyote:Loader:0.7.17")
+}
+

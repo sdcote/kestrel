@@ -1,0 +1,27 @@
+
+allprojects {
+  defaultTasks 'clean', 'build', 'test'
+  group = 'coyote'
+  version = '0.1.0'
+}
+
+subprojects {
+  apply plugin: 'java'
+
+  repositories {
+    jcenter()
+    mavenLocal()
+    mavenCentral()
+  }
+
+
+  dependencies {
+    testImplementation ("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+  }
+
+  test {
+    useJUnitPlatform()
+  }
+
+}

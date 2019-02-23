@@ -1,0 +1,6 @@
+defaultTasks 'clean', 'build', 'publish'
+
+dependencies {
+    compile project(':Kestrel'), project(':ProfileDomain')
+    compile("coyote:Loader:0.7.17")
+}
