@@ -1,6 +1,6 @@
-package coyote.profile;
+package coyote.kestrel;
 
-import coyote.profile.transport.Message;
+import coyote.kestrel.transport.Message;
 import coyote.loader.cfg.ConfigurationException;
 
 public interface KestrelService {

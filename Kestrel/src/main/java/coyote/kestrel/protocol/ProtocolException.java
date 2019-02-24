@@ -1,4 +1,4 @@
-package coyote.profile.protocol;
+package coyote.kestrel.protocol;
 
 
 public class ProtocolException extends Exception {

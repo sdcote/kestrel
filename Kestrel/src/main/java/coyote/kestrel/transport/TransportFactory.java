@@ -1,4 +1,4 @@
-package coyote.profile.transport;
+package coyote.kestrel.transport;
 
 
 /**
@@ -8,6 +8,8 @@ package coyote.profile.transport;
  */
 public class TransportFactory {
 
-
+  Transport getTransport(String name) {
+    return new AmqpTransport();
+  }
 
 }

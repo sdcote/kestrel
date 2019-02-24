@@ -1,4 +1,4 @@
-package coyote.profile.protocol;
+package coyote.kestrel.protocol;
 
 /**
  * Message groups represent the concept of a grouping of messages exchanged

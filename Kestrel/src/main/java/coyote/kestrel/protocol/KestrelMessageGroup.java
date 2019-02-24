@@ -1,4 +1,4 @@
-package coyote.profile.protocol;
+package coyote.kestrel.protocol;
 
 /**
  * Represents a base class for message groups to provide uniformity to message exchanges.

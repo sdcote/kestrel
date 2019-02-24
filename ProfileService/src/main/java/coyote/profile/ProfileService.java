@@ -1,7 +1,9 @@
 package coyote.profile;
 
 
-import coyote.profile.transport.Message;
+import coyote.kestrel.AbstractService;
+import coyote.kestrel.KestrelService;
+import coyote.kestrel.transport.Message;
 import coyote.loader.log.LogMsg;
 import coyote.profile.protocol.ProfileMessageGroup;
 

@@ -3,5 +3,6 @@ defaultTasks 'clean', 'build'
 
 dependencies {
     compile("coyote:Loader:0.7.17")
+    compile('com.rabbitmq:amqp-client:5.6.0')
 }
 

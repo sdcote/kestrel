@@ -1,7 +1,7 @@
-package coyote.profile;
+package coyote.kestrel;
 
 import coyote.dataframe.DataFrameException;
-import coyote.profile.transport.Message;
+import coyote.kestrel.transport.Message;
 
 import java.util.UUID;
 

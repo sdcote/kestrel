@@ -1,8 +1,8 @@
-package coyote.profile.transport;
+package coyote.kestrel.transport;
 
 import coyote.commons.ByteUtil;
 import coyote.dataframe.DataFrame;
-import coyote.profile.KestrelProtocol;
+import coyote.kestrel.KestrelProtocol;
 
 public class Message extends DataFrame {
 

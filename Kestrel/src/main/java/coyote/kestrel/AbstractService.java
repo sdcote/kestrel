@@ -1,6 +1,6 @@
-package coyote.profile;
+package coyote.kestrel;
 
-import coyote.profile.transport.Message;
+import coyote.kestrel.transport.Message;
 import coyote.loader.AbstractLoader;
 import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
@@ -33,11 +33,12 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   /**
    * Start the service running.
    *
-   * <p>This is a blocking call. The thread is expected to remain in this
+   * <p>This is a blocking call; The thread is expected to remain in this
    * method until the loader terminates or an exception is thrown. Keep in
    * mind that some loaders will daemonize and this call will return
    * immediately. In such cases, the service will terminate when the JVM
-   * terminates.</p>
+   * terminates. Therefore, if this method spawns a thread then returns, the
+   * JVM will remain running until that thread terminates.</p>
    */
   @Override
   public void start() {
@@ -46,7 +47,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     // connect to the message broker on the appropriate queue
 
     while(running){
-      running = false; // run once
+      //running = false; // run once
 
       // pull a message from the queue
 

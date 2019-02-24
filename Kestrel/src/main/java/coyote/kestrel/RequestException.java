@@ -1,6 +1,6 @@
-package coyote.profile;
+package coyote.kestrel;
 
-import coyote.profile.protocol.ProtocolException;
+import coyote.kestrel.protocol.ProtocolException;
 
 public class RequestException extends ProtocolException {
   public static final long serialVersionUID = 1L;
