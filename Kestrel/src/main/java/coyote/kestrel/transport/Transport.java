@@ -7,9 +7,16 @@
  */
 package coyote.kestrel.transport;
 
+import java.net.URI;
+
 /**
  * A transport is an adapter to the various messaging transports.
  */
-public interface Transport{
+public interface Transport {
 
+  String AMQP = "AMQP";
+
+  void setURI(URI uri);
+
+  void initialize();
 }

@@ -4,6 +4,7 @@ import coyote.kestrel.protocol.KestrelMessageGroup;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.Message;
+import coyote.kestrel.transport.Transport;
 
 
 /**
@@ -31,6 +32,21 @@ public class ServiceMessageGroup extends KestrelMessageGroup implements MessageG
 
   @Override
   public void send(Message event) {
+
+  }
+
+  @Override
+  public void setTransport(Transport transport) {
+
+  }
+
+  @Override
+  public void setGroup(String groupName) {
+
+  }
+
+  @Override
+  public void initialize() {
 
   }
 

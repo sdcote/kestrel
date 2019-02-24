@@ -6,6 +6,17 @@ import coyote.loader.cfg.ConfigurationException;
 public interface KestrelService {
 
   /**
+   * Name of the transport configuration section
+   */
+  String TRANSPORT_SECTION = "Transport";
+
+  /**
+   * Name of the URI configuration element
+   */
+  String URI_TAG = "URI";
+
+
+  /**
    * Called after the base class has been configured with the expectation the
    * subclass will perform any configuration and initialization processing.
    *

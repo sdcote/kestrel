@@ -26,4 +26,9 @@ public class Inbox {
     return null;
   }
 
+  public void setTransport(Transport transport) {
+  }
+
+  public void initialize() {
+  }
 }

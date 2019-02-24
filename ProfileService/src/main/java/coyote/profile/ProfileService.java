@@ -3,24 +3,18 @@ package coyote.profile;
 
 import coyote.kestrel.AbstractService;
 import coyote.kestrel.KestrelService;
-import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.Message;
-import coyote.loader.log.LogMsg;
-import coyote.profile.protocol.ProfileMessageGroup;
 
 public class ProfileService extends AbstractService implements KestrelService {
 
 
-  public static final LogMsg.BundleBaseName MSG;
+  private static final String GROUP_NAME = "SVC.PROFILE";
 
-  static {
-    MSG = new LogMsg.BundleBaseName("ProfileMsg");
+
+  @Override
+  public String getGroupName() {
+    return GROUP_NAME;
   }
-
-  /**
-   * What we use to communicate with clients
-   */
-  MessageGroup messageGroup = new ProfileMessageGroup();
 
 
   /**
@@ -34,9 +28,8 @@ public class ProfileService extends AbstractService implements KestrelService {
     Message response = message.createResponse();
     // fill it with stuff
 
-    messageGroup.send(response);
+    respond(response);
 
   }
-
 
 }

@@ -1,5 +1,8 @@
 {
   "Class" : "coyote.profile.ProfileService",
-  "Transport": "amqp://[#$AMQP_USER#]:[#$AMQP_PASS#]@[#$AMQP_HOST#]:[#$AMQP_PORT#]"
+
+  "Transport": {
+    "URI":"amqp://[#$AMQP_USER#]:[#$AMQP_PASS#]@[#$AMQP_HOST#]:[#$AMQP_PORT#]"
+  }
 
 }

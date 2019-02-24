@@ -1,6 +1,7 @@
 package coyote.kestrel.protocol;
 
 import coyote.kestrel.transport.Message;
+import coyote.kestrel.transport.Transport;
 
 /**
  * Message groups represent the concept of a grouping of messages exchanged
@@ -12,6 +13,15 @@ import coyote.kestrel.transport.Message;
 public interface MessageGroup {
 
   void respond(Message response);
+
   ResponseFuture request(Message request);
-  void send(Message event);
+
+  void send(Message message);
+
+  void setTransport(Transport transport);
+
+  void setGroup(String groupName);
+
+  void initialize();
+
 }
