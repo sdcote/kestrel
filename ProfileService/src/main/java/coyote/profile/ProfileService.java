@@ -1,11 +1,11 @@
 package coyote.profile;
 
 
+import coyote.dataframe.DataFrame;
 import coyote.kestrel.AbstractService;
-import coyote.kestrel.KestrelService;
 import coyote.kestrel.transport.Message;
 
-public class ProfileService extends AbstractService implements KestrelService {
+public class ProfileService extends AbstractService {
 
 
   private static final String GROUP_NAME = "SVC.PROFILE";
@@ -25,11 +25,19 @@ public class ProfileService extends AbstractService implements KestrelService {
   @Override
   public void process(Message message) {
 
-    Message response = message.createResponse();
-    // fill it with stuff
+    if( message.contains("ID")) {
+      Message response = message.createResponse();
 
-    respond(response);
+      DataFrame payload = new DataFrame();
+      // fill it with stuff
+      response.setPayload(payload);
+      respond(response);
+    } else {
+      sendNak(message,"No id found");
+    }
 
   }
+
+
 
 }

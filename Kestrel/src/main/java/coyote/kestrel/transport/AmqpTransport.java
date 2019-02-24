@@ -20,7 +20,12 @@ public class AmqpTransport implements Transport {
   }
 
   @Override
-  public void initialize() {
+  public String createInboxGroup() {
+    return null;
+  }
+
+  @Override
+  public void open() {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost("localhost");
     Connection connection = null;
@@ -34,6 +39,11 @@ public class AmqpTransport implements Transport {
     }
 
     //channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+  }
+
+  @Override
+  public void close() {
+
   }
 
 

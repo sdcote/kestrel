@@ -2,7 +2,6 @@ package coyote.kestrel;
 
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
-import coyote.commons.UriUtil;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.AmqpTransport;
 import coyote.kestrel.transport.Inbox;
@@ -113,17 +112,19 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
       // pull a message from the queue, block only for a short time
 
-      Message packet = new Message();
+      Message message = messageGroup.getNextMessage();
 
-      try {
-        process(packet);
-      } catch (final Exception e) {
-        //Log.error(LogMsg.createMsg(CDX.MSG, "Job.exception_running_engine", e.getClass().getSimpleName(), e.getMessage(), engine.getName(), engine.getClass().getSimpleName()));
-        Log.error(ExceptionUtil.toString(e));
-        if (Log.isLogging(Log.DEBUG_EVENTS)) {
-          Log.debug(ExceptionUtil.stackTrace(e));
-        }
-      } // try-catch
+      if (message != null) {
+        try {
+          process(message);
+        } catch (final Exception e) {
+          //Log.error(LogMsg.createMsg(CDX.MSG, "Job.exception_running_engine", e.getClass().getSimpleName(), e.getMessage(), engine.getName(), engine.getClass().getSimpleName()));
+          Log.error(ExceptionUtil.toString(e));
+          if (Log.isLogging(Log.DEBUG_EVENTS)) {
+            Log.debug(ExceptionUtil.stackTrace(e));
+          }
+        } // try-catch
+      }
     }
 
 
@@ -167,7 +168,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
         if (Transport.AMQP.equalsIgnoreCase(scheme)) {
 
           retval = new AmqpTransport();
-          retval.setURI( uri);
+          retval.setURI(uri);
 
         } else {
           Log.fatal("Unsupported transport URI scheme: '" + scheme + "'");
@@ -178,8 +179,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     } catch (URISyntaxException e) {
       Log.error("Could not parse transport URI");
     }
-
-
     return retval;
   }
 
@@ -190,6 +189,12 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   protected void send(Message response) {
     messageGroup.send(response);
+  }
+
+  protected void sendNak(Message message, String msg) {
+  }
+
+  protected void sendNak(Message message, int resultcode) {
   }
 
 

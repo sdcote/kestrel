@@ -12,6 +12,8 @@ public class Message extends DataFrame {
   private String cachedGroup = null;
   private String cachedType = null;
 
+  DataFrame payload = null;
+
 
   public void setType(String name) {
     this.put(KestrelProtocol.TYPE_FIELD, name);
@@ -44,19 +46,20 @@ public class Message extends DataFrame {
   public String getReplyGroup() {
     return this.getObject(KestrelProtocol.REPLY_GROUP_FIELD) != null ? this.getObject(KestrelProtocol.REPLY_GROUP_FIELD).toString() : null;
   }
+
   public byte[] getId() {
     Object retval = this.getObject(KestrelProtocol.IDENTIFIER_FIELD);
-    return retval != null ? (byte[])retval : new byte[0];
+    return retval != null ? (byte[]) retval : new byte[0];
   }
 
   public String getIdString() {
     Object retval = this.getObject(KestrelProtocol.IDENTIFIER_FIELD);
-    return retval != null ? ByteUtil.bytesToHex((byte[])retval) : null;
+    return retval != null ? ByteUtil.bytesToHex((byte[]) retval) : null;
   }
 
   public byte[] getReplyId() {
     Object retval = this.getObject(KestrelProtocol.REPLY_ID_FIELD);
-    return retval != null ? (byte[])retval : new byte[0];
+    return retval != null ? (byte[]) retval : new byte[0];
   }
 
   public void setReplyId(byte[] id) {
@@ -65,7 +68,7 @@ public class Message extends DataFrame {
 
   public String getReplyIdString() {
     Object retval = this.getObject(KestrelProtocol.REPLY_ID_FIELD);
-    return retval != null ? ByteUtil.bytesToHex((byte[])retval) : null;
+    return retval != null ? ByteUtil.bytesToHex((byte[]) retval) : null;
   }
 
   public Message createResponse() {
@@ -91,5 +94,16 @@ public class Message extends DataFrame {
   }
 
 
+  public DataFrame getPayload() {
+    return payload;
+  }
+
+  public void setPayload(DataFrame frame) {
+    if (frame == null) {
+      payload = new DataFrame();
+    } else {
+      payload = frame;
+    }
+  }
 
 }

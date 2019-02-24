@@ -18,5 +18,29 @@ public interface Transport {
 
   void setURI(URI uri);
 
-  void initialize();
+
+  /**
+   * Create a private group we can use to receive messages.
+   *
+   * @return A name of a group on which anyone can send but only we can
+   *         receive.
+   */
+  public String createInboxGroup();
+
+
+
+  /**
+   * Open the transport for operation initializing whatever resources are
+   * necessary.
+   */
+  public void open();
+
+
+  /**
+   * Terminate the operation of the transport closing any resources that were
+   * allocated during the transports operation.
+   */
+  public void close();
+
+
 }

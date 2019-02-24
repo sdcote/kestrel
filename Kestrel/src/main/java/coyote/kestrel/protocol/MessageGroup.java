@@ -12,6 +12,15 @@ import coyote.kestrel.transport.Transport;
  */
 public interface MessageGroup {
 
+  /**
+   * This retrieves the next message from the inbox.
+   *
+   * <p>This should return immediately, with no blocking.</p>
+   *
+   * @return the next message waiting in the inbox, or null if there are not messages waiting.
+   */
+  Message getNextMessage() ;
+
   void respond(Message response);
 
   ResponseFuture request(Message request);
