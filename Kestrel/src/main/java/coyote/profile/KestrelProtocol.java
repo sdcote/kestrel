@@ -1,6 +1,7 @@
-package coyote.kestrel;
+package coyote.profile;
 
 import coyote.dataframe.DataFrameException;
+import coyote.profile.transport.Message;
 
 import java.util.UUID;
 
@@ -47,8 +48,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createResponsePacket(Packet packet) {
-    Packet retval = packet.createResponse();
+  public static Message createResponsePacket(Message packet) {
+    Message retval = packet.createResponse();
     if (packet.contains(REPLY_GROUP_FIELD)) {
       retval.put(GROUP_FIELD, packet.getAsString(REPLY_GROUP_FIELD));
     }
@@ -64,8 +65,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createAck(Packet cmd) {
-    Packet retval = createResponsePacket(cmd);
+  public static Message createAck(Message cmd) {
+    Message retval = createResponsePacket(cmd);
     retval.setType(ACK_TYPE);
     return retval;
   }
@@ -73,8 +74,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createNak(String replyGroup, String replyId, byte[] requestId, String failureMessage, Integer errorCode) {
-    Packet retval = new Packet();
+  public static Message createNak(String replyGroup, String replyId, byte[] requestId, String failureMessage, Integer errorCode) {
+    Message retval = new Message();
     if (replyGroup != null) {
       retval.setGroup(replyGroup);
     }
@@ -103,8 +104,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createNak(Packet packet, String msg) {
-    Packet retval = createResponsePacket(packet);
+  public static Message createNak(Message packet, String msg) {
+    Message retval = createResponsePacket(packet);
     retval.setType(NAK_TYPE);
     if (msg != null && msg.trim().length() > 0) {
       retval.put(MESSAGE_FIELD, msg);
@@ -116,8 +117,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createNak(Packet packet, int code) {
-    Packet retval = createResponsePacket(packet);
+  public static Message createNak(Message packet, int code) {
+    Message retval = createResponsePacket(packet);
     retval.setType(NAK_TYPE);
     retval.put(RESULT_CODE_FIELD, code);
     return retval;
@@ -126,8 +127,8 @@ public class KestrelProtocol {
 
 
 
-  public static Packet createNak(Packet packet, int code, String msg) {
-    Packet retval = createNak(packet, code);
+  public static Message createNak(Message packet, int code, String msg) {
+    Message retval = createNak(packet, code);
     if (msg != null && msg.trim().length() > 0) {
       retval.put(MESSAGE_FIELD, msg);
     }
@@ -138,7 +139,7 @@ public class KestrelProtocol {
 
 
 
-  public static void checkForException(Packet p) throws RequestException {
+  public static void checkForException(Message p) throws RequestException {
     String responseType = p.getType();
     if (NAK_TYPE.equals(responseType) && p.contains(RESULT_CODE_FIELD)) {
       try {

@@ -5,8 +5,11 @@
  * terms of the MIT License which accompanies this distribution, and is
  * available at http://creativecommons.org/licenses/MIT/
  */
-package coyote.kestrel;
+package coyote.profile.transport;
 
+/**
+ * A transport is an adapter to the various messaging transports.
+ */
 public interface Transport{
 
 }

@@ -1,5 +1,6 @@
-package coyote.kestrel;
+package coyote.profile;
 
+import coyote.profile.transport.Message;
 import coyote.loader.cfg.ConfigurationException;
 
 public interface KestrelService {
@@ -22,7 +23,7 @@ public interface KestrelService {
    *
    * @param packet the data received from the transport.
    */
-  void process(Packet packet);
+  void process(Message packet);
 
 
 

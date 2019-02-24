@@ -1,5 +1,6 @@
-package coyote.kestrel;
+package coyote.profile;
 
+import coyote.profile.transport.Message;
 import coyote.loader.AbstractLoader;
 import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
@@ -49,7 +50,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
       // pull a message from the queue
 
-      Packet packet = new Packet();
+      Message packet = new Message();
 
       try {
         process(packet);

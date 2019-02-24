@@ -1,9 +1,10 @@
-package coyote.kestrel;
+package coyote.profile.transport;
 
 import coyote.commons.ByteUtil;
 import coyote.dataframe.DataFrame;
+import coyote.profile.KestrelProtocol;
 
-public class Packet extends DataFrame {
+public class Message extends DataFrame {
 
   private byte priority = 4;
 
@@ -67,14 +68,14 @@ public class Packet extends DataFrame {
     return retval != null ? ByteUtil.bytesToHex((byte[])retval) : null;
   }
 
-  public Packet createResponse() {
+  public Message createResponse() {
     return createResponse(this);
   }
 
 
-  public static Packet createResponse(Packet request) {
+  public static Message createResponse(Message request) {
     if (request != null) {
-      Packet retval = new Packet();
+      Message retval = new Message();
       if (request.getReplyGroup() != null) {
         retval.setGroup(request.getReplyGroup());
       }
@@ -88,6 +89,7 @@ public class Packet extends DataFrame {
       return null;
     }
   }
+
 
 
 }

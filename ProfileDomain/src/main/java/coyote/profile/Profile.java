@@ -2,6 +2,11 @@ package coyote.profile;
 
 import coyote.dataframe.DataFrame;
 
-public class Profile extends DataFrame {
+/**
+ * This represents an identified profile
+ */
+public class Profile {
+
+  private DataFrame data = new DataFrame();
 
 }
