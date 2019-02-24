@@ -10,4 +10,5 @@ public interface ProfileClient {
    * @return the Profile with the diven identifier or null if not found
    */
   public Profile retrieveProfile(String id);
+
 }

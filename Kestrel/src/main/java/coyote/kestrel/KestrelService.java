@@ -14,18 +14,26 @@ public interface KestrelService {
   void onConfiguration() throws ConfigurationException;
 
 
-
-
   /**
-   * Process received packets.
+   * Process received messages.
    *
    * <p>This is where the service is implemented.</p>
    *
-   * @param packet the data received from the transport.
+   * @param message the data received from the transport.
    */
-  void process(Message packet);
+  void process(Message message);
 
 
+  /**
+   * Process messages received from our Inbox.
+   *
+   * <p>Inbox messages are normally commands for the service such as cycle
+   * logs, refresh caches or terminate. The service should make every effort
+   * to validate the commands before processing them.</p>
+   *
+   * @param message the data received from the transport.
+   */
+  void processInboxMessage(Message message);
 
 
   /**

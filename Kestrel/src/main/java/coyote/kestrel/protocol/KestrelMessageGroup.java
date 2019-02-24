@@ -5,4 +5,6 @@ package coyote.kestrel.protocol;
  */
 public abstract class KestrelMessageGroup {
   protected String GROUP_NAME;
+
+
 }

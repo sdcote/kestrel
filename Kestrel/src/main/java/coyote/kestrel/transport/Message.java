@@ -46,7 +46,7 @@ public class Message extends DataFrame {
   }
   public byte[] getId() {
     Object retval = this.getObject(KestrelProtocol.IDENTIFIER_FIELD);
-    return retval != null ? (byte[])retval : null;
+    return retval != null ? (byte[])retval : new byte[0];
   }
 
   public String getIdString() {
@@ -56,7 +56,7 @@ public class Message extends DataFrame {
 
   public byte[] getReplyId() {
     Object retval = this.getObject(KestrelProtocol.REPLY_ID_FIELD);
-    return retval != null ? (byte[])retval : null;
+    return retval != null ? (byte[])retval : new byte[0];
   }
 
   public void setReplyId(byte[] id) {

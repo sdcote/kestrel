@@ -12,7 +12,7 @@ buildscript {
 
 
 allprojects {
-  defaultTasks 'clean', 'build', 'test'
+  defaultTasks 'clean', 'build', 'publish', 'installDist'
   group = 'coyote'
   version = '0.1.0'
 }
@@ -22,6 +22,10 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'jacoco'
   apply plugin: "com.github.spotbugs"
+  apply plugin: 'maven-publish'
+  apply plugin: 'application'
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
 
   repositories {
     jcenter()
