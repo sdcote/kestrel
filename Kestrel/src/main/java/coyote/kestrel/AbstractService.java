@@ -107,7 +107,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
             Log.debug(ExceptionUtil.stackTrace(e));
           }
         } // try-catch
-
+        oam = inbox.getNextMessage();
       }
 
       // pull a message from the queue, block only for a short time
