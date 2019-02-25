@@ -3,7 +3,11 @@ package coyote.kestrel.transport;
 import coyote.commons.StringUtil;
 import coyote.loader.cfg.Config;
 import coyote.loader.log.Log;
+import sun.plugin2.applet2.Plugin2Context;
 
+import javax.security.auth.callback.PasswordCallback;
+import javax.sql.RowSet;
+import java.net.DatagramPacket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
@@ -11,13 +15,12 @@ import java.util.Map;
 
 /**
  * This builder caches connections to brokers to keep resources under control.
- *
  */
 public class TransportBuilder extends Config {
     private String brokerURI = null;
     private URI currentURI = null;
 
-    static final Map<String,Transport> transportMap = new Hashtable<>();
+    static final Map<String, Transport> transportMap = new Hashtable<>();
 
     public TransportBuilder setURI(String uri) {
         brokerURI = uri;
@@ -27,8 +30,6 @@ public class TransportBuilder extends Config {
     public String getURI() {
         return brokerURI;
     }
-
-
 
 
     public Transport build() throws IllegalArgumentException {
@@ -53,4 +54,33 @@ public class TransportBuilder extends Config {
     }
 
 
+    public TransportBuilder setScheme(String scheme) {
+        return this;
+    }
+
+    public TransportBuilder setUsername(String username) {
+        return this;
+    }
+
+    public TransportBuilder setPassword(String password) {
+        return this;
+    }
+
+    public TransportBuilder setHost(String hostname) {
+        return this;
+    }
+
+    public TransportBuilder setPort(int port) {
+        return this;
+    }
+
+    // This may be AMQP specific
+    public TransportBuilder setVirtualHost(String virtualHost) {
+        return this;
+    }
+
+    // timeout in milliseconds; zero for infinite
+    public TransportBuilder setConnectionTimeout(int timeout) {
+        return this;
+    }
 }

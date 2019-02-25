@@ -24,14 +24,22 @@ public class AmqpTransport implements Transport {
     return null;
   }
 
+
+
   @Override
   public void open() {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost("localhost");
+    factory.setUsername("guest");
+    factory.setPassword("guest");
+    factory.setConnectionTimeout(300000); //timeout in milliseconds; zero for infinite
     Connection connection = null;
     try {
       connection = factory.newConnection();
       Channel channel = connection.createChannel();
+
+
+
     } catch (IOException e) {
       e.printStackTrace();
     } catch (TimeoutException e) {
