@@ -6,14 +6,21 @@ import coyote.loader.log.Log;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Hashtable;
+import java.util.Map;
 
-public class TransportConfig extends Config {
+/**
+ * This builder caches connections to brokers to keep resources under control.
+ *
+ */
+public class TransportBuilder extends Config {
     private String brokerURI = null;
     private URI currentURI = null;
 
-    public TransportConfig setURI(String uri) {
+    static final Map<String,Transport> transportMap = new Hashtable<>();
+
+    public TransportBuilder setURI(String uri) {
         brokerURI = uri;
-        isValid();
         return this;
     }
 
@@ -24,8 +31,8 @@ public class TransportConfig extends Config {
 
 
 
-    public boolean isValid() {
-        boolean retval = true;
+    public Transport build() throws IllegalArgumentException {
+        Transport retval = null;
         try {
             URI uri = new URI(brokerURI);
             if (StringUtil.isNotBlank(uri.getScheme())) {
@@ -34,15 +41,12 @@ public class TransportConfig extends Config {
                 } else if (Transport.JMS.equalsIgnoreCase(uri.getScheme())) {
                     // perform JMS checks
                 } else {
-                    retval = false;
                     Log.warn("The broker URI scheme is not supported: '" + brokerURI + "'");
                 }
             } else {
-                retval = false;
                 Log.warn("The broker URI scheme is blank: '" + brokerURI + "'");
             }
         } catch (URISyntaxException e) {
-            retval = false;
             Log.warn("The broker URI is invalid: '" + brokerURI + "'");
         }
         return retval;
