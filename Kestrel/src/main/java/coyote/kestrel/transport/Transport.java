@@ -15,6 +15,8 @@ import java.net.URI;
 public interface Transport {
 
   String AMQP = "AMQP";
+  String JMS = "JMS";
+
 
   void setURI(URI uri);
 
