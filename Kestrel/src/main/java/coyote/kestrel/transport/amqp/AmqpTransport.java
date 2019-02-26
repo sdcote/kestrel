@@ -1,8 +1,12 @@
-package coyote.kestrel.transport;
+package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import coyote.kestrel.transport.MessageChannel;
+import coyote.kestrel.transport.MessageQueue;
+import coyote.kestrel.transport.MessageTopic;
+import coyote.kestrel.transport.Transport;
 
 import java.io.IOException;
 import java.net.URI;

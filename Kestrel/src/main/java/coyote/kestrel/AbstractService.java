@@ -3,7 +3,7 @@ package coyote.kestrel;
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
 import coyote.kestrel.protocol.MessageGroup;
-import coyote.kestrel.transport.AmqpTransport;
+import coyote.kestrel.transport.amqp.AmqpTransport;
 import coyote.kestrel.transport.Inbox;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.Transport;
