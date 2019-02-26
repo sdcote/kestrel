@@ -45,4 +45,13 @@ public interface Transport {
   public void close();
 
 
+
+  public void attach(MessageConsumer consumer, String Group);
+  public void detach(MessageConsumer consumer, String Group);
+
+  public void attachSniffer(MessageConsumer consumer, String Group);
+  public void detachSniffer(MessageConsumer consumer, String Group);
+
+
+  void send(Message msg);
 }

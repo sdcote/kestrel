@@ -54,5 +54,30 @@ public class AmqpTransport implements Transport {
 
   }
 
+  @Override
+  public void attach(MessageConsumer consumer, String Group) {
+
+  }
+
+  @Override
+  public void detach(MessageConsumer consumer, String Group) {
+
+  }
+
+  @Override
+  public void attachSniffer(MessageConsumer consumer, String Group) {
+
+  }
+
+  @Override
+  public void detachSniffer(MessageConsumer consumer, String Group) {
+
+  }
+
+  @Override
+  public void send(Message msg) {
+
+  }
+
 
 }

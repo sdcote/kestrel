@@ -3,11 +3,6 @@ package coyote.kestrel.transport;
 import coyote.commons.StringUtil;
 import coyote.loader.cfg.Config;
 import coyote.loader.log.Log;
-import sun.plugin2.applet2.Plugin2Context;
-
-import javax.security.auth.callback.PasswordCallback;
-import javax.sql.RowSet;
-import java.net.DatagramPacket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
