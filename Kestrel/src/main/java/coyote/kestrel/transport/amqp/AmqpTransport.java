@@ -17,6 +17,8 @@ import java.util.concurrent.TimeoutException;
  */
 public class AmqpTransport implements Transport {
 
+  //TODO: Use scoreboard for instrumentation
+  //Scoreboad board = new Scoreboard(); maybe get it from the loader context?
 
   @Override
   public void setURI(URI uri) {
