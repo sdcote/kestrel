@@ -90,7 +90,7 @@ public class ProtocolException extends Exception {
     String resultMessage = null;//this.getResultMessage();
     if (super.getMessage() != null && super.getMessage().length() > 0) {
       String message = super.getMessage();
-      if (resultMessage != null && message != null && !resultMessage.equals(message)) {
+      if (resultMessage != null && !resultMessage.equals(message)) {
         resultMessage = resultMessage + " - " + message;
       }
     }
