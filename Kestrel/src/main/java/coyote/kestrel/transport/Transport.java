@@ -15,25 +15,28 @@ import java.net.URI;
 public interface Transport {
 
   String AMQP = "AMQP";
-  String JMS = "JMS";
+  String AMQPS = "AMQPS";
+  String JMS = "JMS"; // Java message service
+  String TIBRV = "TRV"; // Tibco Rendezvous
 
 
   void setURI(URI uri);
 
 
   /**
-   * Create a private group we can use to receive messages.
+   * Create a private channel we can use to receive messages.
    *
    * @return A name of a group on which anyone can send but only we can
-   *         receive.
+   * receive.
    */
-  public String createInboxGroup();
-
+  public MessageChannel createInboxGroup();
 
 
   /**
    * Open the transport for operation initializing whatever resources are
    * necessary.
+   *
+   * <p>Messages start flowing once the transport is opened.</p>
    */
   public void open();
 
@@ -41,17 +44,29 @@ public interface Transport {
   /**
    * Terminate the operation of the transport closing any resources that were
    * allocated during the transports operation.
+   *
+   * <p>The transport can be opened again later as this method is expected to
+   * be called anytime the flow of messages is to be paused. Messages will
+   * remain on the broker until the transport is opened again.</p>
    */
   public void close();
 
 
+  /**
+   * Get a message channel with a queue quality of service.
+   *
+   * @param name
+   * @return
+   */
+  public MessageQueue getQueue(String name);
 
-  public void attach(MessageConsumer consumer, String Group);
-  public void detach(MessageConsumer consumer, String Group);
 
-  public void attachSniffer(MessageConsumer consumer, String Group);
-  public void detachSniffer(MessageConsumer consumer, String Group);
+  /**
+   * Get a message channel with a Pub/Sub quality of service.
+   *
+   * @param name
+   * @return
+   */
+  public MessageTopic getTopic(String name);
 
-
-  void send(Message msg);
 }

@@ -5,6 +5,7 @@ package coyote;
 
 import coyote.dataframe.DataFrame;
 import coyote.kestrel.transport.Message;
+import coyote.kestrel.transport.MessageChannel;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
 
@@ -26,12 +27,13 @@ public class Beacon {
             .setPort(5672)
             .build();
 
+    MessageChannel topic = transport.getTopic("BEACON");
+
 
     do {
       Message msg = new Message();
-      msg.setGroup("BEACON");
       msg.setPayload(new DataFrame().set("DATE", new Date().toString()));
-      transport.send(msg);
+      topic.send(msg);
 
       try {
         Thread.sleep(10000);

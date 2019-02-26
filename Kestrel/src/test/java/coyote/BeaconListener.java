@@ -1,14 +1,18 @@
 package coyote;
 
-import coyote.kestrel.transport.Message;
-import coyote.kestrel.transport.MessageConsumer;
-import coyote.kestrel.transport.Transport;
-import coyote.kestrel.transport.TransportBuilder;
+import coyote.kestrel.transport.*;
 import coyote.loader.log.Log;
 
 public class BeaconListener implements MessageConsumer {
 
 
+  /**
+   * The call-back used to receive messages.
+   *
+   * <p>Messages arrive in real time; we don't have to retrieve them.</p>
+   *
+   * @param msg the next message received from the message transport.
+   */
   public void onMessage(Message msg) {
     System.out.println(msg.getGroup() + ": " + msg.getPayload());
   }
@@ -28,14 +32,18 @@ public class BeaconListener implements MessageConsumer {
             .setPort(5672)
             .build();
 
-    transport.attach(new BeaconListener(), "DATE");
+    MessageChannel topic = transport.getTopic("BEACON");
+    topic.attach(new BeaconListener());
+
+    transport.open();
 
     // run for 5 minutes
     try {
       Thread.sleep(300000);
-    } catch (final InterruptedException e) {
-      e.printStackTrace();
+    } catch (final InterruptedException ignore) {
     }
+
+    transport.close();
 
     Log.info("Done");
   }

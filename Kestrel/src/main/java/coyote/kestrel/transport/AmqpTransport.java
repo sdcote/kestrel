@@ -20,7 +20,7 @@ public class AmqpTransport implements Transport {
   }
 
   @Override
-  public String createInboxGroup() {
+  public MessageChannel createInboxGroup() {
     return null;
   }
 
@@ -55,28 +55,13 @@ public class AmqpTransport implements Transport {
   }
 
   @Override
-  public void attach(MessageConsumer consumer, String Group) {
-
+  public MessageQueue getQueue(String name) {
+    return null;
   }
 
   @Override
-  public void detach(MessageConsumer consumer, String Group) {
-
-  }
-
-  @Override
-  public void attachSniffer(MessageConsumer consumer, String Group) {
-
-  }
-
-  @Override
-  public void detachSniffer(MessageConsumer consumer, String Group) {
-
-  }
-
-  @Override
-  public void send(Message msg) {
-
+  public MessageTopic getTopic(String name) {
+    return null;
   }
 
 
