@@ -1,7 +1,6 @@
 package coyote.profile;
 
 
-import coyote.dataframe.DataFrame;
 import coyote.kestrel.AbstractService;
 import coyote.kestrel.transport.Message;
 
@@ -25,19 +24,22 @@ public class ProfileService extends AbstractService {
   @Override
   public void process(Message message) {
 
-    if( message.contains("ID")) {
+    if (message.contains("ID")) {
       Message response = message.createResponse();
-
-      DataFrame payload = new DataFrame();
-      // fill it with stuff
-      response.setPayload(payload);
-      respond(response);
+      response.getPayload().clear();
+      response.getPayload().put("ResponseCode", 203);
+      send(response);
     } else {
-      sendNak(message,"No id found");
+      sendNak(message, "No id found");
     }
-
   }
 
+
+  @Override
+  public void processInboxMessage(Message message) {
+    // this is where we process messages sent directly to us
+    // are we being asked to shutdown? change logging? change instrumentation? report status?
+  }
 
 
 }

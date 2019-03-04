@@ -3,7 +3,7 @@ package coyote;
 import coyote.kestrel.transport.*;
 import coyote.loader.log.Log;
 
-public class BeaconListener implements MessageConsumer {
+public class BeaconListener implements MessageListener {
 
 
   /**
@@ -32,10 +32,13 @@ public class BeaconListener implements MessageConsumer {
             .setPort(5672)
             .build();
 
-    MessageChannel topic = transport.getTopic("BEACON");
+    transport.open();
+
+
+    MessageTopic topic = transport.getTopic("BEACON");
     topic.attach(new BeaconListener());
 
-    transport.open();
+
 
     // run for 5 minutes
     try {

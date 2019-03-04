@@ -37,8 +37,16 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   /**
    * The message group we use to handle request/response protocol
    */
-  protected MessageGroup messageGroup = null;
+  protected MessageGroup serviceGroup = null;
 
+  /**
+   * The message group we use to coordinate our operations with other instances of this service
+   */
+  protected MessageGroup coherenceGroup = null;
+
+  /**
+   * The message group we use to handle Operations, Administration and Maintenance messages.
+   */
   protected Inbox inbox = null;
 
 
@@ -89,8 +97,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
     // connect to the message broker on the appropriate queue
 
-    initializeMessageGroup();
-    initializeInbox();
+    initializeMessageGroup(); // service requests are received here
+    initializeInbox(); // OAM messages received here
+    initializeCoherence(); // service coordination messages receive here
 
     while (running) {
 
@@ -112,7 +121,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
       // pull a message from the queue, block only for a short time
 
-      Message message = messageGroup.getNextMessage();
+      Message message = serviceGroup.getNextMessage();
 
       if (message != null) {
         try {
@@ -130,13 +139,17 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   }
 
+  protected  void initializeCoherence(){
+
+  }
+
 
   protected void initializeMessageGroup() {
     try {
-      messageGroup = new ServiceMessageGroup();
-      messageGroup.setTransport(getTransport());
-      messageGroup.setGroup(getGroupName());
-      messageGroup.initialize();
+      serviceGroup = new ServiceMessageGroup();
+      serviceGroup.setTransport(getTransport());
+      serviceGroup.setGroup(getGroupName());
+      serviceGroup.initialize();
     } catch (Exception e) {
       running = false;
       Log.error("Could not initialize the message group");
@@ -184,11 +197,11 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
 
   protected void respond(Message response) {
-    messageGroup.respond(response);
+    serviceGroup.respond(response);
   }
 
   protected void send(Message response) {
-    messageGroup.send(response);
+    serviceGroup.send(response);
   }
 
   protected void sendNak(Message message, String msg) {

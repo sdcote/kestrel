@@ -27,12 +27,14 @@ public class Beacon {
             .setPort(5672)
             .build();
 
+    transport.open(); // connects to the broker
+
     MessageChannel topic = transport.getTopic("BEACON");
 
 
     do {
       Message msg = new Message();
-      msg.setPayload(new DataFrame().set("DATE", new Date().toString()));
+      msg.getPayload().put("DATE", new Date().toString());
       topic.send(msg);
 
       try {

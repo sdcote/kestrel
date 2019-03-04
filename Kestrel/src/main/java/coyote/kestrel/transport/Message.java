@@ -12,7 +12,7 @@ public class Message extends DataFrame {
   private String cachedGroup = null;
   private String cachedType = null;
 
-  DataFrame payload = null;
+  private final DataFrame payload = new DataFrame();
 
 
   public void setType(String name) {
@@ -98,12 +98,6 @@ public class Message extends DataFrame {
     return payload;
   }
 
-  public void setPayload(DataFrame frame) {
-    if (frame == null) {
-      payload = new DataFrame();
-    } else {
-      payload = frame;
-    }
-  }
+  
 
 }

@@ -4,7 +4,7 @@ package coyote.kestrel.transport;
  * Object that implement this interface are enabled to be used as a call-back
  * for MessageTransports
  */
-public interface MessageConsumer {
+public interface MessageListener {
 
   /**
    * Allow messages to be sent to the object implementing this interface.

@@ -54,18 +54,24 @@ public class TransportBuilder extends Config {
 
     if (StringUtil.isNotBlank(getScheme())) {
       if (Transport.AMQP.equalsIgnoreCase(getScheme()) || Transport.AMQPS.equalsIgnoreCase(getScheme())) {
-        // perform AMQP checks
+        retval = createAmqpTransport();
       } else if (Transport.JMS.equalsIgnoreCase(getScheme())) {
-        // perform JMS checks
+       retval = createJmsTransport();
       } else {
         Log.warn("The broker scheme is not supported: '" + getScheme() + "'");
       }
     } else {
       Log.warn("The broker scheme is blank or empty");
     }
-
-
     return retval;
+  }
+
+  private Transport createJmsTransport() {
+    return null;
+  }
+
+  private Transport createAmqpTransport() {
+    return null;
   }
 
   private String getQuery() {
@@ -88,25 +94,7 @@ public class TransportBuilder extends Config {
     return username;
   }
 
-  private int validatePort() {
-    return 0;
-  }
 
-  private String validateHost() {
-    return null;
-  }
-
-  private String validatePassword() {
-    return null;
-  }
-
-  private String validateUsername() {
-    return null;
-  }
-
-  private String validateScheme() {
-    return null;
-  }
 
 
   public TransportBuilder setScheme(String scheme) {
