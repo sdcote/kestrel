@@ -158,9 +158,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   private void initializeInbox() {
     try {
-      inbox = new Inbox();
-      inbox.setTransport(getTransport());
-      inbox.initialize();
+
+      inbox = getTransport().createInboxChannel();
+
     } catch (Exception e) {
       running = false;
       Log.error("Could not initialize the inbox group");

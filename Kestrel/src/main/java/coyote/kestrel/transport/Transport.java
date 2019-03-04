@@ -27,11 +27,8 @@ public interface Transport {
 
   /**
    * Create a private channel we can use to receive messages.
-   *
-   * @return A name of a group on which anyone can send but only we can
-   * receive.
    */
-  public MessageChannel createInboxChannel();
+  public Inbox createInboxChannel();
 
 
   /**

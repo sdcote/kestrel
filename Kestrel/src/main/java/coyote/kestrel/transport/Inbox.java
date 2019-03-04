@@ -20,15 +20,10 @@ public class Inbox {
    *
    * <p>This should return immediately, with no blocking.</p>
    *
-   * @return the next message waiting in the inbox, or null if there are not messages waiting.
+   * @return the next message waiting in the inbox, or null if there are no messages waiting.
    */
   public Message getNextMessage() {
     return null;
   }
 
-  public void setTransport(Transport transport) {
-  }
-
-  public void initialize() {
-  }
 }
