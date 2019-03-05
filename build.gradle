@@ -46,7 +46,6 @@ subprojects {
   }
 
   check.dependsOn jacocoTestCoverageVerification
-  check.dependsOn spotbugsMain
   //check.dependsOn dependencyCheckAnalyze // first run takes 20-30 minutes
 
   spotbugs {
