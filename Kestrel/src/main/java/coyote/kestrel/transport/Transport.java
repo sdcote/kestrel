@@ -22,9 +22,6 @@ public interface Transport {
   String TIBRV = "TRV"; // Tibco Rendezvous
 
 
-  void setURI(URI uri);
-
-
   /**
    * Create a private channel we can use to receive messages.
    */

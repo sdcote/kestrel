@@ -1,6 +1,8 @@
 package coyote.kestrel.transport;
 
 
+import java.io.IOException;
+
 /**
  * Channels are how messages are sent and received.
  *
@@ -11,15 +13,17 @@ package coyote.kestrel.transport;
 public interface MessageChannel {
 
 
-  /**
-   * Send the message on this channel.
-   *
-   * @param msg
-   */
-  void send(Message msg);
+    String getName();
 
+    void setName(String name);
 
-
+    /**
+     * Send the message on this channel.
+     *
+     * @param msg
+     * @throws java.io.IOException if an error is encountered
+     */
+    void send(Message msg) throws IOException;
 
 
 }

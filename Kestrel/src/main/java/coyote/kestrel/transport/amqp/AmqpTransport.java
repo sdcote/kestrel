@@ -2,10 +2,12 @@ package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import coyote.kestrel.transport.*;
+import coyote.kestrel.transport.Inbox;
+import coyote.kestrel.transport.MessageQueue;
+import coyote.kestrel.transport.MessageTopic;
+import coyote.kestrel.transport.Transport;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -36,6 +38,7 @@ public class AmqpTransport implements Transport {
      * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
      */
     private Connection connection = null;
+    private String virtualHost = null;
 
     public String getHostname() {
         return hostname;
@@ -80,11 +83,12 @@ public class AmqpTransport implements Transport {
         this.port = port;
     }
 
+    public String getVirtualHost() {
+        return virtualHost;
+    }
 
-
-    @Override
-    public void setURI(URI uri) {
-
+    public void setVirtualHost(String virtualHoat) {
+        this.virtualHost = virtualHoat;
     }
 
     @Override

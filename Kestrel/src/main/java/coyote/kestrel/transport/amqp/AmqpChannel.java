@@ -4,27 +4,45 @@ import com.rabbitmq.client.Channel;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageChannel;
 
+import java.io.IOException;
+
 
 /**
  * Channels contain a reference to the rabbit channel to help keep channel
  * operations limited to a single thread. A worker thread can own this
  * reference and be the only one performing AMQP channel operations.
  */
-public class AmqpChannel implements MessageChannel {
+public abstract class AmqpChannel implements MessageChannel {
 
-  public Channel getChannel() {
-    return channel;
-  }
+    private Channel channel = null;
+    private String name = null;
 
-  public void setChannel(Channel channel) {
-    this.channel = channel;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
 
-  private Channel channel = null;
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  @Override
-  public void send(Message msg) {
+    public Channel getChannel() {
+        return channel;
+    }
 
-  }
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+
+    /**
+     * @param msg
+     * @throws IOException if the message could not be sent
+     */
+    @Override
+    public void send(Message msg) throws IOException {
+        channel.basicPublish("", msg.getGroup(), null, msg.getBytes());
+    }
 
 }

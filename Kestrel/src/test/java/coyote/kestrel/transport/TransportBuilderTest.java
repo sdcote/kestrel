@@ -22,7 +22,7 @@ public class TransportBuilderTest {
     assertTrue(StringUtil.isNotEmpty(builder.getScheme()));
     assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
     assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
-    assertTrue(StringUtil.isNotEmpty(builder.getHost()));
+    assertTrue(StringUtil.isNotEmpty(builder.getHostname()));
     assertTrue(builder.getPort() == 5672);
   }
 
@@ -34,13 +34,13 @@ public class TransportBuilderTest {
     assertTrue(StringUtil.isNotEmpty(builder.getScheme()));
     assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
     assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
-    assertTrue(StringUtil.isNotEmpty(builder.getHost()));
+    assertTrue(StringUtil.isNotEmpty(builder.getHostname()));
     assertTrue(builder.getPort() == 5672);
   }
 
   @DisplayName("Basic builder configuration")
   @Test
-  void basicBuilder() throws URISyntaxException {
+  void basicBuilder() {
     TransportBuilder builder = new TransportBuilder()
             .setScheme("amqp")
             .setUsername("guest")
@@ -48,14 +48,14 @@ public class TransportBuilderTest {
             .setHost("localhost")
             .setPort(5672)
             .setConnectionTimeout(500)
-            .setVirtualHost("virtualHost");
+            .setQuery("/vhost");
 
     assertTrue(StringUtil.isNotEmpty(builder.getScheme()));
     assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
     assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
-    assertTrue(StringUtil.isNotEmpty(builder.getHost()));
+    assertTrue(StringUtil.isNotEmpty(builder.getHostname()));
     assertTrue(builder.getPort() == 5672);
-    assertTrue(StringUtil.isNotEmpty(builder.getVirtualHost()));
+    assertTrue(StringUtil.isNotEmpty(builder.getQuery()));
     assertTrue(builder.getConnectionTimeout() == 500);
 
   }

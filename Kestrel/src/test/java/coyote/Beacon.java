@@ -20,7 +20,6 @@ public class Beacon {
   public static void main(final String[] args) throws Exception {
 
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
-
     transport.open(); // connects to the broker
 
     MessageChannel topic = transport.getTopic("BEACON");
