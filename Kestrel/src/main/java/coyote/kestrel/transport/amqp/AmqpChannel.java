@@ -42,7 +42,10 @@ public abstract class AmqpChannel implements MessageChannel {
      */
     @Override
     public void send(Message msg) throws IOException {
-        channel.basicPublish("", msg.getGroup(), null, msg.getBytes());
+        if (channel != null) {
+            channel.basicPublish("", msg.getGroup(), null, msg.getBytes());
+        } else {
+            throw new IOException("No transport channel set");
+        }
     }
-
 }

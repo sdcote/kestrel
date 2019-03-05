@@ -29,7 +29,7 @@ public class Beacon {
       Message msg = new Message();
       msg.getPayload().put("DATE", new Date().toString());
       topic.send(msg);
-
+System.out.println("SENT: "+ msg.toString());
       try {
         Thread.sleep(10000);
       } catch (final Exception ignore) {

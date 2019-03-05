@@ -10,8 +10,7 @@ import coyote.kestrel.transport.MessageTopic;
 public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
 
-
-  @Override
+    @Override
   public void attach(MessageListener consumer) {
 
   }
