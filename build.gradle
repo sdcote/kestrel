@@ -7,6 +7,8 @@ buildscript {
   }
   dependencies {
     classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
+    //classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
+    classpath 'org.owasp:dependency-check-gradle:4.0.2'
   }
 }
 
@@ -22,6 +24,7 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'jacoco'
   apply plugin: "com.github.spotbugs"
+  apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'maven-publish'
   apply plugin: 'application'
   apply plugin: 'eclipse'
@@ -29,7 +32,6 @@ subprojects {
 
   repositories {
     jcenter()
-    mavenLocal()
     mavenCentral()
   }
   
@@ -45,6 +47,7 @@ subprojects {
 
   check.dependsOn jacocoTestCoverageVerification
   check.dependsOn spotbugsMain
+  //check.dependsOn dependencyCheckAnalyze // first run takes 20-30 minutes
 
   spotbugs {
     effort = "max"
