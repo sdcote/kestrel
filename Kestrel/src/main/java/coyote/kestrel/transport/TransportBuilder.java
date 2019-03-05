@@ -56,9 +56,6 @@ public class TransportBuilder extends Config {
     return this;
   }
 
-  public String getURI() {
-    return null;
-  }
 
 
   public Transport build() throws IllegalArgumentException {

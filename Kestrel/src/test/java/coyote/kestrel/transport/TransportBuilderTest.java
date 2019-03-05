@@ -26,6 +26,18 @@ public class TransportBuilderTest {
     assertTrue(builder.getPort() == 5672);
   }
 
+  @DisplayName("String URI configuration")
+  @Test
+  void stringUri() {
+    TransportBuilder builder = new TransportBuilder().setURI("amqp://user:passwd@localhost:5672");
+
+    assertTrue(StringUtil.isNotEmpty(builder.getScheme()));
+    assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
+    assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
+    assertTrue(StringUtil.isNotEmpty(builder.getHost()));
+    assertTrue(builder.getPort() == 5672);
+  }
+
   @DisplayName("Basic builder configuration")
   @Test
   void basicBuilder() throws URISyntaxException {
@@ -42,7 +54,7 @@ public class TransportBuilderTest {
     assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
     assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
     assertTrue(StringUtil.isNotEmpty(builder.getHost()));
-    assertTrue(builder.getPort() ==5672);
+    assertTrue(builder.getPort() == 5672);
     assertTrue(StringUtil.isNotEmpty(builder.getVirtualHost()));
     assertTrue(builder.getConnectionTimeout() == 500);
 

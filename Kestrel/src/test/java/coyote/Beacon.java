@@ -19,13 +19,7 @@ public class Beacon {
 
   public static void main(final String[] args) throws Exception {
 
-    Transport transport = new TransportBuilder()
-            .setScheme("amqp")
-            .setUsername("guest")
-            .setPassword("guest")
-            .setHost("localhost")
-            .setPort(5672)
-            .build();
+    Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
 
     transport.open(); // connects to the broker
 
