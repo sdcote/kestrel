@@ -8,12 +8,13 @@ import coyote.kestrel.transport.MessageTopic;
 import java.io.IOException;
 
 /**
- * AMQP messages are sent to an exchange type of "Topic" and the routing key is used to control which queues receive messages.
+ * AMQP messages are sent to an exchange type of "TOPIC" and the routing key
+ * is used to control which queues receive messages.
  */
 public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
 
-  private static final String EXCHANGE_NAME = "Bob";
+  private static final String EXCHANGE_NAME = "TOPIC";
 
   @Override
   public void attach(MessageListener consumer) {

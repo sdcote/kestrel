@@ -7,7 +7,12 @@ import coyote.kestrel.transport.MessageQueue;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * All queues are direct; messages are routed based on the name of the queue
+ * with multiple consumers allowed on a single named queue.
+ */
 public class AmqpQueue extends AmqpChannel implements MessageQueue {
+  private static final String EXCHANGE_NAME = "DIRECT";
 
   public AmqpQueue(Channel channel, String name, boolean durable, boolean exclusive, boolean autodelete, Map<String, Object> arguments) {
     setChannel(channel);
