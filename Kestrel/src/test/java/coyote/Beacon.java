@@ -9,6 +9,7 @@ import coyote.kestrel.transport.MessageChannel;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
 
+import java.io.IOException;
 import java.util.Date;
 
 
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 public class Beacon {
 
-  public static void main(final String[] args) throws Exception {
+  public static void main(final String[] args) {
 
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
     transport.open(); // connects to the broker
@@ -29,10 +30,16 @@ public class Beacon {
 
     Message msg = new Message(); // reusable message
     DataFrame payload = new DataFrame(); // reusable payload
+
     do {
       payload.put("DATE", new Date().toString()); // change the payload
       msg.setPayload(payload); // serialize the payload into the message
-      topic.send(msg); // send the message on the topic
+
+      try {
+        topic.send(msg); // send the message on the topic
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
 
       // sleep for a short while
       try {
