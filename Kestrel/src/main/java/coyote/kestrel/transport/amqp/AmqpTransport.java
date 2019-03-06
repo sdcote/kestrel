@@ -150,9 +150,6 @@ public class AmqpTransport implements Transport {
             e.printStackTrace();
         }
 
-        // create a queue for this message channel to receive messages
-        // bind the queue to exchange.
-
         return retval;
     }
 
