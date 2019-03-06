@@ -143,6 +143,7 @@ public class AmqpTransport implements Transport {
 
         // Create a TOPIC exchange or reuse an existing exchange. The name of the exchange is the same as the topic name
         AmqpTopic retval = new AmqpTopic();
+        retval.setName(name);
         try {
             retval.setChannel(connection.createChannel());
         } catch (IOException e) {

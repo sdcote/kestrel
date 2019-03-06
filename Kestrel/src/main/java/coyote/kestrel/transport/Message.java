@@ -2,6 +2,7 @@ package coyote.kestrel.transport;
 
 import coyote.commons.ByteUtil;
 import coyote.dataframe.DataFrame;
+import coyote.dataframe.DataFrameException;
 import coyote.kestrel.KestrelProtocol;
 
 public class Message extends DataFrame {
@@ -12,8 +13,7 @@ public class Message extends DataFrame {
   private String cachedGroup = null;
   private String cachedType = null;
 
-  private final DataFrame payload = new DataFrame();
-
+  public static final String PAYLOAD_TAG = "PYLD";
 
   public void setType(String name) {
     this.put(KestrelProtocol.TYPE_FIELD, name);
@@ -94,10 +94,46 @@ public class Message extends DataFrame {
   }
 
 
-  public DataFrame getPayload() {
-    return payload;
+  /**
+   * Serialize a data frame in the message as the payload.
+   *
+   * <p>Once the payload is set, it becomes immutable within the the message.
+   * A copy of the data frame is placed in the message so changing the data
+   * frame externally has no effect on the payload.</p>
+   *
+   * @param frame the data frame to serialize into this message.
+   */
+  public void setPayload(DataFrame frame) {
+    put(PAYLOAD_TAG, frame);
   }
 
-  
+  /**
+   * Retrieve a copy of the serialized payload.
+   *
+   * <p>Changing the returned data frame has no effect on the payload. To
+   * update the message with the new/updated data frame, it must be set back
+   * into the message.</p>
+   *
+   * <p>If there is a field with the same name of the payload, but it is not a
+   * data frame, a new data frame is returned and the existing field is
+   * removed. This is by design to help ensure that the payload field is
+   * always a data frame. There are valid ways around this of course, just do
+   * not call get or set on the payload. Then whatever is placed in that field
+   * will remain when sent across the bus.</p>
+   *
+   * @return an exact copy of the payload serialized in this message or an empty frame if no payload was found.
+   */
+  public DataFrame getPayload() {
+    DataFrame retval;
+    try {
+      retval = getAsFrame(PAYLOAD_TAG);
+      if (retval == null) retval = new DataFrame();
+    } catch (DataFrameException ignore) {
+      retval = new DataFrame();
+      super.remove(PAYLOAD_TAG);
+    }
+    return retval;
+  }
+
 
 }
