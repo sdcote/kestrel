@@ -46,6 +46,15 @@ public interface KestrelService {
    */
   void processInboxMessage(Message message);
 
+  /**
+   * Process messages from the coherence channel.
+   *
+   * <p>Messages on this topic are used by services to coordinate their
+   * operation.</p>
+   *
+   * @param message the data received from the transport.
+   */
+  void processCoherenceMessage(Message message);
 
   /**
    * Called when the JVM terminates giving the service a chance to perform any

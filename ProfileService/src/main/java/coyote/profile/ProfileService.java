@@ -42,4 +42,10 @@ public class ProfileService extends AbstractService {
   }
 
 
+  @Override
+  public void processCoherenceMessage(Message message) {
+    // this is where we process coherence messages sent between service
+    // instances to coordinate our activities.
+  }
+
 }
