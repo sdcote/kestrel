@@ -1,8 +1,8 @@
 {
-  "Class": "coyote.accipiter.ProfileService",
+  "Class": "coyote.kestrel.ProfileService",
 
   "Transport": {
     "Broker": "amqp://[#$env.username#]:[#$env.password#]@[#$env.hostname#]:[#$env.port#]/[#$env.broker#]",
-    "AutoAck": true
+    "AutoAck": false
   }
 }

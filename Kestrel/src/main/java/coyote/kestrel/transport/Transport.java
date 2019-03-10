@@ -21,6 +21,10 @@ public interface Transport {
   String JMS = "JMS"; // Java message service
   String TIBRV = "TRV"; // Tibco Rendezvous
 
+  /**
+   * @return true if the transport is open and functioning, false otherwise.
+   */
+  boolean isValid();
 
   /**
    * Create a private channel we can use to receive messages.

@@ -92,6 +92,11 @@ public class AmqpTransport implements Transport {
     }
 
     @Override
+    public boolean isValid() {
+        return true;
+    }
+
+    @Override
     public Inbox createInboxChannel() {
         return null;
     }

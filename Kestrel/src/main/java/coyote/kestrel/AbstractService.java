@@ -2,10 +2,7 @@ package coyote.kestrel;
 
 import coyote.commons.ExceptionUtil;
 import coyote.kestrel.protocol.MessageGroup;
-import coyote.kestrel.transport.Inbox;
-import coyote.kestrel.transport.Message;
-import coyote.kestrel.transport.Transport;
-import coyote.kestrel.transport.TransportBuilder;
+import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
 import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
@@ -39,6 +36,11 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * Time of our last heartbeat
    */
   private volatile long lastHeartbeat = 0;
+
+  /**
+   * The message broker connection
+   */
+  protected Transport transport = null;
 
   /**
    * After the base class is configured and logging initialized, this method
@@ -174,11 +176,19 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
 
   private Transport getTransport() {
-    Transport retval = null;
-    Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
-    String transportUri = cfg.getString(KestrelService.URI_TAG, true);
-    retval = new TransportBuilder().setURI(transportUri).build();
-    return retval;
+    if( transport == null) {
+      try {
+        Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
+        String transportUri = cfg.getString(KestrelService.URI_TAG, true);
+        transport = new TransportBuilder().setURI(transportUri).build();
+        transport.open();
+      } catch (Exception e) {
+        Log.error("Could not build transport: "+e.getLocalizedMessage());
+        transport = new InvalidTransport();
+      }
+    }
+
+    return transport;
   }
 
 
