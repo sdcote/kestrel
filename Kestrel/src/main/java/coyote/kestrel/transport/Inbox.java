@@ -13,7 +13,7 @@ package coyote.kestrel.transport;
  * logging stream or perform other processing outside of the service it
  * provides.</p>
  */
-public class Inbox {
+public interface Inbox {
 
   /**
    * This retrieves the next message from the inbox.
@@ -22,8 +22,6 @@ public class Inbox {
    *
    * @return the next message waiting in the inbox, or null if there are no messages waiting.
    */
-  public Message getNextMessage() {
-    return null;
-  }
+   Message getNextMessage();
 
 }

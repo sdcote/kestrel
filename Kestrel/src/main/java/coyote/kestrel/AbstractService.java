@@ -91,16 +91,20 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   @Override
   public void start() {
-    initializeMessageGroup(); // service requests are received here
-    initializeInbox(); // OAM messages received here
-    initializeCoherence(); // service coordination messages receive here
+    initializeMessageGroup();
+    initializeInbox();
+    initializeCoherence();
 
-    while (running) {
-      heartbeat();
-      inboxProcessing();
-      coherenceProcessing();
-      serviceGroupProcessing();
-      coherenceProcessing();
+    if (transport.isValid()) {
+      while (running) {
+        heartbeat();
+        inboxProcessing();
+        coherenceProcessing();
+        serviceGroupProcessing();
+        coherenceProcessing();
+      }
+    } else {
+      Log.fatal("Could not connect to broker");
     }
   }
 
@@ -155,13 +159,13 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   protected void initializeMessageGroup() {
     try {
-      serviceGroup = new ServiceMessageGroup();
+      // create a service message group using the standard Kestrel exchange protocol
+      serviceGroup = new ServiceGroup(getGroupName());
       serviceGroup.setTransport(getTransport());
-      serviceGroup.setGroup(getGroupName());
       serviceGroup.initialize();
     } catch (Exception e) {
       running = false;
-      Log.error("Could not initialize the message group");
+      Log.error("Could not initialize the message group: "+e.getLocalizedMessage());
     }
   }
 
@@ -176,14 +180,14 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
 
   private Transport getTransport() {
-    if( transport == null) {
+    if (transport == null) {
       try {
         Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
         String transportUri = cfg.getString(KestrelService.URI_TAG, true);
         transport = new TransportBuilder().setURI(transportUri).build();
         transport.open();
       } catch (Exception e) {
-        Log.error("Could not build transport: "+e.getLocalizedMessage());
+        Log.error("Could not build transport: " + e.getLocalizedMessage());
         transport = new InvalidTransport();
       }
     }
@@ -227,10 +231,17 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   @Override
   public void shutdown() {
     running = false;
+    closeTransport();
     try {
       onShutdown();
     } catch (Throwable ball) {
       Log.warn(ball);
+    }
+  }
+
+  private void closeTransport() {
+    if (transport != null && transport.isValid()) {
+      transport.close();
     }
   }
 
