@@ -17,6 +17,10 @@ public abstract class AmqpChannel implements MessageChannel {
     private Channel channel = null;
     private String name = null;
 
+    protected static final boolean AUTO_ACK = true;
+    protected static final boolean MANUAL_ACK = false;
+
+
     @Override
     public String getName() {
         return name;

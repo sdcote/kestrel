@@ -6,7 +6,6 @@ import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
 import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
-import coyote.loader.log.ConsoleAppender;
 import coyote.loader.log.Log;
 
 
@@ -92,8 +91,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   @Override
   public void start() {
-    Log.notice("Staring service on "+getGroupName());
-    
+    Log.notice("Staring service on " + getGroupName());
+
     initializeMessageGroup();
     initializeInbox();
     initializeCoherence();
@@ -168,7 +167,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
       serviceGroup.initialize();
     } catch (Exception e) {
       running = false;
-      Log.error("Could not initialize the message group: "+e.getLocalizedMessage());
+      Log.error("Could not initialize the message group: " + e.getLocalizedMessage());
     }
   }
 
