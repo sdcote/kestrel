@@ -4,5 +4,10 @@
   "Transport": {
     "Broker": "amqp://[#$env.username#]:[#$env.password#]@[#$env.hostname#]:[#$env.port#]/[#$env.broker#]",
     "AutoAck": false
+  },
+
+  "Logging": {
+    "StandardError": { "categories": "error, fatal, warn" },
+    "StandardOutput": { "categories": "info, notice" }
   }
 }

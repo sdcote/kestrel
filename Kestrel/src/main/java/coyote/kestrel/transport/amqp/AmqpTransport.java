@@ -1,7 +1,9 @@
 package coyote.kestrel.transport.amqp;
 
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Recoverable;
 import coyote.kestrel.transport.Inbox;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
@@ -117,6 +119,16 @@ public class AmqpTransport implements Transport {
     factory.setUsername(getUsername());
     factory.setPassword(getPassword());
     factory.setConnectionTimeout(getConnectionTimeout());
+
+    // Configure automatic reconnection
+    factory.setAutomaticRecoveryEnabled(true);
+
+    // Recovery interval: 10s
+    factory.setNetworkRecoveryInterval(10000);
+
+    // Exchanges and so on should be redeclared if necessary
+    factory.setTopologyRecoveryEnabled(true);
+
     try {
       connection = factory.newConnection();
     } catch (IOException e) {
@@ -143,7 +155,9 @@ public class AmqpTransport implements Transport {
     // TODO: look in the cache to see if there is already a queue with that name
     AmqpQueue retval = null;
     try {
-      retval = new AmqpQueue(connection.createChannel(), name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
+      Channel channel = connection.createChannel();
+      retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
+      ((Recoverable) channel).addRecoveryListener( new ChannelRecoveryListener());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -155,10 +169,11 @@ public class AmqpTransport implements Transport {
   public MessageTopic getTopic(String name) {
 
     // Create a TOPIC exchange or reuse an existing exchange. The name of the exchange is the same as the topic name
-    AmqpTopic retval = new AmqpTopic();
-    retval.setName(name);
+    AmqpTopic retval = null;
     try {
-      retval.setChannel(connection.createChannel());
+      Channel channel = connection.createChannel();
+      retval = new AmqpTopic(channel,name);
+      ((Recoverable) channel).addRecoveryListener( new ChannelRecoveryListener());
     } catch (IOException e) {
       e.printStackTrace();
     }

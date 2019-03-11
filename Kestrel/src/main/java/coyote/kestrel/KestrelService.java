@@ -3,6 +3,10 @@ package coyote.kestrel;
 import coyote.kestrel.transport.Message;
 import coyote.loader.cfg.ConfigurationException;
 
+/**
+ * This defines the contract service implementations must support to be used
+ * by the Kestrel framework.
+ */
 public interface KestrelService {
 
   /**

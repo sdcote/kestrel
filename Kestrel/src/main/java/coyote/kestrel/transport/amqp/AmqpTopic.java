@@ -16,6 +16,11 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
   private static final String EXCHANGE_NAME = "TOPIC";
 
+  public AmqpTopic(Channel channel, String name) {
+    setChannel(channel);
+    setName(name);
+  }
+
   @Override
   public void attach(MessageListener consumer) {
 
@@ -30,7 +35,8 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
         String message = new String(delivery.getBody(), "UTF-8");
         System.out.println(" [x] Received '" + message + "'");
       };
-      getChannel().basicConsume(queueName, true, deliverCallback, consumerTag -> { });
+      getChannel().basicConsume(queueName, true, deliverCallback, consumerTag -> {
+      });
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -6,6 +6,7 @@ import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
 import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
+import coyote.loader.log.ConsoleAppender;
 import coyote.loader.log.Log;
 
 
@@ -91,6 +92,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   @Override
   public void start() {
+    Log.notice("Staring service on "+getGroupName());
+    
     initializeMessageGroup();
     initializeInbox();
     initializeCoherence();

@@ -19,7 +19,7 @@ public interface MessageGroup {
    *
    * @return the next message waiting in the inbox, or null if there are not messages waiting.
    */
-  Message getNextMessage() ;
+  Message getNextMessage();
 
   void respond(Message response);
 
@@ -28,8 +28,6 @@ public interface MessageGroup {
   void send(Message message);
 
   void setTransport(Transport transport);
-
-  void setGroup(String groupName);
 
   void initialize();
 
