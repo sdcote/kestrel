@@ -2,7 +2,7 @@
   "Class": "coyote.profile.ProfileService",
 
   "Transport": {
-    "Broker": "amqp://[#$env.username#]:[#$env.password#]@[#$env.hostname#]:[#$env.port#]/[#$env.broker#]",
+    "Uri": "amqp://[#$username#]:[#$password#]@[#$hostname#]:[#$port#]/[#$broker#]",
     "AutoAck": false
   },
 
