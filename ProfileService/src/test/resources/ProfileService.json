@@ -1,5 +1,5 @@
 {
-  "Class": "coyote.kestrel.ProfileService",
+  "Class": "coyote.profile.ProfileService",
 
   "Transport": {
     "Broker": "amqp://[#$env.username#]:[#$env.password#]@[#$env.hostname#]:[#$env.port#]/[#$env.broker#]",
