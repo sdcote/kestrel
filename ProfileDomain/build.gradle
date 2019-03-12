@@ -2,5 +2,4 @@ mainClassName = 'coyote.loader.BootStrap'
 
 dependencies {
     compile project(':Kestrel')
-    compile("coyote:Loader:0.7.17")
 }
