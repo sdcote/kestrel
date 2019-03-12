@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
-import coyote.kestrel.transport.Inbox;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
 import coyote.kestrel.transport.Transport;
@@ -12,6 +11,7 @@ import coyote.kestrel.transport.Transport;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 
@@ -104,15 +104,17 @@ public class AmqpTransport implements Transport {
   }
 
   @Override
-  public Inbox createInboxChannel() {
-    AmqpInbox retval = new AmqpInbox();
-
+  public MessageQueue createInbox() {
+    AmqpQueue retval = null;
     try {
-      retval.setQueue(new AmqpQueue(connection.createChannel(), retval.getIdentifier(), NON_DURABLE, EXCLUSIVE, AUTO_DELETE, NO_ARGUMENTS));
+      String identifier = UUID.randomUUID().toString();
+      Channel channel = connection.createChannel();
+      channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
+      retval = new AmqpQueue(connection.createChannel(), identifier, NON_DURABLE, EXCLUSIVE, AUTO_DELETE, NO_ARGUMENTS);
+      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
     } catch (IOException e) {
       e.printStackTrace();
     }
-
     return retval;
   }
 

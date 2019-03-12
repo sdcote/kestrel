@@ -24,10 +24,20 @@ public interface Transport {
    */
   boolean isValid();
 
+
   /**
-   * Create a private channel we can use to receive messages.
+   * This represents a private queue on which anybody can publish, but only we
+   * can subscribe.
+   *
+   * <p>An inbox is a way to communicate directly to a component in the system.</p>
+   *
+   * <p>Every service has an inbox in which OAM (operations, administration and
+   * maintenance) commands are received. OAM commands can be used to terminate a
+   * service instance, instruct it to perform a backup, enter a message into its
+   * logging stream or perform other processing outside of the service it
+   * provides.</p>
    */
-  public Inbox createInboxChannel();
+  MessageQueue createInbox();
 
 
   /**
@@ -37,7 +47,7 @@ public interface Transport {
    * <p>A connection to the broker is made, but messages do not start flowing
    * until message channels are initialized.</p>
    */
-  public void open();
+  void open();
 
 
   /**
@@ -46,17 +56,23 @@ public interface Transport {
    *
    * <p>The transport can be opened again later.</p>
    */
-  public void close();
+  void close();
 
 
   /**
    * Get a message channel with a queue quality of service.
-   * <p>Queues are durable, non-exclusive, and remain on the server; suitable for service implementations.</p>
+   * <p>Queues are durable, non-exclusive, and remain on the server; suitable
+   * for service implementations.</p>
    *
-   * @param name
-   * @return
+   * <p>Service queues operate on the competing consumer principle, so the
+   * service must retrieve a message, process it, then< acknowledge it so it
+   * is removed from the queue. If there is no acknowledgement, the message
+   * is marked for re-delivery and another consumer can retrieve it./p>
+   *
+   * @param name the name of the queue to create in the broker.
+   * @return a queue from which to retrieve messages.
    */
-  public MessageQueue getServiceQueue(String name);
+  MessageQueue getServiceQueue(String name);
 
 
   /**
@@ -68,6 +84,6 @@ public interface Transport {
    * @param name
    * @return
    */
-  public MessageTopic getTopic(String name);
+  MessageTopic getTopic(String name);
 
 }

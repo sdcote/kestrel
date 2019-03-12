@@ -15,6 +15,6 @@ public interface MessageListener {
    * @param message The message to receive and process.
    * @throws IllegalStateException if the system is in the runtime of shutting-down
    */
-  public void onMessage(Message message);
+   void onMessage(Message message);
 
 }

@@ -12,7 +12,7 @@ import coyote.loader.log.Log;
 /**
  * This is a base class for all services; handling much of the infrastructure.
  */
-public abstract class AbstractService extends AbstractLoader implements KestrelService {
+public abstract class AbstractService extends AbstractLoader implements KestrelService, MessageListener {
 
   private static final int DEFAULT_HEARTBEAT_INTERVAL = 300;
   private static volatile boolean running = true;
@@ -27,7 +27,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   /**
    * The message group we use to handle Operations, Administration and Maintenance messages.
    */
-  protected Inbox inbox = null;
+  protected MessageQueue inbox = null;
   /**
    * The number of seconds between service heartbeats.
    */
@@ -173,7 +173,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   private void initializeInbox() {
     try {
-      inbox = getTransport().createInboxChannel();
+      inbox = getTransport().createInbox();
     } catch (Exception e) {
       running = false;
       Log.error("Could not initialize the inbox group");
@@ -197,6 +197,16 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     return transport;
   }
 
+
+  /**
+   * This is where inbox and coherence messages arrive for processing
+   *
+   * @param message The message to receive and process.
+   */
+  @Override
+  public void onMessage(Message message) {
+
+  }
 
   protected void respond(Message response) {
     serviceGroup.respond(response);

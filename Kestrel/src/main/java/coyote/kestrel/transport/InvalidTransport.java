@@ -13,7 +13,7 @@ public class InvalidTransport implements Transport {
   }
 
   @Override
-  public Inbox createInboxChannel() {
+  public MessageQueue createInbox() {
     throw new IllegalStateException(MESSAGE);
   }
 
