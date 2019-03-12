@@ -173,7 +173,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   private void initializeInbox() {
     try {
+      // create an inbox on which we will receive message directly to us
       inbox = getTransport().createInbox();
+      // start receiving messages and send them to this listener
+      inbox.attach(this);
     } catch (Exception e) {
       running = false;
       Log.error("Could not initialize the inbox group");
@@ -228,7 +231,15 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   @Override
   public void onMessage(Message message) {
-
+    if (message != null) {
+      if (inbox.getName().equals(message.getGroup())) {
+        processInboxMessage(message);
+      } else {
+        // TODO: check for coherence channel
+        processCoherenceMessage(message);
+      }
+      // What if this comes in with an unexpected group name?
+    }
   }
 
   protected void respond(Message response) {

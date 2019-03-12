@@ -52,4 +52,10 @@ public abstract class AmqpChannel implements MessageChannel {
             throw new IOException("No transport channel set");
         }
     }
+
+
+
+
+
+
 }

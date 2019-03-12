@@ -23,7 +23,6 @@ public class ProfileService extends AbstractService {
    */
   @Override
   public void process(Message message) {
-
     if (message.contains("ID")) {
       Message response = message.createResponse();
       response.getPayload().clear();
@@ -39,6 +38,7 @@ public class ProfileService extends AbstractService {
   public void processInboxMessage(Message message) {
     // this is where we process messages sent directly to us
     // are we being asked to shutdown? change logging? change instrumentation? report status?
+    System.out.println("Received inbox message: " + message);
   }
 
 
@@ -46,6 +46,7 @@ public class ProfileService extends AbstractService {
   public void processCoherenceMessage(Message message) {
     // this is where we process coherence messages sent between service
     // instances to coordinate our activities.
+    System.out.println("Received coherence message: " + message);
   }
 
 }

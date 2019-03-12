@@ -6,6 +6,7 @@ import com.rabbitmq.client.GetResponse;
 import coyote.dataframe.DataFrame;
 import coyote.kestrel.KestrelProtocol;
 import coyote.kestrel.transport.Message;
+import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.loader.log.Log;
 
@@ -17,7 +18,6 @@ import java.util.Map;
  * with multiple consumers allowed on a single named queue.
  */
 public class AmqpQueue extends AmqpChannel implements MessageQueue {
-  private static final String EXCHANGE_NAME = "DIRECT";
 
   public AmqpQueue(Channel channel, String name, boolean durable, boolean exclusive, boolean autodelete, Map<String, Object> arguments) {
     setChannel(channel);
@@ -71,5 +71,26 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   @Override
   public Message peek(long timeout) {
     return null;
+  }
+
+  @Override
+  public void attach(MessageListener listener) {
+    if (listener != null){
+      MyConsumer consumer = new MyConsumer(getChannel());
+      consumer.setListener(listener);
+      consumer.setName(getName());
+
+      try {
+        getChannel().basicConsume(getName(),consumer);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+    }
+  }
+
+  @Override
+  public void detach(MessageListener listener) {
+
   }
 }

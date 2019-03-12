@@ -13,17 +13,33 @@ import java.io.IOException;
 public interface MessageChannel {
 
 
-    String getName();
+  String getName();
 
-    void setName(String name);
+  void setName(String name);
 
-    /**
-     * Send the message on this channel.
-     *
-     * @param msg
-     * @throws java.io.IOException if an error is encountered
-     */
-    void send(Message msg) throws IOException;
+  /**
+   * Send the message on this channel.
+   *
+   * @param msg
+   * @throws java.io.IOException if an error is encountered
+   */
+  void send(Message msg) throws IOException;
+
+
+  /**
+   * Join to this channel.
+   *
+   * @param listener the message listener to receive messages from this channel
+   */
+  void attach(MessageListener listener);
+
+
+  /**
+   * Leave this channel.
+   *
+   * @param listener the message listener to receive messages from this channel
+   */
+  void detach(MessageListener listener);
 
 
 }
