@@ -7,11 +7,9 @@
  */
 package coyote.kestrel.transport;
 
-import java.net.URI;
-
 /**
  * A transport is an adapter to the various messaging transports.
- *
+ * <p>
  * Transports must be opened before using them.
  */
 public interface Transport {
@@ -53,11 +51,12 @@ public interface Transport {
 
   /**
    * Get a message channel with a queue quality of service.
+   * <p>Queues are durable, non-exclusive, and remain on the server; suitable for service implementations.</p>
    *
    * @param name
    * @return
    */
-  public MessageQueue getQueue(String name);
+  public MessageQueue getServiceQueue(String name);
 
 
   /**

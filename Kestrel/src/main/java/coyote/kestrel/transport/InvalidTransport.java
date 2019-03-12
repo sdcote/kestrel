@@ -28,7 +28,7 @@ public class InvalidTransport implements Transport {
   }
 
   @Override
-  public MessageQueue getQueue(String name) {
+  public MessageQueue getServiceQueue(String name) {
     throw new IllegalStateException(MESSAGE);
   }
 

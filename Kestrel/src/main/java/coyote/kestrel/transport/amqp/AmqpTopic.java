@@ -25,7 +25,6 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
   public void attach(MessageListener consumer) {
 
     try {
-      getChannel().exchangeDeclare(EXCHANGE_NAME, "fanout");
       String queueName = getChannel().queueDeclare().getQueue();
       getChannel().queueBind(queueName, EXCHANGE_NAME, "");
 

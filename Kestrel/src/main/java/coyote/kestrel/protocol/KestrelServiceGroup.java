@@ -53,7 +53,7 @@ public abstract class KestrelServiceGroup implements MessageGroup {
     if (transport != null) {
 
       // get a shared queue with the name of this group
-      messageQueue = transport.getQueue(getGroupName());
+      messageQueue = transport.getServiceQueue(getGroupName());
 
     } else {
       throw new IllegalStateException("Service group has no transport set.");

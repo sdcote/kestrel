@@ -36,6 +36,11 @@ public class AmqpTransport implements Transport {
   private String username = DEFAULT_USERNAME;
   private String password = DEFAULT_PASSWORD;
   private int connectionTimeout = com.rabbitmq.client.ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT;
+  private static final String DIRECT_EXCHANGE = "DIRECT";
+  private static final String DIRECT = "direct";
+  private static final String TOPIC_EXCHANGE = "TOPIC";
+  private static final String TOPIC = "topic";
+
   /**
    * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
    */
@@ -150,34 +155,34 @@ public class AmqpTransport implements Transport {
     }
   }
 
+
   @Override
-  public MessageQueue getQueue(String name) {
+  public MessageQueue getServiceQueue(String name) {
     // TODO: look in the cache to see if there is already a queue with that name
     AmqpQueue retval = null;
     try {
       Channel channel = connection.createChannel();
+      channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
       retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
-      ((Recoverable) channel).addRecoveryListener( new ChannelRecoveryListener());
+      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
     } catch (IOException e) {
       e.printStackTrace();
     }
-
     return retval;
   }
 
+
   @Override
   public MessageTopic getTopic(String name) {
-
-    // Create a TOPIC exchange or reuse an existing exchange. The name of the exchange is the same as the topic name
     AmqpTopic retval = null;
     try {
       Channel channel = connection.createChannel();
-      retval = new AmqpTopic(channel,name);
-      ((Recoverable) channel).addRecoveryListener( new ChannelRecoveryListener());
+      channel.exchangeDeclare(TOPIC_EXCHANGE, TOPIC, DURABLE);
+      retval = new AmqpTopic(channel, name);
+      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
     } catch (IOException e) {
       e.printStackTrace();
     }
-
     return retval;
   }
 
