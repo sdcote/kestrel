@@ -1,6 +1,7 @@
 package coyote.kestrel;
 
 import coyote.commons.ExceptionUtil;
+import coyote.commons.StringUtil;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
@@ -29,6 +30,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   protected MessageQueue inbox = null;
   /**
+   * The message broker connection
+   */
+  protected Transport transport = null;
+  /**
    * The number of seconds between service heartbeats.
    */
   private int heartbeatInterval = DEFAULT_HEARTBEAT_INTERVAL;
@@ -36,11 +41,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * Time of our last heartbeat
    */
   private volatile long lastHeartbeat = 0;
-
-  /**
-   * The message broker connection
-   */
-  protected Transport transport = null;
 
   /**
    * After the base class is configured and logging initialized, this method
@@ -183,18 +183,41 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   private Transport getTransport() {
     if (transport == null) {
-      try {
-        Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
-        String transportUri = cfg.getString(KestrelService.URI_TAG, true);
-        transport = new TransportBuilder().setURI(transportUri).build();
-        transport.open();
-      } catch (Exception e) {
-        Log.error("Could not build transport: " + e.getLocalizedMessage());
-        transport = new InvalidTransport();
+      Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
+      if (cfg != null) {
+        transport = createTransport(cfg);
+      } else {
+        Log.fatal("No transport configuration section found");
       }
     }
-
     return transport;
+  }
+
+  /**
+   * Create a transport from the given configuration.
+   *
+   * <p>This method will never return null; it will an instance of an
+   * InvalidTransport if the connection could not be opened for any reason.</p>
+   *
+   * @param cfg The configuration to use
+   * @return an opened transport, or an InvalidTransport if the connection could not be made.
+   */
+  private Transport createTransport(Config cfg) {
+    Transport retval = null;
+    try {
+      String transportUri = cfg.getString(KestrelService.URI_TAG, true);
+      if (StringUtil.isNotEmpty(transportUri)) {
+        retval = new TransportBuilder().setURI(transportUri).build();
+        retval.open();
+      } else {
+        Log.fatal("No broker URI found in transport configuration, looking for '" + KestrelService.URI_TAG + "'");
+        retval = new InvalidTransport();
+      }
+    } catch (Exception e) {
+      Log.error("Could not build transport: " + e.getLocalizedMessage());
+      retval = new InvalidTransport();
+    }
+    return retval;
   }
 
 

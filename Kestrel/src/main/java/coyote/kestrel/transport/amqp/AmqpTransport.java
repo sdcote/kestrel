@@ -7,12 +7,12 @@ import com.rabbitmq.client.Recoverable;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
 import coyote.kestrel.transport.Transport;
+import coyote.loader.log.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -31,16 +31,15 @@ public class AmqpTransport implements Transport {
   private static final int DEFAULT_PORT = 5672;
   private static final String DEFAULT_USERNAME = "guest";
   private static final String DEFAULT_PASSWORD = "guest";
+  private static final String DIRECT_EXCHANGE = "DIRECT";
+  private static final String DIRECT = "direct";
+  private static final String TOPIC_EXCHANGE = "TOPIC";
+  private static final String TOPIC = "topic";
   private String hostname = DEFAULT_HOSTNAME;
   private int port = DEFAULT_PORT;
   private String username = DEFAULT_USERNAME;
   private String password = DEFAULT_PASSWORD;
   private int connectionTimeout = com.rabbitmq.client.ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT;
-  private static final String DIRECT_EXCHANGE = "DIRECT";
-  private static final String DIRECT = "direct";
-  private static final String TOPIC_EXCHANGE = "TOPIC";
-  private static final String TOPIC = "topic";
-
   /**
    * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
    */
@@ -138,10 +137,8 @@ public class AmqpTransport implements Transport {
 
     try {
       connection = factory.newConnection();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (TimeoutException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      Log.fatal("Could not open AMPQ connection to broker:" + e.getLocalizedMessage());
     }
   }
 
@@ -150,8 +147,8 @@ public class AmqpTransport implements Transport {
     // should we close each one of our channels first?
     try {
       connection.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (Exception ignore) {
+      // ignore exceptions on close
     } finally {
       connection = null;
     }
@@ -160,15 +157,16 @@ public class AmqpTransport implements Transport {
 
   @Override
   public MessageQueue getServiceQueue(String name) {
-    // TODO: look in the cache to see if there is already a queue with that name
     AmqpQueue retval = null;
-    try {
-      Channel channel = connection.createChannel();
-      channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
-      retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
-      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (connection != null) {
+      try {
+        Channel channel = connection.createChannel();
+        channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
+        retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
+        ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     return retval;
   }
