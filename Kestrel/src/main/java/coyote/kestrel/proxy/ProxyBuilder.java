@@ -1,7 +1,12 @@
 package coyote.kestrel.proxy;
 
 import coyote.kestrel.transport.TransportBuilder;
+import coyote.loader.Loader;
+import coyote.loader.cfg.ConfigurationException;
+import coyote.loader.log.LogMsg;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +24,15 @@ public class ProxyBuilder {
   /**
    * The list of classes we search for implementations.
    */
-  private static final List<Class> proxyClasses;
+  private static final Map<Class, Object> proxyClasses;
+
+  /** Cache of configured instances to be reused */
   private static final Map<Class, Object> proxyCache = new HashMap<>();
 
+  /** Our transport builder, creates transports for proxy instances. */
   private static final TransportBuilder transportBuilder = new TransportBuilder();
+
+  /** A static reference used for builder method chaining. */
   private static final ProxyBuilder instance = new ProxyBuilder();
 
 
@@ -44,12 +54,33 @@ public class ProxyBuilder {
    * @return the first type which implements the given interface type
    */
   public static <E> E build(Class<E> type) {
+    Object retval = null;
 
-    // search for a class which implements the type
+    // scan all the classes for one which implements the given interface
 
-    // If that class also implements the KestrelProxy interface, configure it
 
-    return type.cast(null);
+
+    try {
+      //Class<?> clazz = Class.forName(className);
+      Constructor<?> ctor = type.getConstructor();
+      Object object = ctor.newInstance();
+
+      if (object instanceof KestrelProxy) {
+        retval = (KestrelProxy)object;
+//        try {
+//          retval.setCommandLineArguments(args);
+//          retval.configure(configuration);
+//        } catch (ConfigurationException e) {
+//          System.err.println(LogMsg.createMsg(MSG, "Loader.could_not_config_loader", object.getClass().getName(), e.getClass().getSimpleName(), e.getMessage()));
+//        }
+      } else {
+        System.err.println("Not a Kestrel proxy");
+      }
+    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      System.err.println(e.getLocalizedMessage());
+    }
+
+    return type.cast(retval);
   }
 
 
@@ -59,7 +90,7 @@ public class ProxyBuilder {
    * @param proxyClass
    */
   public static void addProxyClass(Class proxyClass) {
-    proxyClasses.add(proxyClass);
+    //proxyClasses.add(proxyClass);
   }
 
   public static ProxyBuilder setURI(String uri) throws IllegalArgumentException {

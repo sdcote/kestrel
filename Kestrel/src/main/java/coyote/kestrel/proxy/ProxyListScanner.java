@@ -4,9 +4,9 @@ import coyote.loader.log.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -29,8 +29,8 @@ public class ProxyListScanner {
    *
    * @return a list of classes designated as service proxies by proxy list files found in the classpath.
    */
-  public static List<Class> scan() {
-    List<Class> retval = new ArrayList<>();
+  public static Map<Class, Object> scan() {
+    Map<Class, Object> retval = new HashMap<>();
 
     StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), System.getProperty("path.separator"));
     while (st.hasMoreTokens()) {
@@ -48,6 +48,7 @@ public class ProxyListScanner {
                 Log.trace("    '" + jentry.getName() + "' " + jentry.getCrc());
                 if (jentry.getName().toLowerCase().endsWith(FILENAME)) {
                   Log.info("Found " + jentry.getName());
+                  loadMap(retval,jentry.getName());
                 }
               }
             } catch (IOException e) {
@@ -62,6 +63,7 @@ public class ProxyListScanner {
                 Log.trace("    '" + zentry.getName() + "' " + zentry.getCrc());
                 if (zentry.getName().toLowerCase().endsWith(FILENAME)) {
                   Log.info("Found " + zentry.getName());
+                  loadMap(retval,zentry.getName());
                 }
               }
             } catch (IOException e) {
@@ -79,5 +81,15 @@ public class ProxyListScanner {
     } // while more path entries
 
     return retval;
+  }
+
+
+  private static void loadMap(Map<Class, Object> map, String filename) {
+    // load the file with the classloader
+    // scan the file for class names
+    // for each class name
+    //   load the class
+    //   load an instance
+    //   place both in map
   }
 }

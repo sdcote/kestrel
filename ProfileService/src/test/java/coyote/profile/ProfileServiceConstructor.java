@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class AppTest {
+public class ProfileServiceConstructor {
     @Test
     public void testConstructor() {
         ProfileService classUnderTest = new ProfileService();

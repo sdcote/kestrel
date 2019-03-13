@@ -1,7 +1,9 @@
 package coyote.profile;
 
 
-public interface ProfileClient {
+import coyote.kestrel.proxy.KestrelProxy;
+
+public interface ProfileClient extends KestrelProxy {
 
   /**
    * Retrieve the profile with the given identifier.
@@ -10,5 +12,6 @@ public interface ProfileClient {
    * @return the Profile with the diven identifier or null if not found
    */
   public Profile retrieveProfile(String id);
+
 
 }
