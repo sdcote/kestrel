@@ -6,7 +6,9 @@ This library allows a developer to create micro services over message exchanges 
 This is not a generic messaging library. It is a framework which uses messaging to exchange data with the goal of implementing micro services and client API stubs which can be used in any environment an application. The API has been designed for use as a request-reply infrastructure with some eventing for monitoring and management.
 
 # Design Notes
-This framework is designed to support multiple transport technologies. The Default is AMQP, but others are possible including JMS and Tibco Rendezvous. This is why the the underlying class model uses different nomenclature than some developers may be familiar.  
+This framework is designed to support multiple transport technologies. The Default is AMQP, but others are possible including JMS and Tibco Rendezvous. This is why the the underlying class model uses different nomenclature than some developers may be familiar.
+
+Because this is intended to operate across multiple technologies, this framework may replicate some functionality of the underlying transport so that it can be used with other transports. This abstraction makes it possible to have services running on one technology stack, and clients on another with a very simple bridge between the two. For example, a set of clients may be running on a JMS messaging infrastructure, but services running on an AMQP implementation and a simple bridge can route messages between the two.
 
 Micro service implementation is the primary purpose of this framework and therefore will only contain qualities of service determined to be useful in that application. This is not designed to be a generic messaging toolkit. The primary use case is to speed the creation of message driven micro services and the consumption thereof.
 # Docker Notes

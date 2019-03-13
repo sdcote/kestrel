@@ -77,7 +77,6 @@ public abstract class AmqpChannel implements MessageChannel {
     } catch (IOException e) {
       Log.error("Could not NCK delivery, channel error: " + e.getLocalizedMessage());
     }
-
   }
 
 }

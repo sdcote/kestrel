@@ -110,9 +110,9 @@ public class Message extends DataFrame {
   /**
    * Retrieve a copy of the serialized payload.
    *
-   * <p>Changing the returned data frame has no effect on the payload. To
-   * update the message with the new/updated data frame, it must be set back
-   * into the message.</p>
+   * <p>Changing the returned data frame has no effect on the payload
+   * contained in this message. To update the message with the new/updated
+   * data frame, it must be set back into the message.</p>
    *
    * <p>If there is a field with the same name of the payload, but it is not a
    * data frame, a new data frame is returned and the existing field is

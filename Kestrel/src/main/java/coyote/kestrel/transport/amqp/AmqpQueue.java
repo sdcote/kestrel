@@ -37,7 +37,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
       GetResponse response = getChannel().basicGet(getName(), MANUAL_ACK);
       if (response != null) {
         AMQP.BasicProperties props = response.getProps();
-        Log.notice(props);
+        Log.debug(props);
         retval = new Message();
         retval.put(AmqpTransport.DELIVERY_ID_FIELD, response.getEnvelope().getDeliveryTag());
         retval.setPayload(PayloadCodec.decode(response.getBody()));
@@ -48,10 +48,6 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
     return retval;
   }
 
-  @Override
-  public Message getNextMessage(long timeout) {
-    return null;
-  }
 
   @Override
   public Message peek() {

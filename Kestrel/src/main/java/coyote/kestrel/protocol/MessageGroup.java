@@ -21,6 +21,8 @@ public interface MessageGroup {
    */
   Message getNextMessage();
 
+  Message getNextMessage(int timeout);
+
   void respond(Message response);
 
   ResponseFuture request(Message request);

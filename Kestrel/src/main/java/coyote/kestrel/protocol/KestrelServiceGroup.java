@@ -26,6 +26,25 @@ public abstract class KestrelServiceGroup implements MessageGroup {
     }
     return retval;
   }
+  @Override
+  public Message getNextMessage(int timeout) {
+    long expiry = System.currentTimeMillis() + timeout;
+    Message retval = null;
+    if (timeout > 0) expiry = Long.MAX_VALUE;
+    do {
+      retval = getNextMessage();
+      if (retval != null) {
+        break;
+      } else {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          break;
+        }
+      }
+    } while (System.currentTimeMillis() < expiry);
+    return retval;
+  }
 
 
   @Override

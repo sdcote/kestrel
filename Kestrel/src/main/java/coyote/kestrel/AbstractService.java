@@ -108,7 +108,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
   private void serviceGroupProcessing() {
-    Message message = serviceGroup.getNextMessage();
+    Message message = serviceGroup.getNextMessage(100);
     if (message != null) {
       try {
         process(message);
@@ -248,9 +248,27 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     serviceGroup.send(response);
   }
 
+  /**
+   * Send a Kestrel NAK; a NAK to the client. This does not NAK message
+   * delivery at the transport layer.
+   *
+   * <p>This indicates the message could not be processed by the service.</p>
+   *
+   * @param message
+   * @param msg
+   */
   protected void sendNak(Message message, String msg) {
   }
 
+  /**
+   * Send a Kestrel NAK; a NAK to the client. This does not NAK message
+   * delivery at the transport layer.
+   *
+   * <p>This indicates the message could not be processed by the service.</p>
+   *
+   * @param message
+   * @param resultcode
+   */
   protected void sendNak(Message message, int resultcode) {
   }
 

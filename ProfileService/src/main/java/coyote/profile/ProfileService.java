@@ -1,8 +1,10 @@
 package coyote.profile;
 
 
+import coyote.dataframe.DataFrame;
 import coyote.kestrel.AbstractService;
 import coyote.kestrel.transport.Message;
+import coyote.loader.log.Log;
 
 public class ProfileService extends AbstractService {
 
@@ -19,11 +21,17 @@ public class ProfileService extends AbstractService {
   /**
    * This is where we receive our request messages.
    *
+   * <p>If we throw an exception, the message will be negatively acknowledged
+   * at the transport level and re-queued for delivery.</p>
+   *
    * @param message
    */
   @Override
   public void process(Message message) {
-    if (message.contains("ID")) {
+    Log.info("Received service message: " + message);
+
+    DataFrame payload = message.getPayload();
+    if (payload.contains("ID")) {
       Message response = message.createResponse();
       response.getPayload().clear();
       response.getPayload().put("ResponseCode", 203);
@@ -38,7 +46,7 @@ public class ProfileService extends AbstractService {
   public void processInboxMessage(Message message) {
     // this is where we process messages sent directly to us
     // are we being asked to shutdown? change logging? change instrumentation? report status?
-    System.out.println("Received inbox message: " + message);
+    Log.info("Received inbox message: " + message);
   }
 
 
@@ -46,7 +54,7 @@ public class ProfileService extends AbstractService {
   public void processCoherenceMessage(Message message) {
     // this is where we process coherence messages sent between service
     // instances to coordinate our activities.
-    System.out.println("Received coherence message: " + message);
+    Log.info("Received coherence message: " + message);
   }
 
 }
