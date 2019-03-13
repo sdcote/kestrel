@@ -1,23 +1,31 @@
 package coyote.kestrel.proxy;
 
-import java.util.ArrayList;
+import coyote.kestrel.transport.TransportBuilder;
+
+import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Sources of inspiration:
- * http://software.clapper.org/javautil/api/org/clapper/util/classutil/ClassFinder.html
- * https://stackoverflow.com/questions/347248/how-can-i-get-a-list-of-all-the-implementations-of-an-interface-programmatically
- * <p>
- * Reflection is too slow and resource intensive. A service registry approach is more efficient.
+ * This is a builder for creating and configuring service proxies.
+ *
+ * <p>Reflection is too slow and resource intensive. A service registry
+ * approach is more efficient. This means the developer will need to register
+ * proxy implementations with the builder, configure the builder, and then ask
+ * for a configured proxy.</p>
  */
 public class ProxyBuilder {
   /**
    * The list of classes we search for implementations.
    */
-  private static final List<Class> proxyClasses = new ArrayList<>();
+  private static final List<Class> proxyClasses;
+  private static final Map<Class, Object> proxyCache = new HashMap<>();
 
-  static{
-    // TODO: search classpath for lists of proxy classes to load "proxylist.json" for each one, load the classes here
+  private static final TransportBuilder transportBuilder = new TransportBuilder();
+
+  static {
+    proxyClasses = ProxyListScanner.scan();
   }
 
   private ProxyBuilder() {
@@ -51,4 +59,75 @@ public class ProxyBuilder {
   public static void addProxyClass(Class proxyClass) {
 
   }
+
+
+  public String getQuery() {
+    return transportBuilder.getQuery();
+  }
+
+  public TransportBuilder setQuery(String path) {
+    return transportBuilder.setQuery(path);
+  }
+
+  public int getPort() {
+    return transportBuilder.getPort();
+  }
+
+  public TransportBuilder setPort(int port) {
+    return transportBuilder.setPort(port);
+  }
+
+  public String getHostname() {
+    return transportBuilder.getHostname();
+  }
+
+  public String getPassword() {
+    return transportBuilder.getPassword();
+  }
+
+  public TransportBuilder setPassword(String password) {
+    return transportBuilder.setPassword(password);
+  }
+
+  public String getUsername() {
+    return transportBuilder.getUsername();
+  }
+
+  public TransportBuilder setUsername(String username) {
+    return transportBuilder.setUsername(username);
+
+  }
+
+  public String getScheme() {
+    return transportBuilder.getScheme();
+  }
+
+  public TransportBuilder setScheme(String scheme) {
+    return transportBuilder.setScheme(scheme);
+
+  }
+
+  public TransportBuilder setHost(String host) {
+    return transportBuilder.setHost(host);
+
+  }
+
+  public int getConnectionTimeout() {
+    return transportBuilder.getConnectionTimeout();
+  }
+
+  // timeout in milliseconds; zero for infinite
+  public TransportBuilder setConnectionTimeout(int timeout) {
+    return transportBuilder.setConnectionTimeout(timeout);
+  }
+
+  public TransportBuilder setURI(String uri) throws IllegalArgumentException {
+    return transportBuilder.setURI(uri);
+  }
+
+  public TransportBuilder setURI(URI uri) throws IllegalArgumentException {
+    return transportBuilder.setURI(uri);
+  }
+
+
 }

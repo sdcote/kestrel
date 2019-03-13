@@ -2,7 +2,6 @@ package coyote.kestrel.transport;
 
 import coyote.commons.StringUtil;
 import coyote.kestrel.transport.amqp.AmqpTransport;
-import coyote.loader.cfg.Config;
 import coyote.loader.log.Log;
 
 import java.net.URI;
@@ -10,11 +9,8 @@ import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Map;
 
-/**
- * This builder caches connections to brokers to keep resources under control.
- */
-public class TransportBuilder extends Config {
-  static final Map<String, Transport> transportMap = new Hashtable<>();
+public class TransportBuilder {
+  private static final Map<String, Transport> transportMap = new Hashtable<>();
   private String scheme = null;
   private String username = null;
   private String password = null;
@@ -23,73 +19,8 @@ public class TransportBuilder extends Config {
   private String query = null;
   private int connectionTimeout = 60000;
 
-  public TransportBuilder setURI(String uri) throws IllegalArgumentException {
-    if (StringUtil.isNotEmpty(uri)) {
-      try {
-        URI brokerURI = new URI(uri);
-        setURI(brokerURI);
-      } catch (URISyntaxException e) {
-        throw new IllegalArgumentException("The broker URI string is invalid: '" + e.getMessage() + "'");
-      }
-    } // ignore null/empty uri strings
-    return this;
-  }
 
-  public TransportBuilder setURI(URI uri) throws IllegalArgumentException {
-    if (uri != null) {
-      setScheme(uri.getScheme());
-      String userInfo = uri.getUserInfo();
-      if (StringUtil.isNotEmpty(userInfo)) {
-        if (userInfo.contains(":")) {
-          String[] userInfoArray = userInfo.split(":");
-          setUsername(userInfoArray[0]);
-          setPassword(userInfoArray[1]);
-        } else {
-          setUsername(userInfo);
-        }
-      }
-      setHost(uri.getHost());
-      setPort(uri.getPort());
-      setQuery(uri.getPath());
-    }
-
-    return this;
-  }
-
-
-  public Transport build() throws IllegalArgumentException {
-    Transport retval = null;
-
-
-    if (StringUtil.isNotBlank(getScheme())) {
-      if (Transport.AMQP.equalsIgnoreCase(getScheme()) || Transport.AMQPS.equalsIgnoreCase(getScheme())) {
-        retval = createAmqpTransport();
-      } else if (Transport.JMS.equalsIgnoreCase(getScheme())) {
-        retval = createJmsTransport();
-      } else {
-        Log.warn("The broker scheme is not supported: '" + getScheme() + "'");
-      }
-    } else {
-      Log.warn("The broker scheme is blank or empty");
-    }
-    return retval;
-  }
-
-  private Transport createJmsTransport() {
-    return null;
-  }
-
-  private Transport createAmqpTransport() {
-    AmqpTransport retval = new AmqpTransport();
-    retval.setHostname(getHostname());
-    retval.setPort(getPort());
-    retval.setUsername(getUsername());
-    retval.setPassword(getPassword());
-    retval.setVirtualHost(getQuery());
-    return retval;
-  }
-
-  public String getQuery() {
+  public  String getQuery() {
     return query;
   }
 
@@ -151,6 +82,69 @@ public class TransportBuilder extends Config {
   public TransportBuilder setConnectionTimeout(int timeout) {
     this.connectionTimeout = timeout;
     return this;
+  }
+
+  public Transport createJmsTransport() {
+    return null;
+  }
+
+  public Transport createAmqpTransport() {
+    AmqpTransport retval = new AmqpTransport();
+    retval.setHostname(getHostname());
+    retval.setPort(getPort());
+    retval.setUsername(getUsername());
+    retval.setPassword(getPassword());
+    retval.setVirtualHost(getQuery());
+    return retval;
+  }
+
+  public TransportBuilder setURI(String uri) throws IllegalArgumentException {
+    if (StringUtil.isNotEmpty(uri)) {
+      try {
+        URI brokerURI = new URI(uri);
+        setURI(brokerURI);
+      } catch (URISyntaxException e) {
+        throw new IllegalArgumentException("The broker URI string is invalid: '" + e.getMessage() + "'");
+      }
+    } // ignore null/empty uri strings
+    return this;
+  }
+
+  public TransportBuilder setURI(URI uri) throws IllegalArgumentException {
+    if (uri != null) {
+      setScheme(uri.getScheme());
+      String userInfo = uri.getUserInfo();
+      if (StringUtil.isNotEmpty(userInfo)) {
+        if (userInfo.contains(":")) {
+          String[] userInfoArray = userInfo.split(":");
+          setUsername(userInfoArray[0]);
+          setPassword(userInfoArray[1]);
+        } else {
+          setUsername(userInfo);
+        }
+      }
+      setHost(uri.getHost());
+      setPort(uri.getPort());
+      setQuery(uri.getPath());
+    }
+
+    return this;
+  }
+
+  public Transport build() throws IllegalArgumentException {
+    Transport retval = null;
+    if (StringUtil.isNotBlank(getScheme())) {
+      if (Transport.AMQP.equalsIgnoreCase(getScheme()) || Transport.AMQPS.equalsIgnoreCase(getScheme())) {
+        retval = createAmqpTransport();
+      } else if (Transport.JMS.equalsIgnoreCase(getScheme())) {
+        retval = createJmsTransport();
+      } else {
+        Log.warn("The broker scheme is not supported: '" + getScheme() + "'");
+      }
+    } else {
+      Log.warn("The broker scheme is blank or empty");
+    }
+    return retval;
   }
 
 }
