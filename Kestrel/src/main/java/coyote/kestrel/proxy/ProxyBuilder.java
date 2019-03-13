@@ -23,6 +23,8 @@ public class ProxyBuilder {
   private static final Map<Class, Object> proxyCache = new HashMap<>();
 
   private static final TransportBuilder transportBuilder = new TransportBuilder();
+  private static final ProxyBuilder instance = new ProxyBuilder();
+
 
   static {
     proxyClasses = ProxyListScanner.scan();
@@ -57,76 +59,80 @@ public class ProxyBuilder {
    * @param proxyClass
    */
   public static void addProxyClass(Class proxyClass) {
-
+    proxyClasses.add(proxyClass);
   }
 
+  public static ProxyBuilder setURI(String uri) throws IllegalArgumentException {
+    ProxyBuilder.transportBuilder.setURI(uri);
+    return instance;
+  }
 
-  public String getQuery() {
+  public static ProxyBuilder setURI(URI uri) throws IllegalArgumentException {
+    ProxyBuilder.transportBuilder.setURI(uri);
+    return instance;
+  }
+
+  public static String getQuery() {
     return transportBuilder.getQuery();
   }
 
-  public TransportBuilder setQuery(String path) {
-    return transportBuilder.setQuery(path);
+  public ProxyBuilder setQuery(String path) {
+    ProxyBuilder.transportBuilder.setQuery(path);
+    return instance;
   }
 
-  public int getPort() {
-    return transportBuilder.getPort();
+  public static int getPort() {
+    return ProxyBuilder.transportBuilder.getPort();
   }
 
-  public TransportBuilder setPort(int port) {
-    return transportBuilder.setPort(port);
+  public ProxyBuilder setPort(int port) {
+    ProxyBuilder.transportBuilder.setPort(port);
+    return instance;
   }
 
-  public String getHostname() {
-    return transportBuilder.getHostname();
+  public static String getHostname() {
+    return ProxyBuilder.transportBuilder.getHostname();
   }
 
-  public String getPassword() {
-    return transportBuilder.getPassword();
+  public static String getPassword() {
+    return ProxyBuilder.transportBuilder.getPassword();
   }
 
-  public TransportBuilder setPassword(String password) {
-    return transportBuilder.setPassword(password);
+  public ProxyBuilder setPassword(String password) {
+    ProxyBuilder.transportBuilder.setPassword(password);
+    return instance;
   }
 
-  public String getUsername() {
-    return transportBuilder.getUsername();
+  public static String getUsername() {
+    return ProxyBuilder.transportBuilder.getUsername();
   }
 
-  public TransportBuilder setUsername(String username) {
-    return transportBuilder.setUsername(username);
-
+  public ProxyBuilder setUsername(String username) {
+    ProxyBuilder.transportBuilder.setUsername(username);
+    return instance;
   }
 
-  public String getScheme() {
-    return transportBuilder.getScheme();
+  public static String getScheme() {
+    return ProxyBuilder.transportBuilder.getScheme();
   }
 
-  public TransportBuilder setScheme(String scheme) {
-    return transportBuilder.setScheme(scheme);
-
+  public static ProxyBuilder setScheme(String scheme) {
+    ProxyBuilder.transportBuilder.setScheme(scheme);
+    return instance;
   }
 
-  public TransportBuilder setHost(String host) {
-    return transportBuilder.setHost(host);
-
+  public static int getConnectionTimeout() {
+    return ProxyBuilder.transportBuilder.getConnectionTimeout();
   }
 
-  public int getConnectionTimeout() {
-    return transportBuilder.getConnectionTimeout();
+  public ProxyBuilder setConnectionTimeout(int timeout) {
+    ProxyBuilder.transportBuilder.setConnectionTimeout(timeout);
+    return instance;
   }
 
-  // timeout in milliseconds; zero for infinite
-  public TransportBuilder setConnectionTimeout(int timeout) {
-    return transportBuilder.setConnectionTimeout(timeout);
-  }
-
-  public TransportBuilder setURI(String uri) throws IllegalArgumentException {
-    return transportBuilder.setURI(uri);
-  }
-
-  public TransportBuilder setURI(URI uri) throws IllegalArgumentException {
-    return transportBuilder.setURI(uri);
+  public ProxyBuilder setHost(String host) {
+    ProxyBuilder.transportBuilder.setHost(host);
+    return instance;
   }
 
 
