@@ -250,7 +250,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
   /**
-   * Send a Kestrel NAK; a NAK to the client. This does not NAK message
+   * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
    * delivery at the transport layer.
    *
    * <p>This indicates the message could not be processed by the service.</p>
@@ -262,7 +262,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
   /**
-   * Send a Kestrel NAK; a NAK to the client. This does not NAK message
+   * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
    * delivery at the transport layer.
    *
    * <p>This indicates the message could not be processed by the service.</p>

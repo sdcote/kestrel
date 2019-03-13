@@ -1,7 +1,7 @@
 package coyote.profile;
 
 
-import coyote.kestrel.client.ClientBuilder;
+import coyote.kestrel.proxy.ProxyBuilder;
 import org.junit.jupiter.api.*;
 
 public class ProfileClientTest {
@@ -13,9 +13,11 @@ public class ProfileClientTest {
   @Test
   void testClientBuilder() {
 
-    // Setup a client which uses a mock transport
+    ProxyBuilder.addProxyClass(ProfileProxy.class);
 
-    ProfileClient client = ClientBuilder.build(ProfileClient.class);
+    // Setup a proxy which uses a mock transport
+
+    ProfileClient client = ProxyBuilder.build(ProfileClient.class);
 
 
     System.out.println("Success");
