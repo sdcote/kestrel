@@ -2,7 +2,7 @@ package coyote.profile;
 
 
 import coyote.dataframe.DataFrame;
-import coyote.kestrel.AbstractService;
+import coyote.kestrel.service.AbstractService;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
 

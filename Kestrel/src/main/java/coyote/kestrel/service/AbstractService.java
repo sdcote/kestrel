@@ -1,7 +1,8 @@
-package coyote.kestrel;
+package coyote.kestrel.service;
 
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
+import coyote.kestrel.ServiceGroup;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
@@ -103,7 +104,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
         serviceGroupProcessing();
       }
     } else {
-      Log.fatal("Could not connect to broker");
+      Log.fatal("Could not connect to transport service");
     }
   }
 
@@ -177,7 +178,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
       inbox.attach(this);
     } catch (Exception e) {
       running = false;
-      Log.error("Could not initialize the inbox group");
+      Log.error("Could not initialize the inbox");
     }
   }
 

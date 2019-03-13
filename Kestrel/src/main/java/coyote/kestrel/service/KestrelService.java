@@ -1,4 +1,4 @@
-package coyote.kestrel;
+package coyote.kestrel.service;
 
 import coyote.kestrel.transport.Message;
 import coyote.loader.cfg.ConfigurationException;

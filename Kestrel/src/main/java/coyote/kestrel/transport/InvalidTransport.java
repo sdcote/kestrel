@@ -5,7 +5,7 @@ package coyote.kestrel.transport;
  */
 public class InvalidTransport implements Transport {
 
-  private final String MESSAGE = "Could not connect to broker";
+  private final String MESSAGE = "Could not connect to transport";
 
   @Override
   public boolean isValid() {
