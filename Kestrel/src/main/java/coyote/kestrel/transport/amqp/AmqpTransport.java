@@ -20,6 +20,7 @@ import java.util.UUID;
  */
 public class AmqpTransport implements Transport {
 
+  public static final String DELIVERY_ID_FIELD = "AMQP_DLVRY_ID";
   private static final boolean NON_DURABLE = false;
   private static final boolean DURABLE = true;
   private static final boolean EXCLUSIVE = false;

@@ -100,10 +100,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     if (transport.isValid()) {
       while (running) {
         heartbeat();
-        inboxProcessing();
-        coherenceProcessing();
         serviceGroupProcessing();
-        coherenceProcessing();
       }
     } else {
       Log.fatal("Could not connect to broker");
@@ -115,8 +112,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     if (message != null) {
       try {
         process(message);
+        serviceGroup.ackDelivery(message);
       } catch (final Exception e) {
-        //Log.error(LogMsg.createMsg(CDX.MSG, "Job.exception_running_engine", e.getClass().getSimpleName(), e.getMessage(), engine.getName(), engine.getClass().getSimpleName()));
+        serviceGroup.nakDelivery(message);
         Log.error(ExceptionUtil.toString(e));
         if (Log.isLogging(Log.DEBUG_EVENTS)) {
           Log.debug(ExceptionUtil.stackTrace(e));

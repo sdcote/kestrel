@@ -69,5 +69,15 @@ public abstract class KestrelServiceGroup implements MessageGroup {
     groupName = name;
   }
 
+  @Override
+  public void ackDelivery(Message message) {
+    messageQueue.ackDelivery(message);
+  }
+
+  @Override
+  public void nakDelivery(Message message) {
+    messageQueue.nakDelivery(message);
+  }
+
 
 }

@@ -1,8 +1,13 @@
 {
-  "Class" : "coyote.profile.ProfileService",
+  "Class": "coyote.profile.ProfileService",
 
   "Transport": {
-    "URI":"amqp://[#$AMQP_USER#]:[#$AMQP_PASS#]@[#$AMQP_HOST#]:[#$AMQP_PORT#]"
-  }
+    "Uri": "amqp://[#$username#]:[#$password#]@[#$hostname#]:[#$port#]/[#$vhost#]",
+    "AutoAck": false
+  },
 
+  "Logging": {
+    "StandardError": { "categories": "error, fatal, warn" },
+    "StandardOutput": { "categories": "info, notice" }
+  }
 }

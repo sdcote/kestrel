@@ -3,8 +3,7 @@ package coyote.kestrel.transport.amqp;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
-import coyote.dataframe.DataFrame;
-import coyote.kestrel.KestrelProtocol;
+import coyote.kestrel.PayloadCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
@@ -35,22 +34,13 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   public Message getNextMessage() {
     Message retval = null;
     try {
-      GetResponse response = getChannel().basicGet(getName(), AUTO_ACK);
+      GetResponse response = getChannel().basicGet(getName(), MANUAL_ACK);
       if (response != null) {
         AMQP.BasicProperties props = response.getProps();
         Log.notice(props);
         retval = new Message();
-        retval.put(KestrelProtocol.ID_FIELD, response.getEnvelope().getDeliveryTag());
-        byte[] body = response.getBody();
-        DataFrame payload = null;
-        try {
-          payload = new DataFrame(body);
-        } catch (Throwable ball) {
-          payload = new DataFrame();
-          payload.put("BYTES", body);
-          payload.put("ERROR", ball.getLocalizedMessage());
-        }
-        retval.setPayload(payload);
+        retval.put(AmqpTransport.DELIVERY_ID_FIELD, response.getEnvelope().getDeliveryTag());
+        retval.setPayload(PayloadCodec.decode(response.getBody()));
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -75,13 +65,13 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
 
   @Override
   public void attach(MessageListener listener) {
-    if (listener != null){
+    if (listener != null) {
       MyConsumer consumer = new MyConsumer(getChannel());
       consumer.setListener(listener);
       consumer.setName(getName());
 
       try {
-        getChannel().basicConsume(getName(),consumer);
+        getChannel().basicConsume(getName(), consumer);
       } catch (IOException e) {
         e.printStackTrace();
       }

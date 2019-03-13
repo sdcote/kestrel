@@ -41,5 +41,9 @@ public interface MessageChannel {
    */
   void detach(MessageListener listener);
 
+  void ackDelivery(Message message);
+
+  void nakDelivery(Message message);
+
 
 }

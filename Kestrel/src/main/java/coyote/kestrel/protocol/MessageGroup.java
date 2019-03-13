@@ -31,4 +31,7 @@ public interface MessageGroup {
 
   void initialize();
 
+  void ackDelivery(Message message);
+
+  void nakDelivery(Message message);
 }

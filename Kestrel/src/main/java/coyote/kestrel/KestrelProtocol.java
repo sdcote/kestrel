@@ -39,6 +39,8 @@ public class KestrelProtocol {
   public static final short HIGH = 6;
   public static final short VERY_HIGH = 7;
   public static final short HIGHEST = 8;
+  public static final String GENERIC_DATA_FIELD = "DATA";
+
   private static final String[] priorityNames = new String[]{"Lowest", "Very Low", "Low", "Below Normal", "Normal", "Above Normal", "High", "Very High", "Highest"};
 
 

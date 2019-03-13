@@ -3,19 +3,15 @@ package coyote.kestrel.transport.amqp;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import coyote.dataframe.DataFrame;
-import coyote.dataframe.DecodeException;
-import coyote.dataframe.marshal.json.JsonFrameParser;
+import coyote.kestrel.PayloadCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.loader.log.Log;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
- * This implementation supports recovery.
+ * This consumer implementation supports recovery.
  */
 public class MyConsumer extends DefaultConsumer implements Consumer {
   private MessageListener listener = null;
@@ -43,44 +39,19 @@ public class MyConsumer extends DefaultConsumer implements Consumer {
     long deliveryTag = envelope.getDeliveryTag();
 
     if (listener != null) {
-      DataFrame payload = null;
-
       Message message = new Message();
       message.setGroup(getName());
-
+      message.setPayload(PayloadCodec.decode(body));
       try {
-        payload = new DataFrame(body);
-      } catch (DecodeException e) {
-        String data = StandardCharsets.ISO_8859_1.decode(ByteBuffer.wrap(body)).toString();
-        try {
-          List<DataFrame> frames = new JsonFrameParser(data).parse();
-          if (frames.size() > 0) {
-            if (frames.size() == 1) {
-              payload = frames.get(0);
-            } else {
-              payload = new DataFrame();
-              for (DataFrame frame : frames) {
-                payload.add(frame);
-              }
-            }
-          } else {
-            payload = new DataFrame().set("MSG", data);
-          }
-        } catch (Throwable ball) {
-          payload = new DataFrame().set("MSG", data); // unknown string
-        }
-      } catch (Throwable ball) {
-        payload = new DataFrame().set("MSG", body); // unknown binary
+        listener.onMessage(message);
+        getChannel().basicAck(deliveryTag, false);
+      } catch (Exception e) {
+        getChannel().basicNack(deliveryTag,false,true);
       }
-
-      if (payload != null) {
-        message.setPayload(payload);
-      }
-
-      // deliver to the message listener
-      listener.onMessage(message);
+    } else{
+      Log.warn("Consumer on '"+getName()+"' has no listener - Requeueing");
+      getChannel().basicNack(deliveryTag,false,true);
     }
-    getChannel().basicAck(deliveryTag, true);
   }
 
 
