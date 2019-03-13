@@ -123,6 +123,7 @@ public class AmqpTransport implements Transport {
   public void open() {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(getHostname());
+    factory.setPort(getPort());
     factory.setUsername(getUsername());
     factory.setPassword(getPassword());
     factory.setConnectionTimeout(getConnectionTimeout());
@@ -139,7 +140,7 @@ public class AmqpTransport implements Transport {
     try {
       connection = factory.newConnection();
     } catch (Exception e) {
-      Log.fatal("Could not open AMPQ connection to broker:" + e.getLocalizedMessage());
+      Log.fatal("Could not open AMPQ connection to broker("+factory.getUsername()+"@"+factory.getHost()+":"+factory.getPort()+"): " + e.getLocalizedMessage());
     }
   }
 
