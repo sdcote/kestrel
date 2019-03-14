@@ -32,9 +32,15 @@ public class ProfileService extends AbstractService {
 
     DataFrame payload = message.getPayload();
     if (payload.contains("ID")) {
+      // create a response message
       Message response = message.createResponse();
-      response.getPayload().clear();
-      response.getPayload().put("ResponseCode", 203);
+
+      // create a result of our processing
+      DataFrame result = new DataFrame();
+      result.put("ResponseCode", 203);
+      response.setPayload(result);
+
+      // send the response
       send(response);
     } else {
       sendNak(message, "No id found");
