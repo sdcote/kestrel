@@ -2,12 +2,16 @@ package coyote.kestrel.proxy;
 
 import coyote.commons.FileUtil;
 import coyote.commons.StreamUtil;
+import coyote.commons.StringUtil;
+import coyote.loader.cfg.Config;
 import coyote.loader.log.Log;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -69,12 +73,9 @@ public class ProxyListScanner {
               Log.warn("Class path entry '" + entry + "' is not a valid zip archive: " + e.getMessage());
             }
           } else if (file.isDirectory()) {
-            // TODO: perform a directory search...requires constructing fully qualified names
-            Log.debug("Proxy list scanner looking in directory: " + file.getAbsolutePath());
             List<File> files = FileUtil.getFiles(file, true);
             for (File fentry : files) {
               if (fentry.getName().toLowerCase().endsWith(FILENAME)) {
-                Log.debug("Found service proxy configuration file: " + fentry.getAbsolutePath());
                 String partialname = subtractDirFromFile(file, fentry);
                 partialname = partialname.replace('\\', '/');
                 if (partialname.charAt(0) == '/') partialname = partialname.substring(1);
@@ -95,6 +96,13 @@ public class ProxyListScanner {
     return retval;
   }
 
+  /**
+   * Find the portion of the file which represents the namespace from which it should be loaded
+   *
+   * @param dir  the directory reference to remove from the file path
+   * @param file the file within the directory
+   * @return the relative path from the given directory
+   */
   private static String subtractDirFromFile(File dir, File file) {
     String retval = "";
     if (dir != null) {
@@ -121,37 +129,81 @@ public class ProxyListScanner {
   }
 
 
+  /**
+   * @param list
+   * @param filename
+   */
   private static void loadList(Map<Class, Object> list, String filename) {
     Log.info("Found " + filename);
-    // load the file with the classloader
-    ClassLoader cloader = ClassLoader.getSystemClassLoader();
 
-    InputStream in = cloader.getResourceAsStream(filename);
-    if (in != null) {
-      try {
-        Reader reader = StreamUtil.getReader(in);
-        StringBuilder textBuilder = new StringBuilder();
-        int c = 0;
-        while ((c = reader.read()) != -1) {
-          textBuilder.append((char) c);
-        }
-        System.out.println(textBuilder.toString());
-      } catch (Exception e) {
-        e.printStackTrace();
-      } finally {
+    String data = loadFile(filename);
+    if (StringUtil.isNotBlank(data)) {
+      Map<Class, Config> classMap = loadConfig(data);
+
+      for( Map.Entry<Class,Config> entry: classMap.entrySet()){
+        Constructor<?> ctor = null;
         try {
-          in.close();
-        } catch (IOException ignore) {
+          Class<?> clazz =entry.getKey();
+          ctor = clazz.getConstructor();
+          Object object = ctor.newInstance();
+          list.put(clazz,object);
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
     }
-
-    // scan the file for class names
-    //   try JSON
-    //   try simple class per line
-    // for each class name
-    //   load the class
-    //   create an instance for reflection
-    //   place both in map
   }
+
+  private static Map<Class, Config> loadConfig(String data) {
+    Map<Class, Config> retval = new HashMap<>();
+    List<String> classes = new ArrayList<>();
+    String[] lines = data.split("\\r?\\n");
+    for (String line : lines) {
+      if (StringUtil.isNotBlank(line) && !line.trim().startsWith("#")) {
+        classes.add(line.trim());
+      }
+    }
+    for (String line : classes) {
+      try {
+        Class<?> clazz = Class.forName(line);
+        retval.put(clazz, null);
+      } catch (ClassNotFoundException e) {
+        Log.error("Proxy scanner could not load class: '" + line + "'");
+      }
+    }
+    return retval;
+  }
+
+
+  private static String loadFile(String filename) {
+    String retval = "";
+    try {
+      ClassLoader cloader = ClassLoader.getSystemClassLoader();
+      if (cloader == null) throw new IllegalStateException("System classloader returned null");
+
+      InputStream in = cloader.getResourceAsStream(filename);
+      if (in != null) {
+        try {
+          Reader reader = StreamUtil.getReader(in);
+          StringBuilder sb = new StringBuilder();
+          int c = 0;
+          while ((c = reader.read()) != -1) {
+            sb.append((char) c);
+          }
+          retval = sb.toString();
+        } catch (Exception e) {
+          Log.warn("Could not read service proxy file from classpath: '" + filename + "' - Reason: " + e.getLocalizedMessage());
+        } finally {
+          try {
+            in.close();
+          } catch (IOException ignore) {
+          }
+        }
+      }
+    } catch (Throwable ball) {
+      Log.warn("Problems accessing classloader: " + ball.getLocalizedMessage());
+    }
+    return retval;
+  }
+
 }
