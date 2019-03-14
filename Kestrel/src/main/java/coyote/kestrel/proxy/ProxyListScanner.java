@@ -1,9 +1,13 @@
 package coyote.kestrel.proxy;
 
+import coyote.commons.FileUtil;
+import coyote.commons.StreamUtil;
 import coyote.loader.log.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -26,8 +30,8 @@ public class ProxyListScanner {
    *
    * @return a map of classes designated as service proxies by proxy list files found in the classpath.
    */
-  public static Map<Class,Object> scan() {
-    Map<Class,Object> retval = new HashMap<>();
+  public static Map<Class, Object> scan() {
+    Map<Class, Object> retval = new HashMap<>();
 
     StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), System.getProperty("path.separator"));
     while (st.hasMoreTokens()) {
@@ -66,6 +70,17 @@ public class ProxyListScanner {
             }
           } else if (file.isDirectory()) {
             // TODO: perform a directory search...requires constructing fully qualified names
+            Log.debug("Proxy list scanner looking in directory: " + file.getAbsolutePath());
+            List<File> files = FileUtil.getFiles(file, true);
+            for (File fentry : files) {
+              if (fentry.getName().toLowerCase().endsWith(FILENAME)) {
+                Log.debug("Found service proxy configuration file: " + fentry.getAbsolutePath());
+                String partialname = subtractDirFromFile(file, fentry);
+                partialname = partialname.replace('\\', '/');
+                if (partialname.charAt(0) == '/') partialname = partialname.substring(1);
+                loadList(retval, partialname);
+              }
+            }
           } else {
             Log.warn("Class path entry '" + entry + "' is not a valid zip archive or directory");
           }
@@ -80,11 +95,60 @@ public class ProxyListScanner {
     return retval;
   }
 
+  private static String subtractDirFromFile(File dir, File file) {
+    String retval = "";
+    if (dir != null) {
+      String dirname = dir.getAbsolutePath();
+      if (file != null) {
+        String filename = file.getAbsolutePath();
+        int x;
+        int end = Math.min(dirname.length(), filename.length());
+        for (x = 0; x < end; x++) {
+          if (dirname.charAt(x) != filename.charAt(x)) {
+            break;
+          }
+        }
+        if (x < filename.length()) {
+          retval = filename.substring(x);
+        }
+      }
+    } else {
+      if (file != null) {
+        retval = file.getAbsolutePath();
+      }
+    }
+    return retval;
+  }
 
-  private static void loadList(Map<Class,Object> list, String filename) {
+
+  private static void loadList(Map<Class, Object> list, String filename) {
     Log.info("Found " + filename);
     // load the file with the classloader
+    ClassLoader cloader = ClassLoader.getSystemClassLoader();
+
+    InputStream in = cloader.getResourceAsStream(filename);
+    if (in != null) {
+      try {
+        Reader reader = StreamUtil.getReader(in);
+        StringBuilder textBuilder = new StringBuilder();
+        int c = 0;
+        while ((c = reader.read()) != -1) {
+          textBuilder.append((char) c);
+        }
+        System.out.println(textBuilder.toString());
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        try {
+          in.close();
+        } catch (IOException ignore) {
+        }
+      }
+    }
+
     // scan the file for class names
+    //   try JSON
+    //   try simple class per line
     // for each class name
     //   load the class
     //   create an instance for reflection

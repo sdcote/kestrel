@@ -8,7 +8,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +29,7 @@ public class ClientRegistry {
   /**
    * The Map of classes we search for implementations. The object is used for reflection.
    */
-  private static final Map<Class,Object> proxyClasses;
+  private static final Map<Class, Object> proxyClasses;
 
   /**
    * Cache of configured instances to be reused
@@ -62,8 +61,17 @@ public class ClientRegistry {
    *
    * @throws IOException if there were problems connection to the message transport.
    */
-  public void open() throws IOException {
-
+  public void connect() throws IOException, IllegalStateException {
+    if (transport == null) {
+      transport = transportBuilder.build();
+    } else {
+      if (transport.isValid()) {
+        throw new IllegalStateException("Transport already connected");
+      } else {
+        transport.close();
+        transport = transportBuilder.build();
+      }
+    }
   }
 
   /**
@@ -74,7 +82,7 @@ public class ClientRegistry {
    * <p>If a connection to a message transport fails, this method can be called
    * to clear out the registry in preparation for making a new connection.</p>
    */
-  public void close() {
+  public void disconnect() {
 
   }
 
@@ -86,7 +94,7 @@ public class ClientRegistry {
    * This is by design for ease of use.</p>
    *
    * @param type the service interface to locate
-   * @param <E> a configured service proxy which implements that service interface.
+   * @param <E>  a configured service proxy which implements that service interface.
    * @return the first type which implements the given interface type
    */
   public <E> E locate(Class<E> type) {
@@ -129,8 +137,9 @@ public class ClientRegistry {
    *
    * @param proxyClass the class to be instantiated
    */
-  public void addServiceProxyClass(Class proxyClass) {
-    proxyClasses.put(proxyClass,null);
+  public ClientRegistry addServiceProxyClass(Class proxyClass) {
+    proxyClasses.put(proxyClass, null);
+    return this;
   }
 
   public ClientRegistry setURI(String uri) throws IllegalArgumentException {
