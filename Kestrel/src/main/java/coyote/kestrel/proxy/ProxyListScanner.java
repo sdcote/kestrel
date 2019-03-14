@@ -4,10 +4,7 @@ import coyote.loader.log.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -17,20 +14,20 @@ import java.util.zip.ZipFile;
  * Scan the classpath for all occurrences of a proxy list and load those
  * classes into the class list.
  *
- * <p>This allows the developer to pre-populate the ProxyBuilder with classes
+ * <p>This allows the developer to pre-populate the ClientRegistry with classes
  * to use as service proxies and not have to define them in code.</p>
  */
 public class ProxyListScanner {
-  private static final String FILENAME = "proxylist.txt";
+  private static final String FILENAME = "serviceproxy.txt";
 
 
   /**
    * TODO: Make this work.
    *
-   * @return a list of classes designated as service proxies by proxy list files found in the classpath.
+   * @return a map of classes designated as service proxies by proxy list files found in the classpath.
    */
-  public static Map<Class, Object> scan() {
-    Map<Class, Object> retval = new HashMap<>();
+  public static Map<Class,Object> scan() {
+    Map<Class,Object> retval = new HashMap<>();
 
     StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), System.getProperty("path.separator"));
     while (st.hasMoreTokens()) {
@@ -47,8 +44,7 @@ public class ProxyListScanner {
                 JarEntry jentry = en.nextElement();
                 Log.trace("    '" + jentry.getName() + "' " + jentry.getCrc());
                 if (jentry.getName().toLowerCase().endsWith(FILENAME)) {
-                  Log.info("Found " + jentry.getName());
-                  loadMap(retval,jentry.getName());
+                  loadList(retval, jentry.getName());
                 }
               }
             } catch (IOException e) {
@@ -62,15 +58,16 @@ public class ProxyListScanner {
                 ZipEntry zentry = en.nextElement();
                 Log.trace("    '" + zentry.getName() + "' " + zentry.getCrc());
                 if (zentry.getName().toLowerCase().endsWith(FILENAME)) {
-                  Log.info("Found " + zentry.getName());
-                  loadMap(retval,zentry.getName());
+                  loadList(retval, zentry.getName());
                 }
               }
             } catch (IOException e) {
               Log.warn("Class path entry '" + entry + "' is not a valid zip archive: " + e.getMessage());
             }
+          } else if (file.isDirectory()) {
+            // TODO: perform a directory search...requires constructing fully qualified names
           } else {
-            // TODO: perform a directory search
+            Log.warn("Class path entry '" + entry + "' is not a valid zip archive or directory");
           }
         } else {
           Log.warn("Class path entry '" + entry + "' is not readable");
@@ -84,12 +81,13 @@ public class ProxyListScanner {
   }
 
 
-  private static void loadMap(Map<Class, Object> map, String filename) {
+  private static void loadList(Map<Class,Object> list, String filename) {
+    Log.info("Found " + filename);
     // load the file with the classloader
     // scan the file for class names
     // for each class name
     //   load the class
-    //   load an instance
+    //   create an instance for reflection
     //   place both in map
   }
 }

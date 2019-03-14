@@ -1,10 +1,9 @@
 package coyote.profile;
 
 
-import coyote.kestrel.proxy.ProxyBuilder;
+import coyote.kestrel.proxy.ClientRegistry;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -14,17 +13,18 @@ public class ProxyBuilderTest {
   @DisplayName("Simple proxy build successful")
   @Ignore
   void testClientBuilder() {
+    ClientRegistry registry = new ClientRegistry();
 
-    ProxyBuilder.addProxyClass(ProfileProxy.class);
+    registry.addServiceProxyClass(ProfileProxy.class);
 
-    ProxyBuilder
+    registry
             .setScheme("amqp")
             .setUsername("guest")
             .setPassword("guest")
             .setHost("localhost")
             .setPort(5672);
 
-    ProfileClient client = ProxyBuilder.build(ProfileClient.class);
+    ProfileClient client = registry.build(ProfileClient.class);
     assertNotNull(client);
 
     // client.retrieveProfile("123");
