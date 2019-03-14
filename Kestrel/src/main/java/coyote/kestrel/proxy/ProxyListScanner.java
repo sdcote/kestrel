@@ -18,7 +18,7 @@ import java.util.zip.ZipFile;
  * to use as service proxies and not have to define them in code.</p>
  */
 public class ProxyListScanner {
-  private static final String FILENAME = "serviceproxy.txt";
+  private static final String FILENAME = "serviceproxy.cfg";
 
 
   /**

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ProxyBuilderTest {
 
 
-  @DisplayName("Simple proxy build successful")
+  @DisplayName("Simple proxy locate successful")
   @Ignore
   void testClientBuilder() {
     ClientRegistry registry = new ClientRegistry();
@@ -24,7 +24,7 @@ public class ProxyBuilderTest {
             .setHost("localhost")
             .setPort(5672);
 
-    ProfileClient client = registry.build(ProfileClient.class);
+    ProfileClient client = registry.locate(ProfileClient.class);
     assertNotNull(client);
 
     // client.retrieveProfile("123");

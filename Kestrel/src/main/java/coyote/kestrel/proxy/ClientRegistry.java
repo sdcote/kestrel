@@ -79,14 +79,20 @@ public class ClientRegistry {
   }
 
   /**
-   * Build a proxy of the given type connected to the messaging transport currently configured/
+   * Build a proxy of the given type connected to the messaging transport
+   * currently configured.
    *
-   * @param type
-   * @param <E>
+   * <p>SIDE EFFECT: This will open the registry if it is not already opened.
+   * This is by design for ease of use.</p>
+   *
+   * @param type the service interface to locate
+   * @param <E> a configured service proxy which implements that service interface.
    * @return the first type which implements the given interface type
    */
-  public <E> E build(Class<E> type) {
+  public <E> E locate(Class<E> type) {
     Object retval = null;
+
+    // scan the cache
 
     // scan all the classes for one which implements the given interface
 
