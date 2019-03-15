@@ -13,26 +13,25 @@ import java.io.IOException;
 /**
  * This consumer implementation supports recovery.
  */
-public class MyConsumer extends DefaultConsumer implements Consumer {
+public class SimpleConsumer extends DefaultConsumer implements Consumer {
   private MessageListener listener = null;
   private String name = null;
 
-  /**
-   * Constructor.
-   *
-   * @param channel
-   */
-  public MyConsumer(Channel channel) {
+
+  public SimpleConsumer(Channel channel) {
     super(channel);
   }
+
 
   public String getName() {
     return name;
   }
 
+
   public void setName(String name) {
     this.name = name;
   }
+
 
   @Override
   public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
@@ -57,7 +56,6 @@ public class MyConsumer extends DefaultConsumer implements Consumer {
 
   @Override
   public void handleShutdownSignal(String consumerTag, ShutdownSignalException signal) {
-
     if (signal.isInitiatedByApplication()) {
       Log.warn("The connection to the messaging server was shut down." + id(consumerTag));
 
@@ -83,21 +81,17 @@ public class MyConsumer extends DefaultConsumer implements Consumer {
   }
 
 
-  /**
-   * @param consumerTag a consumer tag
-   * @return a readable ID of this consumer
-   */
   private String id(String consumerTag) {
-
     StringBuilder sb = new StringBuilder();
     sb.append(" Consumer tag = ");
     sb.append(consumerTag);
     sb.append(")");
-
     return sb.toString();
   }
+
 
   public void setListener(MessageListener listener) {
     this.listener = listener;
   }
+
 }
