@@ -5,6 +5,17 @@ This library allows a developer to create micro services over message exchanges 
 
 This is not a generic messaging library. It is a framework which uses messaging to exchange data with the goal of implementing micro services and client API stubs which can be used in any environment an application. The API has been designed for use as a request-reply infrastructure with some eventing for monitoring and management.
 
+## Projects
+
+### Kestrel
+This is the core library which contains the messaging abstraction, service protocol, and many abstract base classes for simplifying development. Extend the abstract classes and override a few methods to implement your service and clients.
+
+### Profile Service
+An example service showing how to use the dranework to implement message-driven micro services.
+
+### Profile Domain
+This is the domain model of the service and the implementation of a client (service proxy). Use this project as a template for your on client and domain model.
+
 # Design Notes
 This framework is designed to support multiple transport technologies. The Default is AMQP, but others are possible including JMS and Tibco Rendezvous. This is why the the underlying class model uses different nomenclature than some developers may be familiar.
 
