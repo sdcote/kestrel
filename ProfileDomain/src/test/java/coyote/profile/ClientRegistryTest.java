@@ -2,7 +2,6 @@ package coyote.profile;
 
 
 import coyote.kestrel.proxy.ClientRegistry;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +17,15 @@ public class ClientRegistryTest {
 
     registry.addServiceProxyClass(ProfileProxy.class);
 
-    registry
-            .setScheme("amqp")
+    registry.setScheme("amqp")
             .setUsername("guest")
             .setPassword("guest")
             .setHost("localhost")
             .setPort(5672);
 
     ProfileClient client = registry.locate(ProfileClient.class);
-   // assertNotNull(client);
-
-    // client.retrieveProfile("123");
+    assertNotNull(client);
+    client.retrieveProfile("123");
   }
 
 

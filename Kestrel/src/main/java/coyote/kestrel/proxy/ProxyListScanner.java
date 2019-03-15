@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -27,16 +25,18 @@ import java.util.zip.ZipFile;
  */
 public class ProxyListScanner {
   private static final String FILENAME = "serviceproxy.cfg";
+  private static final String CLASS_SUFFIX = ".class";
 
 
   /**
-   * TODO: Make this work.
+   * Scan for proxy configuration files and create a map of service proxy
+   * types to an instance of th eproxy.
    *
-   * @return a map of classes designated as service proxies by proxy list files found in the classpath.
+   * @return a map of classes designated as service proxies by proxy list
+   * files found in the classpath.
    */
-  public static Map<Class, Object> scan() {
-    Map<Class, Object> retval = new HashMap<>();
-
+  public static Map<Class, Config> scan() {
+    Map<Class, Config> retval = new HashMap<>();
     StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), System.getProperty("path.separator"));
     while (st.hasMoreTokens()) {
       String entry = st.nextToken();
@@ -92,7 +92,6 @@ public class ProxyListScanner {
         Log.warn("Class path entry '" + entry + "' does not appear to exist on file system");
       }
     } // while more path entries
-
     return retval;
   }
 
@@ -133,23 +132,14 @@ public class ProxyListScanner {
    * @param list
    * @param filename
    */
-  private static void loadList(Map<Class, Object> list, String filename) {
+  private static void loadList(Map<Class, Config> list, String filename) {
     Log.info("Found " + filename);
 
     String data = loadFile(filename);
     if (StringUtil.isNotBlank(data)) {
       Map<Class, Config> classMap = loadConfig(data);
-
-      for( Map.Entry<Class,Config> entry: classMap.entrySet()){
-        Constructor<?> ctor = null;
-        try {
-          Class<?> clazz =entry.getKey();
-          ctor = clazz.getConstructor();
-          Object object = ctor.newInstance();
-          list.put(clazz,object);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+      for (Map.Entry<Class, Config> entry : classMap.entrySet()) {
+        list.put(entry.getKey(), entry.getValue());
       }
     }
   }
@@ -160,7 +150,11 @@ public class ProxyListScanner {
     String[] lines = data.split("\\r?\\n");
     for (String line : lines) {
       if (StringUtil.isNotBlank(line) && !line.trim().startsWith("#")) {
-        classes.add(line.trim());
+        String classname = line.trim();
+        if (!classname.endsWith(CLASS_SUFFIX)) {
+          classname = classname.concat(CLASS_SUFFIX);
+        }
+        classes.add(classname);
       }
     }
     for (String line : classes) {

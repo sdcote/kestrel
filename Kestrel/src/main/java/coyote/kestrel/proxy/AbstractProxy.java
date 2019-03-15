@@ -4,6 +4,8 @@ import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.Transport;
+import coyote.loader.cfg.Config;
+import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
 
 /**
@@ -12,6 +14,7 @@ import coyote.loader.log.Log;
 public class AbstractProxy implements KestrelProxy, MessageListener {
   protected MessageQueue inbox = null;
   protected Transport transport = null;
+  protected Config configuration = null;
 
 
   public AbstractProxy() {
@@ -20,14 +23,28 @@ public class AbstractProxy implements KestrelProxy, MessageListener {
   }
 
 
-
-  private Transport getTransport() {
+  @Override
+  public Transport getTransport() {
     return transport;
   }
 
   @Override
   public void setTransport(Transport transport) {
     this.transport = transport;
+  }
+
+  @Override
+  public void configure(Config cfg) throws ConfigurationException {
+    configuration = cfg;
+    onConfiguration();
+  }
+
+  /**
+   * This method is called when the configuration is set to the subclass can
+   * perform its own configuration processing
+   */
+  protected void onConfiguration() throws ConfigurationException {
+    // no-op implementation
   }
 
   private void initializeInbox() {

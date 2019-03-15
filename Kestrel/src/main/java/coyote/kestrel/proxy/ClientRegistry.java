@@ -2,6 +2,8 @@ package coyote.kestrel.proxy;
 
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
+import coyote.loader.cfg.Config;
+import coyote.loader.log.Log;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -29,15 +31,17 @@ public class ClientRegistry {
   /**
    * The Map of classes we search for implementations. The object is used for reflection.
    */
-  private static final Map<Class, Object> proxyClasses;
+  private static final Map<Class, Config> proxyClasses;
+
 
   /**
-   * Cache of configured instances to be reused
+   * Cache of configured instances to be used in this runtime
    */
-  private static final Map<Class, Object> proxyCache = new HashMap<>();
+  private static final Map<Class, Object> proxyCache;
 
   static {
     proxyClasses = ProxyListScanner.scan();
+    proxyCache = populateCache(proxyClasses);
   }
 
   /**
@@ -49,8 +53,35 @@ public class ClientRegistry {
    */
   private Transport transport = null;
 
+
   public ClientRegistry() {
     // new instances of this class mean new inbox an background thread to handle replies
+  }
+
+  private static Map<Class, Object> populateCache(Map<Class, Config> classMap) {
+    Map<Class, Object> retval = new HashMap<>();
+    for (Map.Entry entry : classMap.entrySet()) {
+      Class type = (Class) entry.getKey();
+      try {
+        Constructor<?> ctor = type.getConstructor();
+        Object object = ctor.newInstance();
+
+        if (object instanceof KestrelProxy) {
+          KestrelProxy proxy = (KestrelProxy) object;
+          try {
+            proxy.configure((Config) entry.getValue());
+          } catch (Exception e) {
+            Log.warn("Could not configure proxy '" + type.getCanonicalName() + "' Reason: " + e.getLocalizedMessage());
+          }
+        } else {
+          System.err.println("Not a Kestrel proxy");
+        }
+        retval.put(type, object);
+      } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        System.err.println(e.getLocalizedMessage());
+      }
+    }
+    return retval;
   }
 
 
@@ -64,6 +95,7 @@ public class ClientRegistry {
   public void connect() throws IOException, IllegalStateException {
     if (transport == null) {
       transport = transportBuilder.build();
+      transport.open();
     } else {
       if (transport.isValid()) {
         throw new IllegalStateException("Transport already connected");
@@ -98,34 +130,45 @@ public class ClientRegistry {
    * @return the first type which implements the given interface type
    */
   public <E> E locate(Class<E> type) {
-    Object retval = null;
+    Object retval = locateObject(type);
 
-    // scan the cache
-
-    // scan all the classes for one which implements the given interface
-
-
-    try {
-      //Class<?> clazz = Class.forName(className);
-      Constructor<?> ctor = type.getConstructor();
-      Object object = ctor.newInstance();
-
-      if (object instanceof KestrelProxy) {
-        retval = object;
-//        try {
-//          retval.setCommandLineArguments(args);
-//          retval.configure(configuration);
-//        } catch (ConfigurationException e) {
-//          System.err.println(LogMsg.createMsg(MSG, "Loader.could_not_config_loader", object.getClass().getName(), e.getClass().getSimpleName(), e.getMessage()));
-//        }
-      } else {
-        System.err.println("Not a Kestrel proxy");
+    // make sure we have a transport to set in the proxy
+    if (transport == null) {
+      try {
+        connect();
+      } catch (IOException e) {
+        Log.error("Could not connect");
       }
-    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      System.err.println(e.getLocalizedMessage());
     }
 
+    // make sure the proxy has a transport
+    try {
+      if (retval instanceof KestrelProxy) {
+        KestrelProxy proxy = (KestrelProxy) retval;
+        if (proxy.getTransport() == null) {
+          proxy.setTransport(transport);
+        }
+      }
+    } catch (SecurityException | IllegalArgumentException e) {
+      Log.error("Could not set transport on proxy: " + e.getLocalizedMessage());
+    }
+
+    // return the proxy which implements the given type or null if not found
     return type.cast(retval);
+  }
+
+
+  private <E> Object locateObject(Class<E> type) {
+    Object retval = null;
+    for (Map.Entry entry : proxyCache.entrySet()) {
+      Class clazz = (Class) entry.getKey();
+      Object proxy = entry.getValue();
+      if (type.isInstance(proxy)) {
+        retval = proxy;
+        break;
+      }
+    }
+    return retval;
   }
 
 
@@ -138,9 +181,44 @@ public class ClientRegistry {
    * @param proxyClass the class to be instantiated
    */
   public ClientRegistry addServiceProxyClass(Class proxyClass) {
-    proxyClasses.put(proxyClass, null);
+    return addServiceProxyClass(proxyClass, null);
+  }
+
+  /**
+   * Add a class the builder should use to scan for proxy instances.
+   *
+   * <p>Instances of these classes will be created and configured to use this
+   * registry's inbox for all reply-to headers.</p>
+   *
+   * @param proxyClass the class to be instantiated
+   * @param cfg        the configuration to use for the proxy (if applicable)
+   */
+  public ClientRegistry addServiceProxyClass(Class proxyClass, Config cfg) {
+    if (proxyClass != null) {
+      try {
+        Constructor<?> ctor = proxyClass.getConstructor();
+        Object object = ctor.newInstance();
+        if (cfg != null) {
+          if (object instanceof KestrelProxy) {
+            KestrelProxy proxy = (KestrelProxy) object;
+            try {
+              proxy.configure(cfg);
+            } catch (Exception e) {
+              Log.warn("Could not configure proxy '" + proxyClass.getCanonicalName() + "' Reason: " + e.getLocalizedMessage());
+            }
+          } else {
+            System.err.println("Not a Kestrel proxy");
+          }
+        }
+        proxyCache.put(proxyClass, object);
+      } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        System.err.println(e.getLocalizedMessage());
+      }
+      proxyClasses.put(proxyClass, cfg);
+    }
     return this;
   }
+
 
   public ClientRegistry setURI(String uri) throws IllegalArgumentException {
     transportBuilder.setURI(uri);
