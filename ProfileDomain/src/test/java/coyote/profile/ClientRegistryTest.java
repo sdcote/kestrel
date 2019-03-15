@@ -17,11 +17,7 @@ public class ClientRegistryTest {
 
     registry.addServiceProxyClass(ProfileProxy.class);
 
-    registry.setScheme("amqp")
-            .setUsername("guest")
-            .setPassword("guest")
-            .setHost("localhost")
-            .setPort(5672);
+
 
     ProfileClient client = registry.locate(ProfileClient.class);
     assertNotNull(client);

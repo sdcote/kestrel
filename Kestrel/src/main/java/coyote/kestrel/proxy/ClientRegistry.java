@@ -1,5 +1,6 @@
 package coyote.kestrel.proxy;
 
+import coyote.kestrel.transport.InvalidTransport;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
 import coyote.loader.cfg.Config;
@@ -95,7 +96,11 @@ public class ClientRegistry {
   public void connect() throws IOException, IllegalStateException {
     if (transport == null) {
       transport = transportBuilder.build();
-      transport.open();
+      if (transport instanceof InvalidTransport) {
+        Log.fatal("Could not create a valid transport from set configuration.");
+      } else {
+        transport.open();
+      }
     } else {
       if (transport.isValid()) {
         throw new IllegalStateException("Transport already connected");

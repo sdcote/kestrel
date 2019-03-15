@@ -143,6 +143,7 @@ public class TransportBuilder {
       }
     } else {
       Log.warn("The broker scheme is blank or empty");
+      retval = new InvalidTransport();
     }
     return retval;
   }

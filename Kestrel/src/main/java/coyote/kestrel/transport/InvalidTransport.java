@@ -1,7 +1,12 @@
 package coyote.kestrel.transport;
 
 /**
- * Instance of a transport which is the result of not being able to connect to the broker.
+ * Instance of a transport which is the result of not being able to connect to
+ * the broker.
+ *
+ * <p>This type is designed to reduce the number of null pointer exceptions
+ * and it will be returned when a variety of operations fail, not just
+ * connections.</p>
  */
 public class InvalidTransport implements Transport {
 
@@ -36,4 +41,5 @@ public class InvalidTransport implements Transport {
   public MessageTopic getTopic(String name) {
     throw new IllegalStateException(MESSAGE);
   }
+
 }
