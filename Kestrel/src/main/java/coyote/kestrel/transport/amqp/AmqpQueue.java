@@ -62,7 +62,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   @Override
   public void attach(MessageListener listener) {
     if (listener != null) {
-      MyConsumer consumer = new MyConsumer(getChannel());
+      SimpleConsumer consumer = new SimpleConsumer(getChannel());
       consumer.setListener(listener);
       consumer.setName(getName());
 

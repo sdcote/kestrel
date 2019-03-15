@@ -1,5 +1,7 @@
 package coyote.kestrel.proxy;
 
+import coyote.i13n.StatBoard;
+import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
@@ -11,15 +13,18 @@ import coyote.loader.log.Log;
 /**
  * The base class for all service proxies
  */
-public class AbstractProxy implements KestrelProxy, MessageListener {
+public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   protected MessageQueue inbox = null;
   protected Transport transport = null;
   protected Config configuration = null;
-
+  /**
+   * The component responsible for tracking operational statistics for this proxy
+   */
+  private final StatBoard stats = new StatBoardImpl();
+  private boolean initializedFlag = false;
 
   public AbstractProxy() {
     Log.info("proxy initializing");
-    initializeInbox();
   }
 
 
@@ -32,6 +37,32 @@ public class AbstractProxy implements KestrelProxy, MessageListener {
   public void setTransport(Transport transport) {
     this.transport = transport;
   }
+
+  @Override
+  public boolean isInitialized() {
+    return initializedFlag;
+  }
+
+  @Override
+  public void initialize() {
+    if (transport != null) {
+      try {
+        inbox = getTransport().createInbox();
+        inbox.attach(this);
+        onInitialization();
+      } catch (Exception e) {
+        Log.error("Could not initialize service proxy inbox");
+      }
+    } else {
+      Log.error("Cannot initialize service proxy: transport not set");
+    }
+  }
+
+  @Override
+  public StatBoard getStatBoard() {
+    return stats;
+  }
+
 
   @Override
   public void configure(Config cfg) throws ConfigurationException {
@@ -47,16 +78,14 @@ public class AbstractProxy implements KestrelProxy, MessageListener {
     // no-op implementation
   }
 
-  private void initializeInbox() {
-    try {
-      // create an inbox on which we will receive message directly to us
-      inbox = getTransport().createInbox();
-      // start receiving messages and send them to this listener
-      inbox.attach(this);
-    } catch (Exception e) {
-      Log.error("Could not initialize the inbox");
-    }
+  /**
+   * This method is called when the initialization method is complete and
+   * successful.
+   */
+  protected void onInitialization() {
+    // no-op implementation
   }
+
 
   /**
    * This is where all our responses are received.
@@ -71,7 +100,7 @@ public class AbstractProxy implements KestrelProxy, MessageListener {
    */
   @Override
   public void onMessage(Message message) {
-
+    System.out.println("Proxy received: " + message);
 
   }
 

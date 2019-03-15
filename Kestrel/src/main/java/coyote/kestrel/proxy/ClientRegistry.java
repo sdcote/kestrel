@@ -146,12 +146,16 @@ public class ClientRegistry {
       }
     }
 
-    // make sure the proxy has a transport
     try {
       if (retval instanceof KestrelProxy) {
         KestrelProxy proxy = (KestrelProxy) retval;
+        // make sure the proxy has a transport
         if (proxy.getTransport() == null) {
           proxy.setTransport(transport);
+        }
+        // make sure the proxy is initialized
+        if( proxy.isInitialized()){
+          proxy.initialize();
         }
       }
     } catch (SecurityException | IllegalArgumentException e) {

@@ -11,7 +11,7 @@ public interface ProfileClient extends KestrelProxy {
    * @param id the identifier of the profile to retrieve
    * @return the Profile with the diven identifier or null if not found
    */
-  public Profile retrieveProfile(String id);
+   Profile retrieveProfile(String id);
 
 
 }

@@ -2,6 +2,8 @@ package coyote.kestrel.service;
 
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
+import coyote.i13n.StatBoard;
+import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.ServiceGroup;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
@@ -34,6 +36,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * The message broker connection
    */
   protected Transport transport = null;
+  /**
+   * The component responsible for tracking operational statistics for this proxy
+   */
+  StatBoard stats = new StatBoardImpl();
   /**
    * The number of seconds between service heartbeats.
    */
