@@ -52,8 +52,9 @@ public class StatUtil {
     for (final Iterator it = stats.getCounterIterator(); it.hasNext(); ) {
       final Counter cntr = (Counter) ((Map.Entry) it.next()).getValue();
       try {
-        retval.put(cntr.getName(), new Long(cntr.getValue()));
-      } catch (final Exception ignore) {
+        retval.put(cntr.getName(), Long.valueOf(cntr.getValue()));
+      } catch (final Exception e) {
+        Log.trace(e);
       }
     }
     return retval;
@@ -69,7 +70,8 @@ public class StatUtil {
       final State stayt = (State) ((Map.Entry) it.next()).getValue();
       try {
         retval.put(stayt.getName(), stayt.getValue());
-      } catch (final Exception ignore) {
+      } catch (final Exception e) {
+        Log.trace(e);
       }
     }
     return retval;

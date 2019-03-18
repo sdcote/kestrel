@@ -1,8 +1,9 @@
-package coyote.kestrel;
+package coyote.kestrel.protocol;
 
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.DecodeException;
 import coyote.dataframe.marshal.json.JsonFrameParser;
+import coyote.kestrel.protocol.KestrelProtocol;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

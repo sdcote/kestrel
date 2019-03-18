@@ -57,6 +57,12 @@ public class ProxyListScanner {
               }
             } catch (IOException e) {
               Log.warn("Class path entry '" + entry + "' is not a valid java archive: " + e.getMessage());
+            } finally {
+              try {
+                if (jarfile != null) jarfile.close();
+              } catch (IOException e) {
+                Log.trace(e);
+              }
             }
           } else if (entry.endsWith("zip")) {
             ZipFile zipfile = null;
@@ -71,6 +77,12 @@ public class ProxyListScanner {
               }
             } catch (IOException e) {
               Log.warn("Class path entry '" + entry + "' is not a valid zip archive: " + e.getMessage());
+            } finally {
+              try {
+                if (zipfile != null) zipfile.close();
+              } catch (IOException e) {
+                Log.trace(e);
+              }
             }
           } else if (file.isDirectory()) {
             List<File> files = FileUtil.getFiles(file, true);

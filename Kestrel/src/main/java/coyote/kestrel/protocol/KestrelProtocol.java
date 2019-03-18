@@ -1,5 +1,6 @@
-package coyote.kestrel;
+package coyote.kestrel.protocol;
 
+import coyote.commons.Version;
 import coyote.dataframe.DataFrameException;
 import coyote.kestrel.transport.Message;
 
@@ -28,8 +29,10 @@ public class KestrelProtocol {
   // Types of messages there are
   public static final String ACK_TYPE = "ACK"; // Acknowledgement - OK
   public static final String NAK_TYPE = "NAK"; // Negative Acknowledgement - Not OK
-  public static final String OAM_TYPE = "OAM"; // Negative Acknowledgement - Not OK
+  public static final String OAM_TYPE = "OAM"; // Operations, Administration and Maintenance
 
+  // The version of this protocol
+  public static final Version VERSION = new Version(0,1,0);
 
 
   private KestrelProtocol() {

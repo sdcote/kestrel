@@ -2,8 +2,7 @@ package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
-import coyote.dataframe.DataFrame;
-import coyote.kestrel.PayloadCodec;
+import coyote.kestrel.protocol.PayloadCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.loader.log.Log;

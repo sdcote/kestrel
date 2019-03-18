@@ -3,7 +3,7 @@ package coyote.kestrel.transport.amqp;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
-import coyote.kestrel.PayloadCodec;
+import coyote.kestrel.protocol.PayloadCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;

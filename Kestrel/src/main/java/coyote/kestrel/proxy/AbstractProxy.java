@@ -1,7 +1,5 @@
 package coyote.kestrel.proxy;
 
-import com.rabbitmq.client.Channel;
-import coyote.dataframe.marshal.JSONMarshaler;
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.protocol.ResponseFuture;
@@ -27,9 +25,8 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    * The component responsible for tracking operational statistics
    */
   private static final StatBoard stats = new StatBoardImpl();
-  protected static MessageQueue inbox = null;
-  protected static Transport transport = null;
-  protected static Channel channel = null;
+  private static MessageQueue inbox = null;
+  private static Transport transport = null;
   protected Config configuration = null;
   private boolean initializedFlag = false;
   private Map<String, ResponseFuture> responseCache = new HashMap<>();

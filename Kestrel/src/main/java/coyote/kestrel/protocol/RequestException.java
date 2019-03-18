@@ -1,4 +1,4 @@
-package coyote.kestrel;
+package coyote.kestrel.protocol;
 
 import coyote.kestrel.protocol.ProtocolException;
 

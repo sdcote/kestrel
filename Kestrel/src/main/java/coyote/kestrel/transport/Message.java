@@ -1,9 +1,8 @@
 package coyote.kestrel.transport;
 
-import coyote.commons.ByteUtil;
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.DataFrameException;
-import coyote.kestrel.KestrelProtocol;
+import coyote.kestrel.protocol.KestrelProtocol;
 
 import java.util.UUID;
 

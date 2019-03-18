@@ -4,7 +4,7 @@ package coyote.profile;
 import coyote.commons.StringUtil;
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.marshal.JSONMarshaler;
-import coyote.kestrel.KestrelProtocol;
+import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.service.AbstractService;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;

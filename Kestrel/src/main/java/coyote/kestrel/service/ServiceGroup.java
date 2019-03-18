@@ -1,4 +1,4 @@
-package coyote.kestrel;
+package coyote.kestrel.service;
 
 import coyote.kestrel.protocol.KestrelServiceGroup;
 import coyote.kestrel.protocol.MessageGroup;
