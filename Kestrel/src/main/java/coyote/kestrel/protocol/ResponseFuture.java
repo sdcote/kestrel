@@ -96,7 +96,7 @@ public class ResponseFuture {
    * @return true if there are no response and the response time out has not expired.
    */
   public boolean isWaiting() {
-    return (responses.size() == 0 && System.currentTimeMillis() > expiry);
+    return (responses.size() == 0 && System.currentTimeMillis() < expiry);
   }
 
 

@@ -39,11 +39,11 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
         AMQP.BasicProperties props = response.getProps();
         Log.debug(props);
         retval = new Message();
+        retval.merge(PayloadCodec.decode(response.getBody()));
         retval.put(AmqpTransport.DELIVERY_ID_FIELD, response.getEnvelope().getDeliveryTag());
-        retval.setPayload(PayloadCodec.decode(response.getBody()));
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error("Problems parsing message data: " + e.getMessage());
     }
     return retval;
   }

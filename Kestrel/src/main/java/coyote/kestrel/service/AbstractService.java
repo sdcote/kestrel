@@ -12,6 +12,8 @@ import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
 
+import java.io.IOException;
+
 
 /**
  * This is a base class for all services; handling much of the infrastructure.
@@ -251,8 +253,18 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     serviceGroup.respond(response);
   }
 
-  protected void send(Message response) {
-    serviceGroup.send(response);
+
+  /**
+   * Send a message across the transport.
+   *
+   * <p>The message group set inside the message will determine how the the
+   * message will be routed.</p>
+   *
+   * @param message the message to send
+   * @throws IOException if problems were encountered sending the message.
+   */
+  protected void send(Message message) throws IOException {
+    getTransport().send(message);
   }
 
   /**

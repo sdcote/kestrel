@@ -1,10 +1,14 @@
 package coyote.profile;
 
 
+import coyote.commons.StringUtil;
 import coyote.dataframe.DataFrame;
+import coyote.dataframe.marshal.JSONMarshaler;
 import coyote.kestrel.service.AbstractService;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
+
+import java.io.IOException;
 
 public class ProfileService extends AbstractService {
 
@@ -28,10 +32,10 @@ public class ProfileService extends AbstractService {
    */
   @Override
   public void process(Message message) {
-    Log.info("Received service message: " + message);
+    Log.info("Received service message: " + JSONMarshaler.toFormattedString(message));
 
     DataFrame payload = message.getPayload();
-    if (payload.contains("ID")) {
+    if (StringUtil.isNotEmpty(message.getId())) {
       // create a response message
       Message response = message.createResponse();
 
@@ -41,9 +45,16 @@ public class ProfileService extends AbstractService {
       response.setPayload(result);
 
       // send the response
-      send(response);
+      try {
+        Log.info("Sending response message: "+response);
+        send(response);
+      } catch (IOException e) {
+        Log.error("Could not send response: "+e.getMessage());
+      }
+
+      Log.info("Sent response to inbox: "+response.getGroup());
     } else {
-      sendNak(message, "No id found");
+      Log.error("No id found in received message");
     }
   }
 

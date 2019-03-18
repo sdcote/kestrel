@@ -39,8 +39,8 @@ public class SimpleConsumer extends DefaultConsumer implements Consumer {
 
     if (listener != null) {
       Message message = new Message();
+      message.merge(PayloadCodec.decode(body));
       message.setGroup(getName());
-      message.setPayload(PayloadCodec.decode(body));
       try {
         listener.onMessage(message);
         getChannel().basicAck(deliveryTag, false);

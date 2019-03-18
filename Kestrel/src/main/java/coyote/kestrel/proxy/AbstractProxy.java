@@ -1,6 +1,7 @@
 package coyote.kestrel.proxy;
 
 import com.rabbitmq.client.Channel;
+import coyote.dataframe.marshal.JSONMarshaler;
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.protocol.ResponseFuture;
@@ -83,6 +84,12 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   }
 
 
+  /**
+   * Create a message suitable for publishing on the given group.
+   *
+   * @param messageGroup The name of the message group on which the message is to be sent.
+   * @return a message with the group and identifier set.
+   */
   protected Message createMessage(String messageGroup) {
     Message request = new Message();
     request.setGroup(messageGroup);
@@ -121,7 +128,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    */
   @Override
   public void onMessage(Message message) {
-    Log.trace("Proxy received message: " + message.getId());
+    System.out.println("Proxy received message: \r\n" + JSONMarshaler.toFormattedString(message));
     if (!recordResponse(message)) {
       processMessage(message);
     }
@@ -165,14 +172,14 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   }
 
   private ResponseFuture getResponse(Message message) {
-    return responseCache.get(message.getId());
+    return responseCache.get(message.getReplyId());
   }
 
 
   /**
    * Send the message and return the response future object to track responses.
    *
-   * <p>The caller shoul take care and remove the response object from the
+   * <p>The caller should take care and remove the response object from the
    * response queue by calling clearCache which will remove all the expired
    * response futures from the cache.</p>
    *
@@ -183,6 +190,10 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   protected ResponseFuture send(Message message) throws IOException {
     ResponseFuture retval = new ResponseFuture(message);
     responseCache.put(retval.getIdentifier(), retval);
+    if (!isInitialized()) {
+      initialize();
+    }
+    message.setReplyGroup(inbox.getName());
     getTransport().send(message);
     return retval;
   }
@@ -193,7 +204,8 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    * <p>This method will remove the response future from the response cache
    * before returning to help keep the response cache clean. This means only
    * one response will be correlated for this request. If multiple responses
-   * are expected, the </p>
+   * are expected, the @code{send(Message} method should be used with the
+   * caller managing timeouts and response counts.</p>
    *
    * @param request The request message to send
    * @param timeout How long to wait (in milliseconds) for responses.
@@ -203,6 +215,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     ResponseFuture retval = null;
     try {
       retval = send(request);
+      retval.setTimeout(timeout);
       while (retval.isWaiting()) {
         try {
           Thread.sleep(10);

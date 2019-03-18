@@ -60,6 +60,8 @@ public abstract class KestrelServiceGroup implements MessageGroup {
   @Override
   public void send(Message event) {
 
+
+
   }
 
   @Override
