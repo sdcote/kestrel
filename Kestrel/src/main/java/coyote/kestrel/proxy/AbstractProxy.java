@@ -1,5 +1,6 @@
 package coyote.kestrel.proxy;
 
+import com.rabbitmq.client.Channel;
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.transport.Message;
@@ -10,17 +11,20 @@ import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
 
+import java.io.IOException;
+
 /**
  * The base class for all service proxies
  */
 public abstract class AbstractProxy implements KestrelProxy, MessageListener {
-  protected MessageQueue inbox = null;
-  protected Transport transport = null;
+  protected static MessageQueue inbox = null;
+  protected static Transport transport = null;
+  protected static Channel channel = null;
   protected Config configuration = null;
   /**
-   * The component responsible for tracking operational statistics for this proxy
+   * The component responsible for tracking operational statistics
    */
-  private final StatBoard stats = new StatBoardImpl();
+  private static final StatBoard stats = new StatBoardImpl();
   private boolean initializedFlag = false;
 
   public AbstractProxy() {
@@ -49,6 +53,8 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
       try {
         inbox = getTransport().createInbox();
         inbox.attach(this);
+        stats.setId(inbox.getName());
+        initializedFlag = true;
         onInitialization();
       } catch (Exception e) {
         Log.error("Could not initialize service proxy inbox");
@@ -69,6 +75,15 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     configuration = cfg;
     onConfiguration();
   }
+
+
+  protected Message createMessage(String messageGroup) {
+    Message request = new Message();
+    request.setGroup(messageGroup);
+    request.generateId();
+    return request;
+  }
+
 
   /**
    * This method is called when the configuration is set to the subclass can
@@ -101,7 +116,11 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   @Override
   public void onMessage(Message message) {
     System.out.println("Proxy received: " + message);
-
   }
 
+
+
+  protected void send(Message message) throws IOException {
+    getTransport().send(message);
+  }
 }

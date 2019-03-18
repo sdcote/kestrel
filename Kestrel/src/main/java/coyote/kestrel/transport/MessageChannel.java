@@ -17,13 +17,6 @@ public interface MessageChannel {
 
   void setName(String name);
 
-  /**
-   * Send the message on this channel.
-   *
-   * @param msg
-   * @throws java.io.IOException if an error is encountered
-   */
-  void send(Message msg) throws IOException;
 
 
   /**

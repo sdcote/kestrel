@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
+import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
 import coyote.kestrel.transport.Transport;
@@ -45,6 +46,9 @@ public class AmqpTransport implements Transport {
    * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
    */
   private Connection connection = null;
+  /** The channel this transport uses to send messages */
+  private Channel outboundChannel = null;
+
   private String virtualHost = null;
 
   public String getHostname() {
@@ -139,6 +143,8 @@ public class AmqpTransport implements Transport {
 
     try {
       connection = factory.newConnection();
+      outboundChannel = connection.createChannel();
+
     } catch (Exception e) {
       Log.fatal("Could not open AMPQ connection to broker("+factory.getUsername()+"@"+factory.getHost()+":"+factory.getPort()+"): " + e.getLocalizedMessage());
     }
@@ -186,6 +192,20 @@ public class AmqpTransport implements Transport {
       e.printStackTrace();
     }
     return retval;
+  }
+
+
+  /**
+   * @param msg
+   * @throws IOException if the message could not be sent
+   */
+  @Override
+  public void send(Message msg) throws IOException {
+    if (outboundChannel != null) {
+      outboundChannel.basicPublish("", msg.getGroup(), null, msg.getBytes());
+    } else {
+      throw new IOException("No outbound transport channel set");
+    }
   }
 
 

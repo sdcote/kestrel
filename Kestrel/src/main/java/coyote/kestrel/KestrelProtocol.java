@@ -76,7 +76,7 @@ public class KestrelProtocol {
 
 
 
-  public static Message createNak(String replyGroup, String replyId, byte[] requestId, String failureMessage, Integer errorCode) {
+  public static Message createNak(String replyGroup, String replyId, String requestId, String failureMessage, Integer errorCode) {
     Message retval = new Message();
     if (replyGroup != null) {
       retval.setGroup(replyGroup);

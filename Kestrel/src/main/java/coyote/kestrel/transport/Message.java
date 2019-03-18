@@ -5,76 +5,15 @@ import coyote.dataframe.DataFrame;
 import coyote.dataframe.DataFrameException;
 import coyote.kestrel.KestrelProtocol;
 
+import java.util.UUID;
+
 public class Message extends DataFrame {
 
-  private byte priority = 4;
-
+  public static final String PAYLOAD_TAG = "PYLD";
   volatile long timestamp = 0L;
+  private byte priority = 4;
   private String cachedGroup = null;
   private String cachedType = null;
-
-  public static final String PAYLOAD_TAG = "PYLD";
-
-  public void setType(String name) {
-    this.put(KestrelProtocol.TYPE_FIELD, name);
-    this.cachedType = name;
-  }
-
-  public String getType() {
-    if (cachedType == null && getObject(KestrelProtocol.TYPE_FIELD) != null) {
-      cachedType = getObject(KestrelProtocol.TYPE_FIELD).toString();
-    }
-    return cachedType;
-  }
-
-  public void setGroup(String name) {
-    put(KestrelProtocol.GROUP_FIELD, name);
-    cachedGroup = name;
-  }
-
-  public String getGroup() {
-    if (cachedGroup == null && getObject(KestrelProtocol.GROUP_FIELD) != null) {
-      cachedGroup = getObject(KestrelProtocol.GROUP_FIELD).toString();
-    }
-    return cachedGroup;
-  }
-
-  public void setReplyGroup(String name) {
-    this.put(KestrelProtocol.REPLY_GROUP_FIELD, name);
-  }
-
-  public String getReplyGroup() {
-    return this.getObject(KestrelProtocol.REPLY_GROUP_FIELD) != null ? this.getObject(KestrelProtocol.REPLY_GROUP_FIELD).toString() : null;
-  }
-
-  public byte[] getId() {
-    Object retval = this.getObject(KestrelProtocol.IDENTIFIER_FIELD);
-    return retval != null ? (byte[]) retval : new byte[0];
-  }
-
-  public String getIdString() {
-    Object retval = this.getObject(KestrelProtocol.IDENTIFIER_FIELD);
-    return retval != null ? ByteUtil.bytesToHex((byte[]) retval) : null;
-  }
-
-  public byte[] getReplyId() {
-    Object retval = this.getObject(KestrelProtocol.REPLY_ID_FIELD);
-    return retval != null ? (byte[]) retval : new byte[0];
-  }
-
-  public void setReplyId(byte[] id) {
-    this.put(KestrelProtocol.REPLY_ID_FIELD, id);
-  }
-
-  public String getReplyIdString() {
-    Object retval = this.getObject(KestrelProtocol.REPLY_ID_FIELD);
-    return retval != null ? ByteUtil.bytesToHex((byte[]) retval) : null;
-  }
-
-  public Message createResponse() {
-    return createResponse(this);
-  }
-
 
   public static Message createResponse(Message request) {
     if (request != null) {
@@ -93,18 +32,57 @@ public class Message extends DataFrame {
     }
   }
 
+  public String getType() {
+    if (cachedType == null && getObject(KestrelProtocol.TYPE_FIELD) != null) {
+      cachedType = getObject(KestrelProtocol.TYPE_FIELD).toString();
+    }
+    return cachedType;
+  }
 
-  /**
-   * Serialize a data frame in the message as the payload.
-   *
-   * <p>Once the payload is set, it becomes immutable within the the message.
-   * A copy of the data frame is placed in the message so changing the data
-   * frame externally has no effect on the payload.</p>
-   *
-   * @param frame the data frame to serialize into this message.
-   */
-  public void setPayload(DataFrame frame) {
-    put(PAYLOAD_TAG, frame);
+  public void setType(String name) {
+    this.put(KestrelProtocol.TYPE_FIELD, name);
+    this.cachedType = name;
+  }
+
+  public String getGroup() {
+    if (cachedGroup == null && getObject(KestrelProtocol.GROUP_FIELD) != null) {
+      cachedGroup = getObject(KestrelProtocol.GROUP_FIELD).toString();
+    }
+    return cachedGroup;
+  }
+
+  public void setGroup(String name) {
+    put(KestrelProtocol.GROUP_FIELD, name);
+    cachedGroup = name;
+  }
+
+  public String getReplyGroup() {
+    return this.getObject(KestrelProtocol.REPLY_GROUP_FIELD) != null ? this.getObject(KestrelProtocol.REPLY_GROUP_FIELD).toString() : null;
+  }
+
+  public void setReplyGroup(String name) {
+    this.put(KestrelProtocol.REPLY_GROUP_FIELD, name);
+  }
+
+  public String getId() {
+    return super.getAsString(KestrelProtocol.IDENTIFIER_FIELD);
+  }
+
+  public void setId(String id) {
+    this.put(KestrelProtocol.IDENTIFIER_FIELD, id);
+  }
+
+  public String getReplyId() {
+    return super.getAsString(KestrelProtocol.REPLY_ID_FIELD);
+  }
+
+  public void setReplyId(String rid) {
+    this.put(KestrelProtocol.REPLY_ID_FIELD, rid);
+  }
+
+
+  public Message createResponse() {
+    return createResponse(this);
   }
 
   /**
@@ -135,5 +113,21 @@ public class Message extends DataFrame {
     return retval;
   }
 
+  /**
+   * Serialize a data frame in the message as the payload.
+   *
+   * <p>Once the payload is set, it becomes immutable within the the message.
+   * A copy of the data frame is placed in the message so changing the data
+   * frame externally has no effect on the payload.</p>
+   *
+   * @param frame the data frame to serialize into this message.
+   */
+  public void setPayload(DataFrame frame) {
+    put(PAYLOAD_TAG, frame);
+  }
 
+  public String generateId() {
+    setId(UUID.randomUUID().toString());
+    return getId();
+  }
 }

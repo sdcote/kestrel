@@ -7,6 +7,8 @@
  */
 package coyote.kestrel.transport;
 
+import java.io.IOException;
+
 /**
  * A transport is an adapter to the various messaging transports.
  * <p>
@@ -19,10 +21,15 @@ public interface Transport {
   String JMS = "JMS"; // Java message service
   String TIBRV = "TRV"; // Tibco Rendezvous
 
+
+
+
   /**
    * @return true if the transport is open and functioning, false otherwise.
    */
   boolean isValid();
+
+
 
 
   /**
@@ -40,6 +47,8 @@ public interface Transport {
   MessageQueue createInbox();
 
 
+
+
   /**
    * Open the transport for operation initializing whatever resources are
    * necessary.
@@ -50,6 +59,8 @@ public interface Transport {
   void open();
 
 
+
+
   /**
    * Terminate the connection to the broker, closing any resources that were
    * allocated during the transports operation.
@@ -57,6 +68,8 @@ public interface Transport {
    * <p>The transport can be opened again later.</p>
    */
   void close();
+
+
 
 
   /**
@@ -75,6 +88,8 @@ public interface Transport {
   MessageQueue getServiceQueue(String name);
 
 
+
+
   /**
    * Get a message channel with a Pub/Sub quality of service.
    *
@@ -85,5 +100,18 @@ public interface Transport {
    * @return
    */
   MessageTopic getTopic(String name);
+
+
+
+
+  /**
+   * Send the message on this transport.
+   *
+   * <p>The message group will determine how this message is routed.</p>
+   *
+   * @param msg the message to send.
+   * @throws java.io.IOException if an error is encountered
+   */
+  void send(Message msg) throws IOException;
 
 }

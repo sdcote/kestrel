@@ -1,5 +1,7 @@
 package coyote.kestrel.transport;
 
+import java.io.IOException;
+
 /**
  * Instance of a transport which is the result of not being able to connect to
  * the broker.
@@ -40,6 +42,11 @@ public class InvalidTransport implements Transport {
   @Override
   public MessageTopic getTopic(String name) {
     throw new IllegalStateException(MESSAGE);
+  }
+
+  @Override
+  public void send(Message msg) throws IOException {
+    throw new IOException("Invalid transport; not connected");
   }
 
 }
