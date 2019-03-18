@@ -69,11 +69,24 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
 
+  /**
+   * Override this method to handle messages sent directly to this instance
+   * of the service.
+   *
+   * @param message the data received from the transport.
+   */
   @Override
   public void processInboxMessage(Message message) {
     // default no-op implementation
   }
 
+  /**
+   * Override this method to handle coherence messages.
+   *
+   * <p>Coherence messages allow a group of services to coordinate processing.</p>
+   *
+   * @param message the data received from the transport.
+   */
   @Override
   public void processCoherenceMessage(Message message) {
     // default no-op implementation
@@ -133,33 +146,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
 
-  private void coherenceProcessing() {
-    Message message = inbox.getNextMessage();
-    while (message != null) {
-      try {
-        processCoherenceMessage(message);
-      } catch (final Exception e) {
-        Log.error(ExceptionUtil.toString(e));
-        Log.debug(ExceptionUtil.stackTrace(e));
-      } // try-catch
-      message = inbox.getNextMessage();
-    }
-  }
-
-
-  protected void inboxProcessing() {
-    // Pull a message from our inbox to see if we have an OAM message to process
-    Message oam = inbox.getNextMessage();
-    while (oam != null) {
-      try {
-        processInboxMessage(oam);
-      } catch (final Exception e) {
-        Log.error(ExceptionUtil.toString(e));
-        Log.debug(ExceptionUtil.stackTrace(e));
-      } // try-catch
-      oam = inbox.getNextMessage();
-    }
-  }
+  
 
   protected void initializeCoherence() {
 
@@ -249,9 +236,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     }
   }
 
-  protected void respond(Message response) {
-    serviceGroup.respond(response);
-  }
 
 
   /**

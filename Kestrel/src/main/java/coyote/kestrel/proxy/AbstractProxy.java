@@ -128,7 +128,6 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    */
   @Override
   public void onMessage(Message message) {
-    System.out.println("Proxy received message: \r\n" + JSONMarshaler.toFormattedString(message));
     if (!recordResponse(message)) {
       processMessage(message);
     }

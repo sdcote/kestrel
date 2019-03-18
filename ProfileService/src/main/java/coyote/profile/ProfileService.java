@@ -4,6 +4,7 @@ package coyote.profile;
 import coyote.commons.StringUtil;
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.marshal.JSONMarshaler;
+import coyote.kestrel.KestrelProtocol;
 import coyote.kestrel.service.AbstractService;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
@@ -34,10 +35,10 @@ public class ProfileService extends AbstractService {
   public void process(Message message) {
     Log.info("Received service message: " + JSONMarshaler.toFormattedString(message));
 
-    DataFrame payload = message.getPayload();
+    DataFrame request = message.getPayload();
     if (StringUtil.isNotEmpty(message.getId())) {
-      // create a response message
-      Message response = message.createResponse();
+
+     Message response = KestrelProtocol.createResponse(message);
 
       // create a result of our processing
       DataFrame result = new DataFrame();
@@ -48,30 +49,14 @@ public class ProfileService extends AbstractService {
       try {
         Log.info("Sending response message: "+response);
         send(response);
+        Log.info("Sent response to group: "+response.getGroup());
       } catch (IOException e) {
         Log.error("Could not send response: "+e.getMessage());
       }
 
-      Log.info("Sent response to inbox: "+response.getGroup());
     } else {
       Log.error("No id found in received message");
     }
-  }
-
-
-  @Override
-  public void processInboxMessage(Message message) {
-    // this is where we process messages sent directly to us
-    // are we being asked to shutdown? change logging? change instrumentation? report status?
-    Log.info("Received inbox message: " + message);
-  }
-
-
-  @Override
-  public void processCoherenceMessage(Message message) {
-    // this is where we process coherence messages sent between service
-    // instances to coordinate our activities.
-    Log.info("Received coherence message: " + message);
   }
 
 }

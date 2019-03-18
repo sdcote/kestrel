@@ -23,25 +23,13 @@ public class KestrelProtocol {
   public static final String TYPE_FIELD = "TYP";
   public static final String MESSAGE_FIELD = "MSG";
   public static final String RESULT_CODE_FIELD = "RSLTCD";
-
-  // Types of packets there are
-  public static final String ACK_TYPE = "ACK"; // Acknowledgement - OK
-  public static final String NAK_TYPE = "NAK"; // Negative Acknowledgement - Not OK
-
-
-
-  public static final short LOWEST = 0;
-  public static final short VERY_LOW = 1;
-  public static final short LOW = 2;
-  public static final short BELOW_NORMAL = 3;
-  public static final short NORMAL = 4;
-  public static final short ABOVE_NORMAL = 5;
-  public static final short HIGH = 6;
-  public static final short VERY_HIGH = 7;
-  public static final short HIGHEST = 8;
   public static final String GENERIC_DATA_FIELD = "DATA";
 
-  private static final String[] priorityNames = new String[]{"Lowest", "Very Low", "Low", "Below Normal", "Normal", "Above Normal", "High", "Very High", "Highest"};
+  // Types of messages there are
+  public static final String ACK_TYPE = "ACK"; // Acknowledgement - OK
+  public static final String NAK_TYPE = "NAK"; // Negative Acknowledgement - Not OK
+  public static final String OAM_TYPE = "OAM"; // Negative Acknowledgement - Not OK
+
 
 
   private KestrelProtocol() {
@@ -50,25 +38,30 @@ public class KestrelProtocol {
 
 
 
-  public static Message createResponsePacket(Message packet) {
-    Message retval = packet.createResponse();
-    if (packet.contains(REPLY_GROUP_FIELD)) {
-      retval.put(GROUP_FIELD, packet.getAsString(REPLY_GROUP_FIELD));
-    }
 
-    if (packet.contains(ID_FIELD)) {
-      retval.put(REPLY_ID_FIELD, packet.getAsString(ID_FIELD));
-    }
+  public static Message createResponse(Message request) {
+    if (request != null) {
+      Message retval = new Message();
+      if (request.getReplyGroup() != null) {
+        retval.setGroup(request.getReplyGroup());
+      }
 
-    retval.put(ID_FIELD, UUID.randomUUID().toString());
-    return retval;
+      if (request.getId() != null) {
+        retval.setReplyId(request.getId());
+      }
+
+      retval.generateId();
+
+      return retval;
+    } else {
+      return null;
+    }
   }
 
 
 
-
   public static Message createAck(Message cmd) {
-    Message retval = createResponsePacket(cmd);
+    Message retval = createResponse(cmd);
     retval.setType(ACK_TYPE);
     return retval;
   }
@@ -106,8 +99,8 @@ public class KestrelProtocol {
 
 
 
-  public static Message createNak(Message packet, String msg) {
-    Message retval = createResponsePacket(packet);
+  public static Message createNak(Message message, String msg) {
+    Message retval = createResponse(message);
     retval.setType(NAK_TYPE);
     if (msg != null && msg.trim().length() > 0) {
       retval.put(MESSAGE_FIELD, msg);
@@ -119,8 +112,8 @@ public class KestrelProtocol {
 
 
 
-  public static Message createNak(Message packet, int code) {
-    Message retval = createResponsePacket(packet);
+  public static Message createNak(Message message, int code) {
+    Message retval = createResponse(message);
     retval.setType(NAK_TYPE);
     retval.put(RESULT_CODE_FIELD, code);
     return retval;
@@ -129,8 +122,8 @@ public class KestrelProtocol {
 
 
 
-  public static Message createNak(Message packet, int code, String msg) {
-    Message retval = createNak(packet, code);
+  public static Message createNak(Message message, int code, String msg) {
+    Message retval = createNak(message, code);
     if (msg != null && msg.trim().length() > 0) {
       retval.put(MESSAGE_FIELD, msg);
     }

@@ -21,7 +21,7 @@ public class ProfileProxy extends AbstractProxy implements ProfileClient {
     request.setPayload(new DataFrame().set("Request", "Ping"));
 
     // send the request and wait up to the time-out interval for responses.
-    ResponseFuture response = sendAndWait(request,600000);
+    ResponseFuture response = sendAndWait(request,3000);
     List<Message> responses = response.getResponses();
 
 

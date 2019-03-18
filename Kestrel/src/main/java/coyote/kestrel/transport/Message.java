@@ -15,22 +15,6 @@ public class Message extends DataFrame {
   private String cachedGroup = null;
   private String cachedType = null;
 
-  public static Message createResponse(Message request) {
-    if (request != null) {
-      Message retval = new Message();
-      if (request.getReplyGroup() != null) {
-        retval.setGroup(request.getReplyGroup());
-      }
-
-      if (request.getId() != null) {
-        retval.setReplyId(request.getId());
-      }
-
-      return retval;
-    } else {
-      return null;
-    }
-  }
 
   public String getType() {
     if (cachedType == null && getObject(KestrelProtocol.TYPE_FIELD) != null) {
@@ -80,10 +64,6 @@ public class Message extends DataFrame {
     this.put(KestrelProtocol.REPLY_ID_FIELD, rid);
   }
 
-
-  public Message createResponse() {
-    return createResponse(this);
-  }
 
   /**
    * Retrieve a copy of the serialized payload.
