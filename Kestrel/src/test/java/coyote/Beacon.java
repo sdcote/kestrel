@@ -23,10 +23,6 @@ public class Beacon {
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
     transport.open(); // connects to the broker
 
-    // Create a message channel with a name of BEACON. If you want messages on this topic, you will need to attach a
-    // listener to another topic channel with the same name
-    MessageChannel topic = transport.getTopic("BEACON");
-
 
     Message msg = new Message(); // reusable message
     DataFrame payload = new DataFrame(); // reusable payload
@@ -36,7 +32,7 @@ public class Beacon {
       msg.setPayload(payload); // serialize the payload into the message
 
       try {
-        topic.send(msg); // send the message on the topic
+        transport.send(msg); // send the message on the topic
       } catch (IOException e) {
         e.printStackTrace();
       }

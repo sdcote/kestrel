@@ -3,9 +3,10 @@ package coyote.profile;
 import coyote.dataframe.DataFrame;
 import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.proxy.AbstractProxy;
-import coyote.kestrel.proxy.KestrelProxy;
 import coyote.kestrel.transport.Message;
-import coyote.loader.cfg.Config;
+import coyote.loader.log.Log;
+
+import java.io.IOException;
 
 /**
  * Implements the service proxy for the profile service.
@@ -14,16 +15,17 @@ public class ProfileProxy extends AbstractProxy implements ProfileClient {
 
   @Override
   public Profile retrieveProfile(String id) {
-
+    Profile retval = null;
     Message request = createMessage(ProfileProtocol.PROFILE_GROUP);
-    request.setPayload(new DataFrame().set("Request","Ping);"));
+    request.setPayload(new DataFrame().set("Request", "Ping);"));
 
-    ResponseFuture response = new ResponseFuture();
+    // send the request and wait up to the time-out interval for responses.
+    ResponseFuture response = sendAndWait(request,6000);
 
-    // send(response);
 
-    return new Profile();
+    return retval;
   }
+
 
 
 }

@@ -1,6 +1,7 @@
 package coyote.kestrel.proxy;
 
 import coyote.i13n.StatBoard;
+import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.Transport;
 import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
@@ -21,4 +22,7 @@ public interface KestrelProxy {
   void initialize();
 
   StatBoard getStatBoard();
+
+  void processMessage(Message message);
+
 }

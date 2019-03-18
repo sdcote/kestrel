@@ -14,13 +14,12 @@ public class ClientRegistryTest {
   @Test
   void testClientBuilder() {
     ClientRegistry registry = new ClientRegistry();
-
+    registry.setURI("amqp://guest:guest@localhost:5672");
     registry.addServiceProxyClass(ProfileProxy.class);
-
-
-
     ProfileClient client = registry.locate(ProfileClient.class);
     assertNotNull(client);
+
+
     client.retrieveProfile("123");
   }
 

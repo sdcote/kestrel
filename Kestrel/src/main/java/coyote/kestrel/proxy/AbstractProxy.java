@@ -3,6 +3,7 @@ package coyote.kestrel.proxy;
 import com.rabbitmq.client.Channel;
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
+import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
@@ -12,20 +13,25 @@ import coyote.loader.cfg.ConfigurationException;
 import coyote.loader.log.Log;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 
 /**
  * The base class for all service proxies
  */
 public abstract class AbstractProxy implements KestrelProxy, MessageListener {
-  protected static MessageQueue inbox = null;
-  protected static Transport transport = null;
-  protected static Channel channel = null;
-  protected Config configuration = null;
   /**
    * The component responsible for tracking operational statistics
    */
   private static final StatBoard stats = new StatBoardImpl();
+  protected static MessageQueue inbox = null;
+  protected static Transport transport = null;
+  protected static Channel channel = null;
+  protected Config configuration = null;
   private boolean initializedFlag = false;
+  private Map<String, ResponseFuture> responseCache = new HashMap<>();
 
   public AbstractProxy() {
     Log.info("proxy initializing");
@@ -39,7 +45,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
 
   @Override
   public void setTransport(Transport transport) {
-    this.transport = transport;
+    AbstractProxy.transport = transport;
   }
 
   @Override
@@ -115,12 +121,104 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    */
   @Override
   public void onMessage(Message message) {
-    System.out.println("Proxy received: " + message);
+    Log.trace("Proxy received message: " + message.getId());
+    if (!recordResponse(message)) {
+      processMessage(message);
+    }
+    cleanCache();
+  }
+
+  /**
+   * Remove all expired response futures from the cache.
+   */
+  protected void cleanCache() {
+    synchronized (responseCache) {
+      for (Iterator<Map.Entry<String, ResponseFuture>> it = responseCache.entrySet().iterator(); it.hasNext(); ) {
+        Map.Entry<String, ResponseFuture> entry = it.next();
+        if (entry.getValue().isExpired()) {
+          it.remove();
+        }
+      }
+    }
   }
 
 
+  @Override
+  public void processMessage(Message message) {
+    Log.debug("Proxy received message that did not correlate to an active request : " + message.getId());
+  }
 
-  protected void send(Message message) throws IOException {
+  /**
+   * Place the message into the correlated response future.
+   *
+   * @param message the message to place in the response
+   * @return true if the message was placed, false otherwise.
+   */
+  private boolean recordResponse(Message message) {
+    boolean retval = false;
+    ResponseFuture future = getResponse(message);
+    if (future != null) {
+      future.addResponse(message);
+      retval = true;
+    }
+    return retval;
+  }
+
+  private ResponseFuture getResponse(Message message) {
+    return responseCache.get(message.getId());
+  }
+
+
+  /**
+   * Send the message and return the response future object to track responses.
+   *
+   * <p>The caller shoul take care and remove the response object from the
+   * response queue by calling clearCache which will remove all the expired
+   * response futures from the cache.</p>
+   *
+   * @param message the (request) message to send
+   * @return the response future object where responses will be recorded.
+   * @throws IOException
+   */
+  protected ResponseFuture send(Message message) throws IOException {
+    ResponseFuture retval = new ResponseFuture(message);
+    responseCache.put(retval.getIdentifier(), retval);
     getTransport().send(message);
+    return retval;
   }
+
+  /**
+   * Send the request and wait up to the time-out interval for responses.
+   *
+   * <p>This method will remove the response future from the response cache
+   * before returning to help keep the response cache clean. This means only
+   * one response will be correlated for this request. If multiple responses
+   * are expected, the </p>
+   *
+   * @param request The request message to send
+   * @param timeout How long to wait (in milliseconds) for responses.
+   * @return The response future object with at least one response or after the timeout has expired.
+   */
+  protected ResponseFuture sendAndWait(Message request, int timeout) {
+    ResponseFuture retval = null;
+    try {
+      retval = send(request);
+      while (retval.isWaiting()) {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException ignore) {
+        }
+      }
+    } catch (IOException e) {
+      Log.fatal("Could not send message: " + e.getLocalizedMessage());
+    }
+
+    // clear this future from the response cache
+    if (retval != null) {
+      responseCache.remove(retval.getIdentifier());
+    }
+
+    return retval;
+  }
+
 }
