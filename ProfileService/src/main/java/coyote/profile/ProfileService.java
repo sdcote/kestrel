@@ -9,7 +9,7 @@ import coyote.loader.log.Log;
 public class ProfileService extends AbstractService {
 
 
-  private static final String GROUP_NAME = "SVC.PROFILE";
+  private static final String GROUP_NAME = ProfileProtocol.PROFILE_GROUP;
 
 
   @Override
