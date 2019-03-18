@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class InvalidTransport implements Transport {
 
-  private final String MESSAGE = "Could not connect to transport";
+  private static final String MESSAGE = "Could not connect to transport";
 
   @Override
   public boolean isValid() {

@@ -130,8 +130,8 @@ public class StatUtil {
 
     // get the list of component versions registered with the statboard
     Map<String, String> versions = statboard.getVersions();
-    for (String key : versions.keySet()) {
-      childPacket.add(key, versions.get(key));
+    for (Map.Entry<String, String> entry : versions.entrySet()) {
+      childPacket.add(entry.getKey(), entry.getValue());
     }
     retval.add(VERSION, childPacket);
 
