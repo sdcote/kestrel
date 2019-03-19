@@ -33,9 +33,9 @@ public class AmqpTransport implements Transport {
   private static final int DEFAULT_PORT = 5672;
   private static final String DEFAULT_USERNAME = "guest";
   private static final String DEFAULT_PASSWORD = "guest";
-  private static final String DIRECT_EXCHANGE = "DIRECT";
+  static final String DIRECT_EXCHANGE = "DIRECT";
   private static final String DIRECT = "direct";
-  private static final String TOPIC_EXCHANGE = "TOPIC";
+  static final String TOPIC_EXCHANGE = "TOPIC";
   private static final String TOPIC = "topic";
   private String hostname = DEFAULT_HOSTNAME;
   private int port = DEFAULT_PORT;
@@ -115,7 +115,7 @@ public class AmqpTransport implements Transport {
       Channel channel = connection.createChannel();
       channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
       retval = new AmqpQueue(connection.createChannel(), identifier, NON_DURABLE, EXCLUSIVE, AUTO_DELETE, NO_ARGUMENTS);
-      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
+      ((Recoverable) channel).addRecoveryListener(retval);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -171,7 +171,7 @@ public class AmqpTransport implements Transport {
         Channel channel = connection.createChannel();
         channel.exchangeDeclare(DIRECT_EXCHANGE, DIRECT, DURABLE);
         retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
-        ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
+        ((Recoverable) channel).addRecoveryListener(retval);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -187,7 +187,7 @@ public class AmqpTransport implements Transport {
       Channel channel = connection.createChannel();
       channel.exchangeDeclare(TOPIC_EXCHANGE, TOPIC, DURABLE);
       retval = new AmqpTopic(channel, name);
-      ((Recoverable) channel).addRecoveryListener(new ChannelRecoveryListener());
+      ((Recoverable) channel).addRecoveryListener(retval);
     } catch (IOException e) {
       e.printStackTrace();
     }

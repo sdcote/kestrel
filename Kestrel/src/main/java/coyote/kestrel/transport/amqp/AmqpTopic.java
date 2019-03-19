@@ -2,6 +2,7 @@ package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
+import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageTopic;
 
@@ -14,7 +15,6 @@ import java.io.IOException;
 public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
 
-  private static final String EXCHANGE_NAME = "TOPIC";
 
   public AmqpTopic(Channel channel, String name) {
     setChannel(channel);
@@ -26,7 +26,7 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
     try {
       String queueName = getChannel().queueDeclare().getQueue();
-      getChannel().queueBind(queueName, EXCHANGE_NAME, "");
+      getChannel().queueBind(queueName, AmqpTransport.TOPIC_EXCHANGE, getName());
 
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
@@ -42,6 +42,16 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
   @Override
   public void detach(MessageListener consumer) {
 
+  }
+
+
+  @Override
+  public void send(Message message) throws IOException {
+    if (getChannel() != null) {
+      getChannel().basicPublish(AmqpTransport.TOPIC_EXCHANGE, getName(), null, message.getBytes());
+    } else {
+      throw new IOException("No channel set");
+    }
   }
 
 

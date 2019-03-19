@@ -79,4 +79,13 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   public void detach(MessageListener listener) {
 
   }
+
+  @Override
+  public void send(Message message) throws IOException {
+    if (getChannel() != null) {
+      getChannel().basicPublish(AmqpTransport.DIRECT_EXCHANGE, getName(), null, message.getBytes());
+    } else {
+      throw new IOException("No channel set");
+    }
+  }
 }

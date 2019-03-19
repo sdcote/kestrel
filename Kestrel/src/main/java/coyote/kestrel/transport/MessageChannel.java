@@ -13,8 +13,17 @@ import java.io.IOException;
 public interface MessageChannel {
 
 
+  /**
+   * @return the name of this channel
+   */
   String getName();
 
+
+  /**
+   * Set the name of the channel.
+   *
+   * @param name the name of the channel to set.
+   */
   void setName(String name);
 
 
@@ -38,5 +47,13 @@ public interface MessageChannel {
 
   void nakDelivery(Message message);
 
+
+  /**
+   * Send the message on this channel.
+   *
+   * @param message the message to send
+   * @throws IOException if any problems were encountered sending the message
+   */
+  void send(Message message) throws IOException;
 
 }
