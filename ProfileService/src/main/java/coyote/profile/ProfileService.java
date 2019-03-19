@@ -1,11 +1,11 @@
 package coyote.profile;
 
 
-import coyote.commons.StringUtil;
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.marshal.JSONMarshaler;
 import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.service.AbstractService;
+import coyote.kestrel.service.ServiceUtil;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
 
@@ -35,28 +35,32 @@ public class ProfileService extends AbstractService {
   public void process(Message message) {
     Log.info("Received service message: " + JSONMarshaler.toFormattedString(message));
 
+
+    // figure out what the service is supposed to do
     DataFrame request = message.getPayload();
-    if (StringUtil.isNotEmpty(message.getId())) {
 
-     Message response = KestrelProtocol.createResponse(message);
+    String cmd = ServiceUtil.getCommand(request);
 
-      // create a result of our processing
-      DataFrame result = new DataFrame();
-      result.put("ResponseCode", 203);
-      response.setPayload(result);
-
-      // send the response
-      try {
-        Log.info("Sending response message: "+response);
-        send(response);
-        Log.info("Sent response to group: "+response.getGroup());
-      } catch (IOException e) {
-        Log.error("Could not send response: "+e.getMessage());
+    DataFrame result;
+    if (cmd != null) {
+      switch (cmd.toUpperCase()) {
+        case "GET":
+          sendAck(message, getProfile(request));
+          break;
+        default:
+          sendNak(message, "unsupported command");
+          break;
       }
-
     } else {
-      Log.error("No id found in received message");
+      sendNak(message, "No command found in request");
     }
+
+  }
+
+
+  private DataFrame getProfile(DataFrame request) {
+    String id = ServiceUtil.getIdentifier(request);
+    return null;
   }
 
 }

@@ -2,6 +2,8 @@ package coyote.kestrel.service;
 
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
+import coyote.dataframe.DataFrame;
+import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
@@ -246,6 +248,23 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     getTransport().sendDirect(message);
   }
 
+  /**
+   * Acknowledge the message with the given payload.
+   *
+   * @param message
+   * @param payload
+   */
+  protected void sendAck(Message message, DataFrame payload) {
+    Message response = KestrelProtocol.createResponse(message);
+    response.setType(KestrelProtocol.ACK_TYPE);
+    response.setPayload(payload);
+    try {
+      send(response);
+    } catch (IOException e) {
+      Log.error("Could not send ACK response: " + e.getMessage());
+    }
+
+  }
 
   /**
    * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
@@ -257,20 +276,17 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * @param msg
    */
   protected void sendNak(Message message, String msg) {
+    Message response = KestrelProtocol.createResponse(message);
+    response.setType(KestrelProtocol.NAK_TYPE);
+    response.setMessage(msg);
+    try {
+      send(response);
+    } catch (IOException e) {
+      Log.error("Could not send ACK response: " + e.getMessage());
+    }
   }
 
 
-  /**
-   * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
-   * delivery at the transport layer.
-   *
-   * <p>This indicates the message could not be processed by the service.</p>
-   *
-   * @param message
-   * @param resultcode
-   */
-  protected void sendNak(Message message, int resultcode) {
-  }
 
 
   protected void heartbeat() {

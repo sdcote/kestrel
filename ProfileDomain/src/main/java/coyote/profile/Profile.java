@@ -5,8 +5,11 @@ import coyote.dataframe.DataFrame;
 /**
  * This represents an identified profile
  */
-public class Profile {
+public class Profile extends DataFrame {
 
-  private DataFrame data = new DataFrame();
+
+  public Profile(DataFrame frame) {
+    merge(frame);
+  }
 
 }

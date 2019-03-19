@@ -18,12 +18,16 @@ public class ProfileProxy extends AbstractProxy implements ProfileClient {
   public Profile retrieveProfile(String id) {
     Profile retval = null;
     Message request = createMessage(ProfileProtocol.PROFILE_GROUP);
-    request.setPayload(new DataFrame().set("Request", "Ping"));
+    request.setPayload(new DataFrame().set("CMD", "Get").set("ID",id));
 
     // send the request and wait up to the time-out interval for responses.
     ResponseFuture response = sendAndWait(request,3000);
     List<Message> responses = response.getResponses();
-
+    if( responses.size()>0){
+      retval = new Profile(responses.get(0).getPayload());
+    }else {
+      Log.debug("profile '"+id+"' was not found");
+    }
 
     return retval;
   }
