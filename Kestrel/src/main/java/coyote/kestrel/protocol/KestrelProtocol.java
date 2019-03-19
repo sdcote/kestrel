@@ -34,6 +34,9 @@ public class KestrelProtocol {
   // The version of this protocol
   public static final Version VERSION = new Version(0,1,0);
 
+  // Name of the payload field which contains the service command
+  public static final String COMMAND_FIELD = "CMD";
+
 
   private KestrelProtocol() {
   }
