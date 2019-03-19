@@ -4,7 +4,10 @@
 package coyote;
 
 import coyote.dataframe.DataFrame;
-import coyote.kestrel.transport.*;
+import coyote.kestrel.transport.Message;
+import coyote.kestrel.transport.MessageTopic;
+import coyote.kestrel.transport.Transport;
+import coyote.kestrel.transport.TransportBuilder;
 
 import java.io.IOException;
 import java.util.Date;
@@ -19,12 +22,12 @@ public class Beacon {
 
     // Configure the transport builder
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
+
     // connects to the broker
     transport.open();
 
     // Create a message group which will allow multiple consumers
     MessageTopic topic = transport.getTopic("BEACON");
-
 
     // reusable message
     Message message = new Message();
@@ -32,6 +35,7 @@ public class Beacon {
     // reusable payload
     DataFrame payload = new DataFrame();
 
+    // publish a message on the topic every 5 seconds
     do {
       // change the payload
       payload.put("DATE", new Date().toString());

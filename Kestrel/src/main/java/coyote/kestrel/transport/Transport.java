@@ -22,14 +22,10 @@ public interface Transport {
   String TIBRV = "TRV"; // Tibco Rendezvous
 
 
-
-
   /**
    * @return true if the transport is open and functioning, false otherwise.
    */
   boolean isValid();
-
-
 
 
   /**
@@ -47,8 +43,6 @@ public interface Transport {
   MessageQueue createInbox();
 
 
-
-
   /**
    * Open the transport for operation initializing whatever resources are
    * necessary.
@@ -59,8 +53,6 @@ public interface Transport {
   void open();
 
 
-
-
   /**
    * Terminate the connection to the broker, closing any resources that were
    * allocated during the transports operation.
@@ -68,8 +60,6 @@ public interface Transport {
    * <p>The transport can be opened again later.</p>
    */
   void close();
-
-
 
 
   /**
@@ -88,8 +78,6 @@ public interface Transport {
   MessageQueue getServiceQueue(String name);
 
 
-
-
   /**
    * Get a message channel with a Pub/Sub quality of service.
    *
@@ -102,16 +90,29 @@ public interface Transport {
   MessageTopic getTopic(String name);
 
 
+  /**
+   * Send the message on this transport to the message group specified in the
+   * message.
+   *
+   * <p>This assumes a queue quality of service. The message should be
+   * delivered to the named queue if it exists.</p>
+   *
+   * @param message the message to send.
+   * @throws java.io.IOException if an error is encountered
+   */
+  void sendDirect(Message message) throws IOException;
 
 
   /**
-   * Send the message on this transport.
+   * Send the message on this transport to the message group specified in the
+   * message.
    *
-   * <p>The message group will determine how this message is routed.</p>
+   * <p>This assumes a Topic quality of service. Zero or more consumers may
+   * receive this message.</p>
    *
-   * @param msg the message to send.
+   * @param message the message to send.
    * @throws java.io.IOException if an error is encountered
    */
-  void send(Message msg) throws IOException;
+  void broadcast(Message message) throws IOException;
 
 }

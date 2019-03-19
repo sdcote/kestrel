@@ -21,6 +21,7 @@ import java.util.Map;
  * The base class for all service proxies
  */
 public abstract class AbstractProxy implements KestrelProxy, MessageListener {
+
   /**
    * The component responsible for tracking operational statistics
    */
@@ -30,6 +31,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   protected Config configuration = null;
   private boolean initializedFlag = false;
   private Map<String, ResponseFuture> responseCache = new HashMap<>();
+
 
   public AbstractProxy() {
     Log.info("proxy initializing");
@@ -41,15 +43,18 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     return transport;
   }
 
+
   @Override
   public void setTransport(Transport transport) {
     AbstractProxy.transport = transport;
   }
 
+
   @Override
   public boolean isInitialized() {
     return initializedFlag;
   }
+
 
   @Override
   public void initialize() {
@@ -67,6 +72,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
       Log.error("Cannot initialize service proxy: transport not set");
     }
   }
+
 
   @Override
   public StatBoard getStatBoard() {
@@ -103,6 +109,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     // no-op implementation
   }
 
+
   /**
    * This method is called when the initialization method is complete and
    * successful.
@@ -131,6 +138,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     cleanCache();
   }
 
+
   /**
    * Remove all expired response futures from the cache.
    */
@@ -151,6 +159,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     Log.debug("Proxy received message that did not correlate to an active request : " + message.getId());
   }
 
+
   /**
    * Place the message into the correlated response future.
    *
@@ -166,6 +175,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     }
     return retval;
   }
+
 
   private ResponseFuture getResponse(Message message) {
     return responseCache.get(message.getReplyId());
@@ -190,9 +200,10 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
       initialize();
     }
     message.setReplyGroup(inbox.getName());
-    getTransport().send(message);
+    getTransport().sendDirect(message);
     return retval;
   }
+
 
   /**
    * Send the request and wait up to the time-out interval for responses.

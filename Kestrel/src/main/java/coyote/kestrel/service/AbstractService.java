@@ -2,8 +2,6 @@ package coyote.kestrel.service;
 
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
-import coyote.i13n.StatBoard;
-import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
 import coyote.loader.AbstractLoader;
@@ -46,6 +44,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   private volatile long lastHeartbeat = 0;
 
+
   /**
    * After the base class is configured and logging initialized, this method
    * is called to give loader a chance to initialize.
@@ -74,6 +73,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   public void processInboxMessage(Message message) {
     // default no-op implementation
   }
+
 
   /**
    * Override this method to handle coherence messages.
@@ -124,6 +124,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     }
   }
 
+
   private void serviceGroupProcessing() {
     Message message = serviceGroup.getNextMessage(100);
     if (message != null) {
@@ -139,8 +140,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
       } // try-catch
     }
   }
-
-
 
 
   protected void initializeCoherence() {
@@ -159,6 +158,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
       Log.error("Could not initialize the message group: " + e.getLocalizedMessage());
     }
   }
+
 
   private void initializeInbox() {
     try {
@@ -184,6 +184,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     }
     return transport;
   }
+
 
   /**
    * Create a transport from the given configuration.
@@ -232,7 +233,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
 
-
   /**
    * Send a message across the transport.
    *
@@ -243,8 +243,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * @throws IOException if problems were encountered sending the message.
    */
   protected void send(Message message) throws IOException {
-    getTransport().send(message);
+    getTransport().sendDirect(message);
   }
+
 
   /**
    * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
@@ -257,6 +258,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   protected void sendNak(Message message, String msg) {
   }
+
 
   /**
    * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
@@ -273,7 +275,6 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   protected void heartbeat() {
     // check heartbeat interval, send heartbeat if interval has elapsed
-
     // Heartbeats send events to a message group for discovery and monitoring
   }
 
@@ -298,6 +299,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
       Log.warn(ball);
     }
   }
+
 
   private void closeTransport() {
     if (transport != null && transport.isValid()) {

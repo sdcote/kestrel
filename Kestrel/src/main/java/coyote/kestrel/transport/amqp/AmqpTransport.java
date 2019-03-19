@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
+import coyote.commons.StringUtil;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
@@ -22,6 +23,8 @@ import java.util.UUID;
 public class AmqpTransport implements Transport {
 
   public static final String DELIVERY_ID_FIELD = "AMQP_DLVRY_ID";
+  static final String DIRECT_EXCHANGE = "DIRECT";
+  static final String TOPIC_EXCHANGE = "TOPIC";
   private static final boolean NON_DURABLE = false;
   private static final boolean DURABLE = true;
   private static final boolean EXCLUSIVE = false;
@@ -33,9 +36,7 @@ public class AmqpTransport implements Transport {
   private static final int DEFAULT_PORT = 5672;
   private static final String DEFAULT_USERNAME = "guest";
   private static final String DEFAULT_PASSWORD = "guest";
-  static final String DIRECT_EXCHANGE = "DIRECT";
   private static final String DIRECT = "direct";
-  static final String TOPIC_EXCHANGE = "TOPIC";
   private static final String TOPIC = "topic";
   private String hostname = DEFAULT_HOSTNAME;
   private int port = DEFAULT_PORT;
@@ -46,22 +47,28 @@ public class AmqpTransport implements Transport {
    * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
    */
   private Connection connection = null;
-  /** The channel this transport uses to send messages */
+  /**
+   * The channel this transport uses to send messages
+   */
   private Channel outboundChannel = null;
 
   private String virtualHost = null;
+
 
   public String getHostname() {
     return hostname;
   }
 
+
   public void setHostname(String hostname) {
     this.hostname = hostname;
   }
 
+
   public int getConnectionTimeout() {
     return connectionTimeout;
   }
+
 
   /**
    * timeout in milliseconds; zero for infinite
@@ -70,42 +77,52 @@ public class AmqpTransport implements Transport {
     this.connectionTimeout = connectionTimeout;
   }
 
+
   public String getPassword() {
     return password;
   }
+
 
   public void setPassword(String password) {
     this.password = password;
   }
 
+
   public String getUsername() {
     return username;
   }
+
 
   public void setUsername(String username) {
     this.username = username;
   }
 
+
   public int getPort() {
     return port;
   }
+
 
   public void setPort(int port) {
     this.port = port;
   }
 
+
   public String getVirtualHost() {
     return virtualHost;
   }
+
 
   public void setVirtualHost(String virtualHoat) {
     this.virtualHost = virtualHoat;
   }
 
+
   @Override
   public boolean isValid() {
     return true;
   }
+
 
   @Override
   public MessageQueue createInbox() {
@@ -146,9 +163,10 @@ public class AmqpTransport implements Transport {
       outboundChannel = connection.createChannel();
 
     } catch (Exception e) {
-      Log.fatal("Could not open AMPQ connection to broker("+factory.getUsername()+"@"+factory.getHost()+":"+factory.getPort()+"): " + e.getLocalizedMessage());
+      Log.fatal("Could not open AMPQ connection to broker(" + factory.getUsername() + "@" + factory.getHost() + ":" + factory.getPort() + "): " + e.getLocalizedMessage());
     }
   }
+
 
   @Override
   public void close() {
@@ -195,14 +213,25 @@ public class AmqpTransport implements Transport {
   }
 
 
-  /**
-   * @param msg
-   * @throws IOException if the message could not be sent
-   */
   @Override
-  public void send(Message msg) throws IOException {
+  public void sendDirect(Message msg) throws IOException {
+    send(DIRECT_EXCHANGE, msg);
+  }
+
+
+  @Override
+  public void broadcast(Message msg) throws IOException {
+    send(TOPIC_EXCHANGE, msg);
+  }
+
+
+  private void send(String exchange, Message msg) throws IOException {
     if (outboundChannel != null) {
-      outboundChannel.basicPublish("", msg.getGroup(), null, msg.getBytes());
+      if (StringUtil.isNotBlank(msg.getGroup())) {
+        outboundChannel.basicPublish(exchange, msg.getGroup(), null, msg.getBytes());
+      } else {
+        throw new IOException("No message group name specified in message");
+      }
     } else {
       throw new IOException("No outbound transport channel set");
     }

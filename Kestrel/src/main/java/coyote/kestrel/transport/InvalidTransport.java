@@ -45,7 +45,12 @@ public class InvalidTransport implements Transport {
   }
 
   @Override
-  public void send(Message msg) throws IOException {
+  public void sendDirect(Message msg) throws IOException {
+    throw new IOException("Invalid transport; not connected");
+  }
+
+  @Override
+  public void broadcast(Message msg) throws IOException {
     throw new IOException("Invalid transport; not connected");
   }
 
