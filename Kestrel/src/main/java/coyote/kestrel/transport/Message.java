@@ -109,4 +109,14 @@ public class Message extends DataFrame {
     setId(UUID.randomUUID().toString());
     return getId();
   }
+
+  public String getMessage() {
+    return super.getAsString(KestrelProtocol.MESSAGE_FIELD);
+  }
+
+  public void setMessage(String msg) {
+    this.put(KestrelProtocol.MESSAGE_FIELD, msg);
+  }
+
 }
+
