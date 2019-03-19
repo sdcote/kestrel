@@ -134,7 +134,7 @@ public class AmqpTransport implements Transport {
       retval = new AmqpQueue(connection.createChannel(), identifier, NON_DURABLE, EXCLUSIVE, AUTO_DELETE, NO_ARGUMENTS);
       ((Recoverable) channel).addRecoveryListener(retval);
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
     return retval;
   }
@@ -191,7 +191,7 @@ public class AmqpTransport implements Transport {
         retval = new AmqpQueue(channel, name, DURABLE, NON_EXCLUSIVE, MANUAL_DELETE, NO_ARGUMENTS);
         ((Recoverable) channel).addRecoveryListener(retval);
       } catch (IOException e) {
-        e.printStackTrace();
+        Log.error(e);
       }
     }
     return retval;
@@ -207,7 +207,7 @@ public class AmqpTransport implements Transport {
       retval = new AmqpTopic(channel, name);
       ((Recoverable) channel).addRecoveryListener(retval);
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
     return retval;
   }

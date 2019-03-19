@@ -5,6 +5,7 @@ import com.rabbitmq.client.DeliverCallback;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageTopic;
+import coyote.loader.log.Log;
 
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
       getChannel().basicConsume(queueName, true, deliverCallback, consumerTag -> {
       });
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
 
   }

@@ -25,7 +25,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
       AMQP.Queue.DeclareOk response = getChannel().queueDeclare(name, durable, exclusive, autodelete, arguments);
       Log.notice(response.getQueue() + " declared with " + response.getMessageCount() + " messages waiting and " + response.getConsumerCount() + " consumers");
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
   }
 
@@ -69,7 +69,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
       try {
         getChannel().basicConsume(getName(), consumer);
       } catch (IOException e) {
-        e.printStackTrace();
+        Log.error(e);
       }
 
     }
