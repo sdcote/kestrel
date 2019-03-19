@@ -3,13 +3,10 @@ package coyote.profile;
 
 import coyote.dataframe.DataFrame;
 import coyote.dataframe.marshal.JSONMarshaler;
-import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.service.AbstractService;
 import coyote.kestrel.service.ServiceUtil;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
-
-import java.io.IOException;
 
 public class ProfileService extends AbstractService {
 
@@ -29,19 +26,18 @@ public class ProfileService extends AbstractService {
    * <p>If we throw an exception, the message will be negatively acknowledged
    * at the transport level and re-queued for delivery.</p>
    *
-   * @param message
+   * @param message the message we received from the message group
    */
   @Override
   public void process(Message message) {
-    Log.info("Received service message: " + JSONMarshaler.toFormattedString(message));
+    Log.debug("Received service message: " + JSONMarshaler.toFormattedString(message));
 
-
-    // figure out what the service is supposed to do
+    // extract the message payload
     DataFrame request = message.getPayload();
 
+    // get the command from the request payload
     String cmd = ServiceUtil.getCommand(request);
 
-    DataFrame result;
     if (cmd != null) {
       switch (cmd.toUpperCase()) {
         case "GET":
@@ -58,9 +54,19 @@ public class ProfileService extends AbstractService {
   }
 
 
+  /**
+   * This only returns one profile, ID=123.
+   *
+   * @param request the payload of the message representing the request
+   * @return the profile or null if the identified profile could not be found
+   */
   private DataFrame getProfile(DataFrame request) {
+    DataFrame retval = null;
     String id = ServiceUtil.getIdentifier(request);
-    return null;
+    if ("123".equals(id)) {
+      retval = new DataFrame().set("id", "123").set("theme", "dark").set("logging", "error,fatal,warn,notice").set("name", "Bob");
+    }
+    return retval;
   }
 
 }
