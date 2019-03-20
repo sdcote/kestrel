@@ -27,9 +27,12 @@ public class KestrelProtocol {
   public static final String GENERIC_DATA_FIELD = "DATA";
 
   // Types of messages there are
-  public static final String ACK_TYPE = "ACK"; // Acknowledgement - OK
+  public static final String REQUEST_TYPE = "RQS"; // Requests
+  public static final String ACK_TYPE = "ACK"; // Acknowledgement - OK - Contains requested data
   public static final String NAK_TYPE = "NAK"; // Negative Acknowledgement - Not OK
   public static final String OAM_TYPE = "OAM"; // Operations, Administration and Maintenance
+  public static final String HEARTBEAT_TYPE = "HBT"; // Heartbeats
+  public static final String EVENT_TYPE = "EVT"; // Events
 
   // The version of this protocol
   public static final Version VERSION = new Version(0,1,0);
