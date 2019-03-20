@@ -1,0 +1,5 @@
+mainClassName = 'coyote.loader.BootStrap'
+
+dependencies {
+    compile project(':Kestrel'), project(':ProfileDomain')
+}
