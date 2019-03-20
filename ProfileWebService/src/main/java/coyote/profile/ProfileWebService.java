@@ -34,12 +34,12 @@ public class ProfileWebService extends AbstractJsonResponder implements Responde
     String id = urlParams.get("id");
 
     // find an instance of the service proxy
-    ProfileClient client = server.locate(ProfileClient.class);
+    ProfileClient client = server.locateProxy(ProfileClient.class);
 
 
 
-    // The results dataframe is where our superclass generates its responce
-    getResults().merge(new DataFrame().set("id",id).set("name", "Bob").set("msg", "Hello World"));
+    // The results data frame is where our superclass generates its responce
+    getResults().merge(new DataFrame().set("id",id).set("name", "Bob").set("msg", "Hello World!"));
 
     // create a response using the superclass methods
     return Response.createFixedLengthResponse(getStatus(), getMimeType(), getText());

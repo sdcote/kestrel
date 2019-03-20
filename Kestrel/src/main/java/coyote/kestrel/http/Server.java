@@ -17,17 +17,29 @@ public class Server extends WebServer {
   public void configure(Config config) throws ConfigurationException {
     super.configure(config);
 
-    // look for the transport section in the configuration
     Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
-    if (cfg == null) throw new ConfigurationException("No transport configuration section found");
-    String uri = cfg.getString(KestrelService.URI_TAG);
-    if (StringUtil.isBlank(uri))
-      throw new ConfigurationException("Could not retrieve transport URI from configuration");
-    registry.setURI(uri);
 
+    if (cfg == null) {
+      throw new ConfigurationException("No transport configuration section found");
+    }
+
+    String uri = cfg.getString(KestrelService.URI_TAG);
+
+    if (StringUtil.isBlank(uri)) {
+      throw new ConfigurationException("Could not retrieve transport URI from configuration");
+    }
+
+    registry.setURI(uri);
   }
 
-  public <E> E locate(Class<E> type) {
+
+  /**
+   * Allow responders to find proxies to their services.
+   *
+   * @param type the service interface class to locate
+   * @return an instance of a proxy implementing that class or null if none were found.
+   */
+  public <E> E locateProxy(Class<E> type) {
     return registry.locate(type);
   }
 
