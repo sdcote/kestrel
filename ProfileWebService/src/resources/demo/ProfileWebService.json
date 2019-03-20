@@ -1,18 +1,11 @@
 {
-  "Class": "coyote.commons.WebServer",
+  "Class": "coyote.kestrel.http.Server",
 
-  "Transport": {
-    "Uri": "amqp://[#$username#]:[#$password#]@[#$hostname#]:[#$port#]/[#$vhost#]",
-    "AutoAck": false
-  },
-
+  "Transport": { "Uri": "[#$transport#]" },
 
   "Endpoints": {
-    "/": { "Class": "coyote.commons.network.http.responder.ResourceResponder", "root": "content", "RedirectOnIndexedDir": false, "Priority": 32767 },
-    "/(.)+": { "Class": "coyote.commons.network.http.responder.ResourceResponder", "root": "content", "RedirectOnIndexedDir": false, "Priority": 32767 },
     "/api/profile/:id": { "Class": "coyote.profile.ProfileWebService", "timeout": "5000" }
   },
-
 
   "Logging": {
     "StandardOutput": {"categories": "trace, debug, notice, info, httpd"},

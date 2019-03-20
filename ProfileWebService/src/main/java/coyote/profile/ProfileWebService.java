@@ -8,6 +8,7 @@ import coyote.commons.network.http.responder.AbstractJsonResponder;
 import coyote.commons.network.http.responder.Resource;
 import coyote.commons.network.http.responder.Responder;
 import coyote.dataframe.DataFrame;
+import coyote.kestrel.http.Server;
 import coyote.loader.cfg.Config;
 
 import java.util.Map;
@@ -26,14 +27,19 @@ public class ProfileWebService extends AbstractJsonResponder implements Responde
    */
   @Override
   public Response get(Resource resource, Map<String, String> urlParams, HTTPSession session) {
-    WebServer loader = resource.initParameter(0, WebServer.class);
+    Server server = resource.initParameter(0, Server.class);
     Config config = resource.initParameter(1, Config.class);
 
     // Get the command from the URL parameters specified when we were registered with the router
-    String id = urlParams.get("metric");
+    String id = urlParams.get("id");
+
+    // find an instance of the service proxy
+    ProfileClient client = server.locate(ProfileClient.class);
+
+
 
     // The results dataframe is where our superclass generates its responce
-    getResults().merge(new DataFrame().set("name", "Bob").set("msg", "Hello World"));
+    getResults().merge(new DataFrame().set("id",id).set("name", "Bob").set("msg", "Hello World"));
 
     // create a response using the superclass methods
     return Response.createFixedLengthResponse(getStatus(), getMimeType(), getText());
