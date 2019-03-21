@@ -18,8 +18,6 @@ public class ClientRegistryTest {
     registry.addServiceProxyClass(ProfileProxy.class);
     ProfileClient client = registry.locate(ProfileClient.class);
     assertNotNull(client);
-
-
     client.retrieveProfile("123");
   }
 

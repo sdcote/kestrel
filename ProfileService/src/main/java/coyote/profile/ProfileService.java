@@ -38,6 +38,7 @@ public class ProfileService extends AbstractService {
     // get the command from the request payload
     String cmd = ServiceUtil.getCommand(request);
 
+    // Each service can support any number of commands
     if (cmd != null) {
       switch (cmd.toUpperCase()) {
         case "GET":
@@ -50,7 +51,6 @@ public class ProfileService extends AbstractService {
     } else {
       sendNak(message, "No command found in request");
     }
-
   }
 
 
