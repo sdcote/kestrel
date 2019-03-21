@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class ProfileProxy extends AbstractProxy implements ProfileClient {
 
+
   /**
    * Retrieve the profile with the given identifier
    *

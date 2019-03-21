@@ -16,21 +16,19 @@ public class Server extends WebServer {
   @Override
   public void configure(Config config) throws ConfigurationException {
     super.configure(config);
-
     registry = new ClientRegistry();
 
+    // We need a transport section to configure our connection to the message transport
     Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
-
     if (cfg == null) {
       throw new ConfigurationException("No transport configuration section found");
     }
 
+    // configure the registry with the transport URI
     String uri = cfg.getString(KestrelService.URI_TAG);
-
     if (StringUtil.isBlank(uri)) {
       throw new ConfigurationException("Could not retrieve transport URI from configuration");
     }
-
     registry.setURI(uri);
 
   }
@@ -47,9 +45,15 @@ public class Server extends WebServer {
   }
 
 
+  /**
+   * This adds the proxy class and its configuration to the registry for later instantiation.
+   *
+   * @param proxyClass The class to instantiate if needed
+   * @param cfg        The configuration to set (if it is a KestrelProxy) when instantiated.
+   * @return the client registry where all the servers proxy classes are cached.
+   */
   public ClientRegistry addServiceProxyClass(Class proxyClass, Config cfg) {
-    return registry.addServiceProxyClass(proxyClass,cfg);
+    return registry.addServiceProxyClass(proxyClass, cfg);
   }
-
 
 }
