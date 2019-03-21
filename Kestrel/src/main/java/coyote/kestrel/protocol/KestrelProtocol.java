@@ -67,6 +67,10 @@ public class KestrelProtocol {
         retval.setReplyId(request.getId());
       }
 
+      if( request.getEncoding()!= null){
+        retval.setEncoding(request.getEncoding());
+      }
+
       retval.generateId();
 
       return retval;
