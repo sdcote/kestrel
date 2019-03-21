@@ -33,18 +33,23 @@ public class ProfileWebService extends AbstractJsonResponder implements Responde
 
     // Get the command from the URL parameters specified when we were registered with the router
     String id = urlParams.get("id");
-//    server.addServiceProxyClass(ProfileClient.class,null);
 
-    // find an instance of the service proxy
+    // Make sure the server knows about the service proxy class, use our configuration object
+    server.addServiceProxyClass(ProfileProxy.class,config);
+
+    // get a configured instance of the service proxy
     ProfileClient client = server.locateProxy(ProfileClient.class);
+
+
     if( client == null ){
       Log.error("could not retrieve Profile Service proxy");
+      // 500 server error
     }
 
     String name = coyote.profile.ProfileProxy.class.getSimpleName();
 
 
-    // The results data frame is where our superclass generates its responce
+    // The results data frame is where our superclass generates its response
     getResults().merge(new DataFrame().set("id",id).set("name", "Bob").set("msg", "Hello World!"));
 
     // create a response using the superclass methods
