@@ -32,18 +32,14 @@ public class ClientRegistry {
   /**
    * The Map of classes we search for implementations. The object is used for reflection.
    */
-  private static final Map<Class, Config> proxyClasses;
+  private static final Map<Class, Config> proxyClasses = new HashMap<>();
 
 
   /**
    * Cache of configured instances to be used in this runtime
    */
-  private static final Map<Class, Object> proxyCache;
+  private static final Map<Class, Object> proxyCache = new HashMap<>();
 
-  static {
-    proxyClasses = ProxyListScanner.scan();
-    proxyCache = populateCache(proxyClasses);
-  }
 
   /**
    * Our transport builder, creates transports for proxy instances.
@@ -154,7 +150,7 @@ public class ClientRegistry {
           proxy.setTransport(transport);
         }
         // make sure the proxy is initialized
-        if( proxy.isInitialized()){
+        if (proxy.isInitialized()) {
           proxy.initialize();
         }
       }
