@@ -118,5 +118,18 @@ public class Message extends DataFrame {
     this.put(KestrelProtocol.MESSAGE_FIELD, msg);
   }
 
+  public int getResultCode() {
+    try {
+      return super.getAsInt(KestrelProtocol.RESULT_CODE_FIELD);
+    } catch (DataFrameException e) {
+      return 0;
+    }
+  }
+
+  public void setResultCode(int resultCode) {
+    this.put(KestrelProtocol.RESULT_CODE_FIELD, resultCode);
+  }
+
+
 }
 

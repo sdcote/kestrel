@@ -251,42 +251,118 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   /**
    * Acknowledge the message with the given payload.
    *
-   * @param message
-   * @param payload
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage  the message used to generate the response.
+   * @param responsePayload the payload to send in the response.
    */
-  protected void sendAck(Message message, DataFrame payload) {
-    Message response = KestrelProtocol.createResponse(message);
-    response.setType(KestrelProtocol.ACK_TYPE);
-    response.setPayload(payload);
-    try {
-      send(response);
-    } catch (IOException e) {
-      Log.error("Could not send ACK response: " + e.getMessage());
-    }
-
+  protected void sendAck(Message requestMessage, DataFrame responsePayload) {
+    sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, responsePayload, null, -1);
   }
 
   /**
-   * Send a Kestrel NAK; a NAK to the proxy. This does not NAK message
-   * delivery at the transport layer.
+   * Acknowledge the message with the given text.
    *
-   * <p>This indicates the message could not be processed by the service.</p>
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
    *
-   * @param message
-   * @param msg
+   * @param requestMessage the message used to generate the response.
+   * @param message        text message to include in the response.
    */
-  protected void sendNak(Message message, String msg) {
-    Message response = KestrelProtocol.createResponse(message);
-    response.setType(KestrelProtocol.NAK_TYPE);
-    response.setMessage(msg);
+  protected void sendAck(Message requestMessage, String message) {
+    sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, message, -1);
+  }
+
+  /**
+   * Acknowledge the message with the given text and result code.
+   *
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage the message used to generate the response.
+   * @param message        text message to include in the response.
+   * @param resultCode     numeric result code.
+   */
+  protected void sendAck(Message requestMessage, String message, int resultCode) {
+    sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, message, resultCode);
+  }
+
+  /**
+   * Acknowledge the message with the given result code.
+   *
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage the message used to generate the response.
+   * @param resultCode     numeric result code.
+   */
+  protected void sendAck(Message requestMessage, int resultCode) {
+    sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, null, resultCode);
+  }
+
+  /**
+   * Send a negative acknowledgement in response to the given request message.
+   *
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage the message used to generate the response.
+   * @param message        text message to include in the response.
+   */
+  protected void sendNak(Message requestMessage, String message) {
+    sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, message, -1);
+  }
+
+  /**
+   * Send a NAK response to the given message with message text and a result code.
+   *
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage the message used to generate the response.
+   * @param message        text message to include in the response.
+   * @param resultCode     numeric result code.
+   */
+  protected void sendNak(Message requestMessage, String message, int resultCode) {
+    sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, message, resultCode);
+  }
+
+  /**
+   * Send a NAK response to the given message with a result code.
+   *
+   * <p>This is not a transport level protocol message. It is a response to
+   * the Kestrel request/response protocol.</p>
+   *
+   * @param requestMessage the message used to generate the response.
+   * @param resultCode     numeric result code.
+   */
+  protected void sendNak(Message requestMessage, int resultCode) {
+    sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, null, resultCode);
+  }
+
+  /**
+   * This generates a response message from the given data and sends it across
+   * the current message transport.
+   *
+   * @param type            The type (e.g. ACK, NAK) of message to send
+   * @param requestMessage  the message used to generate the response.
+   * @param responsePayload the optional payload for the message
+   * @param message         the optional text message to include in the response
+   * @param resultCode      the optional result code for the response
+   */
+  private void sendResponse(String type, Message requestMessage, DataFrame responsePayload, String message, int resultCode) {
+    Message response = KestrelProtocol.createResponse(requestMessage);
+    response.setType(type);
+    if (responsePayload != null) response.setPayload(responsePayload);
+    if (message != null) response.setMessage(message);
+    if (resultCode > 0) response.setResultCode(resultCode);
     try {
       send(response);
     } catch (IOException e) {
-      Log.error("Could not send ACK response: " + e.getMessage());
+      Log.error("Could not send '" + type + "' response: " + e.getMessage());
     }
   }
-
-
 
 
   protected void heartbeat() {
