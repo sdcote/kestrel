@@ -22,6 +22,8 @@ import java.util.zip.ZipFile;
  *
  * <p>This allows the developer to pre-populate the ClientRegistry with classes
  * to use as service proxies and not have to define them in code.</p>
+ *
+ * <p>THis is being deprecated as classloaders don't always find the classes.</p>
  */
 public class ProxyListScanner {
   private static final String FILENAME = "serviceproxy.cfg";
@@ -68,6 +70,7 @@ public class ProxyListScanner {
             ZipFile zipfile = null;
             try {
               zipfile = new ZipFile(file);
+              Log.trace("checking '" + entry + "'");
               for (Enumeration<? extends ZipEntry> en = zipfile.entries(); en.hasMoreElements(); ) {
                 ZipEntry zentry = en.nextElement();
                 Log.trace("    '" + zentry.getName() + "' " + zentry.getCrc());
@@ -85,8 +88,10 @@ public class ProxyListScanner {
               }
             }
           } else if (file.isDirectory()) {
+            Log.trace("checking '" + entry + "' - "+file.getAbsolutePath());
             List<File> files = FileUtil.getFiles(file, true);
             for (File fentry : files) {
+              Log.trace("    '" + fentry.getName());
               if (fentry.getName().toLowerCase().endsWith(FILENAME)) {
                 String partialname = subtractDirFromFile(file, fentry);
                 partialname = partialname.replace('\\', '/');
@@ -174,7 +179,7 @@ public class ProxyListScanner {
         Class<?> clazz = Class.forName(line);
         retval.put(clazz, null);
       } catch (ClassNotFoundException e) {
-        Log.error("Proxy scanner could not load class: '" + line + "'");
+        Log.error("Proxy scanner could not load class: '" + line + "' - Reason: "+e.getClass().getSimpleName()+"-"+e.getLocalizedMessage());
       }
     }
     return retval;

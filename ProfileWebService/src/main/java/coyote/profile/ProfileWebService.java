@@ -10,6 +10,7 @@ import coyote.commons.network.http.responder.Responder;
 import coyote.dataframe.DataFrame;
 import coyote.kestrel.http.Server;
 import coyote.loader.cfg.Config;
+import coyote.loader.log.Log;
 
 import java.util.Map;
 
@@ -32,10 +33,15 @@ public class ProfileWebService extends AbstractJsonResponder implements Responde
 
     // Get the command from the URL parameters specified when we were registered with the router
     String id = urlParams.get("id");
+//    server.addServiceProxyClass(ProfileClient.class,null);
 
     // find an instance of the service proxy
     ProfileClient client = server.locateProxy(ProfileClient.class);
+    if( client == null ){
+      Log.error("could not retrieve Profile Service proxy");
+    }
 
+    String name = coyote.profile.ProfileProxy.class.getSimpleName();
 
 
     // The results data frame is where our superclass generates its responce

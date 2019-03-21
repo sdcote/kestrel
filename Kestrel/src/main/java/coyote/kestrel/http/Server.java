@@ -8,7 +8,7 @@ import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
 
 public class Server extends WebServer {
-  private ClientRegistry registry = new ClientRegistry();
+  private ClientRegistry registry = null;
 
   /**
    * @see coyote.loader.AbstractLoader#configure(coyote.loader.cfg.Config)
@@ -16,6 +16,8 @@ public class Server extends WebServer {
   @Override
   public void configure(Config config) throws ConfigurationException {
     super.configure(config);
+
+    registry = new ClientRegistry();
 
     Config cfg = configuration.getSection(KestrelService.TRANSPORT_SECTION);
 
@@ -30,6 +32,7 @@ public class Server extends WebServer {
     }
 
     registry.setURI(uri);
+
   }
 
 
@@ -42,5 +45,11 @@ public class Server extends WebServer {
   public <E> E locateProxy(Class<E> type) {
     return registry.locate(type);
   }
+
+
+  public ClientRegistry addServiceProxyClass(Class proxyClass, Config cfg) {
+    return registry.addServiceProxyClass(proxyClass,cfg);
+  }
+
 
 }
