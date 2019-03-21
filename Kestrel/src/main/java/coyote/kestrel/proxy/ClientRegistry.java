@@ -55,32 +55,6 @@ public class ClientRegistry {
     // new instances of this class mean new inbox an background thread to handle replies
   }
 
-  private static Map<Class, Object> populateCache(Map<Class, Config> classMap) {
-    Map<Class, Object> retval = new HashMap<>();
-    for (Map.Entry entry : classMap.entrySet()) {
-      Class type = (Class) entry.getKey();
-      try {
-        Constructor<?> ctor = type.getConstructor();
-        Object object = ctor.newInstance();
-
-        if (object instanceof KestrelProxy) {
-          KestrelProxy proxy = (KestrelProxy) object;
-          try {
-            proxy.configure((Config) entry.getValue());
-          } catch (Exception e) {
-            Log.warn("Could not configure proxy '" + type.getCanonicalName() + "' Reason: " + e.getLocalizedMessage());
-          }
-        } else {
-          System.err.println("Not a Kestrel proxy");
-        }
-        retval.put(type, object);
-      } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        System.err.println(e.getLocalizedMessage());
-      }
-    }
-    return retval;
-  }
-
 
   /**
    * Opens a connection to a message transport, creates an inbox queue for
@@ -89,7 +63,7 @@ public class ClientRegistry {
    *
    * @throws IOException if there were problems connection to the message transport.
    */
-  public void connect() throws IOException, IllegalStateException {
+  public void connect() throws IllegalStateException {
     if (transport == null) {
       transport = transportBuilder.build();
       if (transport instanceof InvalidTransport) {
@@ -116,7 +90,8 @@ public class ClientRegistry {
    * to clear out the registry in preparation for making a new connection.</p>
    */
   public void disconnect() {
-
+    transport.close();
+    transport = null;
   }
 
   /**
@@ -124,53 +99,84 @@ public class ClientRegistry {
    * currently configured.
    *
    * <p>SIDE EFFECT: This will open the registry if it is not already opened.
-   * This is by design for ease of use.</p>
+   * This is by design for ease of use and ensuring the returned proxy
+   * instances are ready to use.</p>
    *
    * @param type the service interface to locate
    * @param <E>  a configured service proxy which implements that service interface.
    * @return the first type which implements the given interface type
    */
   public <E> E locate(Class<E> type) {
-    Object retval = locateObject(type);
-
-    // make sure we have a transport to set in the proxy
     if (transport == null) {
       try {
         connect();
-      } catch (IOException e) {
+      } catch (Exception e) {
         Log.error("Could not connect");
       }
     }
 
-    try {
-      if (retval instanceof KestrelProxy) {
-        KestrelProxy proxy = (KestrelProxy) retval;
-        // make sure the proxy has a transport
-        if (proxy.getTransport() == null) {
-          proxy.setTransport(transport);
-        }
-        // make sure the proxy is initialized
-        if (proxy.isInitialized()) {
-          proxy.initialize();
-        }
-      }
-    } catch (SecurityException | IllegalArgumentException e) {
-      Log.error("Could not set transport on proxy: " + e.getLocalizedMessage());
-    }
+    Object retval = findOrCreateProxy(type);
 
     // return the proxy which implements the given type or null if not found
     return type.cast(retval);
   }
 
 
-  private <E> Object locateObject(Class<E> type) {
+  /**
+   * Find an existing service proxy in the cache, or create a new instance if
+   * it does not exist.
+   *
+   * <p>This assumes a proxy class has been registered with the requested
+   * interface. If not, then null will be returned.</p>
+   *
+   * <p>The returned object will be configured, if it is an instance of
+   * KestrelProxy and a Config object has been registered with the proxy
+   * class.</p>
+   *
+   * <p>If the object was created, the transport will be set in the new proxy
+   * instance and it will be initialized.</p>
+   *
+   * @param type the type (i.e. interface) for which to search the registered classes.
+   * @return an object implementing the requested type, or null if none of the registered classes implement the given type.
+   */
+  private <E> Object findOrCreateProxy(Class<E> type) {
     Object retval = null;
-    for (Map.Entry entry : proxyCache.entrySet()) {
-      Class clazz = (Class) entry.getKey();
-      Object proxy = entry.getValue();
-      if (type.isInstance(proxy)) {
-        retval = proxy;
+    for (Map.Entry<Class, Object> entry : proxyCache.entrySet()) {
+      if (type.isInstance(entry.getValue())) {
+        retval = entry.getValue();
         break;
+      }
+    }
+
+    if (retval == null) {
+      for (Map.Entry<Class, Config> entry : proxyClasses.entrySet()) {
+        try {
+          Constructor<?> ctor = entry.getKey().getConstructor();
+          Object proxy = ctor.newInstance();
+          if (type.isInstance(proxy)) {
+            retval = proxy;
+            proxyCache.put(type, proxy);
+            if (proxy instanceof KestrelProxy) {
+              KestrelProxy kestrelProxy = (KestrelProxy) proxy;
+              try {
+                kestrelProxy.configure(entry.getValue());
+                kestrelProxy.setTransport(transport);
+                try {
+                  kestrelProxy.initialize();
+                } catch (Exception e) {
+                  Log.error("Problems initializing proxy: " + proxy.getClass().getCanonicalName() + " - Reason: " + e.getLocalizedMessage());
+                }
+              } catch (Exception e) {
+                Log.warn("Could not configure proxy '" + proxy.getClass().getCanonicalName() + "' Reason: " + e.getLocalizedMessage());
+              }
+            } else {
+              Log.notice("Proxy '" + proxy.getClass().getCanonicalName() + " is not a Kestrel proxy, no configuration or initialization performed");
+            }
+            break;
+          }
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+          e.printStackTrace();
+        }
       }
     }
     return retval;
@@ -189,37 +195,25 @@ public class ClientRegistry {
     return addServiceProxyClass(proxyClass, null);
   }
 
+
   /**
-   * Add a class the builder should use to scan for proxy instances.
+   * Add a class the registry should use to scan for proxy instances.
    *
-   * <p>Instances of these classes will be created and configured to use this
-   * registry's inbox for all reply-to headers.</p>
+   * <p>Proxy classes can only be added once, if another request is received
+   * to add the same proxy class, it is ignored. THis is by design to help
+   * ensure proxy instances are not orphaned and are shared between
+   * components.</p>
    *
    * @param proxyClass the class to be instantiated
    * @param cfg        the configuration to use for the proxy (if applicable)
    */
   public ClientRegistry addServiceProxyClass(Class proxyClass, Config cfg) {
     if (proxyClass != null) {
-      try {
-        Constructor<?> ctor = proxyClass.getConstructor();
-        Object object = ctor.newInstance();
-        if (cfg != null) {
-          if (object instanceof KestrelProxy) {
-            KestrelProxy proxy = (KestrelProxy) object;
-            try {
-              proxy.configure(cfg);
-            } catch (Exception e) {
-              Log.warn("Could not configure proxy '" + proxyClass.getCanonicalName() + "' Reason: " + e.getLocalizedMessage());
-            }
-          } else {
-            System.err.println("Not a Kestrel proxy");
-          }
-        }
-        proxyCache.put(proxyClass, object);
-      } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        System.err.println(e.getLocalizedMessage());
+      if (!proxyClasses.containsKey(proxyClass)) {
+        proxyClasses.put(proxyClass, cfg);
       }
-      proxyClasses.put(proxyClass, cfg);
+    } else {
+      throw new IllegalArgumentException("Cannot add a null service proxy class to registry");
     }
     return this;
   }
