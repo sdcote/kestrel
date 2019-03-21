@@ -1,9 +1,9 @@
 package coyote.profile;
 
 
-import coyote.commons.WebServer;
 import coyote.commons.network.http.HTTPSession;
 import coyote.commons.network.http.Response;
+import coyote.commons.network.http.Status;
 import coyote.commons.network.http.responder.AbstractJsonResponder;
 import coyote.commons.network.http.responder.Resource;
 import coyote.commons.network.http.responder.Responder;
@@ -35,22 +35,28 @@ public class ProfileWebService extends AbstractJsonResponder implements Responde
     String id = urlParams.get("id");
 
     // Make sure the server knows about the service proxy class, use our configuration object
-    server.addServiceProxyClass(ProfileProxy.class,config);
+    server.addServiceProxyClass(ProfileProxy.class, config);
 
     // get a configured instance of the service proxy
     ProfileClient client = server.locateProxy(ProfileClient.class);
 
 
-    if( client == null ){
+    if (client == null) {
       Log.error("could not retrieve Profile Service proxy");
-      // 500 server error
+      super.setStatus(Status.INTERNAL_ERROR);
+      super.getResults().merge(new DataFrame("Error", "Could not retrieve proxy"));
+    } else {
+      // make the service call
+      Profile profile = client.retrieveProfile(id);
+
+      // Set the results
+      if (profile != null) {
+        super.getResults().merge(profile);
+        super.setStatus(Status.OK);
+      } else {
+        super.setStatus(Status.NOT_FOUND);
+      }
     }
-
-    String name = coyote.profile.ProfileProxy.class.getSimpleName();
-
-
-    // The results data frame is where our superclass generates its response
-    getResults().merge(new DataFrame().set("id",id).set("name", "Bob").set("msg", "Hello World!"));
 
     // create a response using the superclass methods
     return Response.createFixedLengthResponse(getStatus(), getMimeType(), getText());
