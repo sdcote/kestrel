@@ -33,11 +33,6 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   private Map<String, ResponseFuture> responseCache = new HashMap<>();
 
 
-  public AbstractProxy() {
-    Log.info("proxy initializing");
-  }
-
-
   @Override
   public Transport getTransport() {
     return transport;
