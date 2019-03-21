@@ -3,7 +3,7 @@ package coyote.kestrel.transport.amqp;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
-import coyote.kestrel.protocol.PayloadCodec;
+import coyote.kestrel.protocol.MessageCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageQueue;
@@ -39,7 +39,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
         AMQP.BasicProperties props = response.getProps();
         Log.debug(props);
         retval = new Message();
-        retval.merge(PayloadCodec.decode(response.getBody()));
+        retval.merge(MessageCodec.decode(response.getBody()));
         retval.put(AmqpTransport.DELIVERY_ID_FIELD, response.getEnvelope().getDeliveryTag());
       }
     } catch (IOException e) {
@@ -83,7 +83,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   @Override
   public void send(Message message) throws IOException {
     if (getChannel() != null) {
-      getChannel().basicPublish(AmqpTransport.DIRECT_EXCHANGE, getName(), null, message.getBytes());
+      getChannel().basicPublish(AmqpTransport.DIRECT_EXCHANGE, getName(), null, MessageCodec.encode(message));
     } else {
       throw new IOException("No channel set");
     }

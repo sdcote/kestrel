@@ -12,19 +12,21 @@ import java.util.UUID;
 public class KestrelProtocol {
 
   // Standardized field names
-  public static final String IDENTIFIER_FIELD = "MID"; // transport specific message identifier
-  public static final String ID_FIELD= "ID"; // application specific identifier for the message/packet
-  public static final String REPLY_ID_FIELD = "RPID"; // message/packet for which this message is a reply
+  public static final String IDENTIFIER_FIELD = "MID"; // Kestrel protocol specific message identifier
+  public static final String ID_FIELD= "ID"; // transport specific identifier for the message
+  public static final String REPLY_ID_FIELD = "RID"; // message/packet for which this message is a reply
+  public static final String GROUP_FIELD = "GRP"; // the name of the group the message traveled
+  public static final String REPLY_GROUP_FIELD = "RPY"; // name of the group to which replies should be sent
+  public static final String TYPE_FIELD = "TYP"; // the type of message it is (e.g. ACK, NAK, RQS, etc.)
+  public static final String MESSAGE_FIELD = "MSG"; // human readable message for AXKs and NAKs any maybe other types
+  public static final String RESULT_CODE_FIELD = "RCD"; // detailed result code in ACK/NAK messages for i18n
+  public static final String GENERIC_DATA_FIELD = "DATA"; // generate data filed name
+  public static final String PAYLOAD_FIELD = "PLD"; // name of the payload field
+  public static final String ENCODING_FIELD = "ENC"; // how the message was/should be encoded on the transport
   public static final String SOURCE_FIELD = "SRC";
   public static final String TARGET_FIELD = "TGT";
-  public static final String GROUP_FIELD = "GRP";
-  public static final String REPLY_GROUP_FIELD = "RPY"; // name of the group to which replies should be sent
   public static final String FLAGS_FIELD = "FLG";
   public static final String PRIORITY_FIELD = "PRI";
-  public static final String TYPE_FIELD = "TYP";
-  public static final String MESSAGE_FIELD = "MSG";
-  public static final String RESULT_CODE_FIELD = "RSLTCD";
-  public static final String GENERIC_DATA_FIELD = "DATA";
 
   // Types of messages there are
   public static final String REQUEST_TYPE = "RQS"; // Requests
@@ -39,6 +41,12 @@ public class KestrelProtocol {
 
   // Name of the payload field which contains the service command
   public static final String COMMAND_FIELD = "CMD";
+
+  // How the message was or should be encoded on the transport
+  public static final String FRAME_ENCODING = "FRAM";
+  public static final String JSON_ENCODING = "JSON";
+  public static final String STRING_ENCODING = "STR";
+  public static final String UNKNOWN_ENCODING = "UNKN";
 
 
   private KestrelProtocol() {

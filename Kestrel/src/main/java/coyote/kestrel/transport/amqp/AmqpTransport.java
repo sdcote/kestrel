@@ -5,6 +5,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
 import coyote.commons.StringUtil;
+import coyote.kestrel.protocol.MessageCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageQueue;
 import coyote.kestrel.transport.MessageTopic;
@@ -228,7 +229,7 @@ public class AmqpTransport implements Transport {
   private void send(String exchange, Message msg) throws IOException {
     if (outboundChannel != null) {
       if (StringUtil.isNotBlank(msg.getGroup())) {
-        outboundChannel.basicPublish(exchange, msg.getGroup(), null, msg.getBytes());
+        outboundChannel.basicPublish(exchange, msg.getGroup(), null, MessageCodec.encode(msg));
       } else {
         throw new IOException("No message group name specified in message");
       }

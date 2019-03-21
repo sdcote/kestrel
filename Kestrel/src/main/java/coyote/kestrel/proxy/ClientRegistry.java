@@ -34,17 +34,16 @@ public class ClientRegistry {
    */
   private static final Map<Class, Config> proxyClasses = new HashMap<>();
 
-
   /**
    * Cache of configured instances to be used in this runtime
    */
   private static final Map<Class, Object> proxyCache = new HashMap<>();
 
-
   /**
    * Our transport builder, creates transports for proxy instances.
    */
   private final TransportBuilder transportBuilder = new TransportBuilder();
+
   /**
    * The transport shared by all the proxies.
    */
@@ -81,6 +80,7 @@ public class ClientRegistry {
     }
   }
 
+
   /**
    * This removes the inbox queue, terminates dispatch threads, clears out the
    * service proxy cache, closes the connection with the message transport,
@@ -94,6 +94,7 @@ public class ClientRegistry {
     transport = null;
   }
 
+
   /**
    * Build a proxy of the given type connected to the messaging transport
    * currently configured.
@@ -103,7 +104,6 @@ public class ClientRegistry {
    * instances are ready to use.</p>
    *
    * @param type the service interface to locate
-   * @param <E>  a configured service proxy which implements that service interface.
    * @return the first type which implements the given interface type
    */
   public <E> E locate(Class<E> type) {

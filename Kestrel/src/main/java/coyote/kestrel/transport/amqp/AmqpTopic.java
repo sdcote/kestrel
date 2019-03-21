@@ -2,6 +2,7 @@ package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
+import coyote.kestrel.protocol.MessageCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.kestrel.transport.MessageTopic;
@@ -49,7 +50,7 @@ public class AmqpTopic extends AmqpChannel implements MessageTopic {
   @Override
   public void send(Message message) throws IOException {
     if (getChannel() != null) {
-      getChannel().basicPublish(AmqpTransport.TOPIC_EXCHANGE, getName(), null, message.getBytes());
+      getChannel().basicPublish(AmqpTransport.TOPIC_EXCHANGE, getName(), null, MessageCodec.encode(message));
     } else {
       throw new IOException("No channel set");
     }

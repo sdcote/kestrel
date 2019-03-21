@@ -2,6 +2,7 @@ package coyote.kestrel.proxy;
 
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
+import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
@@ -195,6 +196,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
       initialize();
     }
     message.setReplyGroup(inbox.getName());
+    message.setType(KestrelProtocol.REQUEST_TYPE);
     getTransport().sendDirect(message);
     return retval;
   }

@@ -28,7 +28,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   /**
    * The message group we use to coordinate our operations with other instances of this service
    */
-  protected MessageGroup coherenceGroup = null;
+  protected MessageTopic coherenceTopic = null;
   /**
    * The message group we use to handle Operations, Administration and Maintenance messages.
    */
@@ -127,6 +127,13 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
 
+  /**
+   * Pull the next message from the service group and process the message.
+   *
+   * <p>Message delivery is acknowledged which causes the message to be
+   * removed from the queue. If an exception is thrown, the acknowledgement
+   * is not sent and the message is re-queued for delivery.</p>
+   */
   private void serviceGroupProcessing() {
     Message message = serviceGroup.getNextMessage(100);
     if (message != null) {
@@ -144,8 +151,30 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
 
+  /**
+   * Start listening to coherence messages
+   */
   protected void initializeCoherence() {
+    if( StringUtil.isNotBlank(getCoherenceGroupName())){
+      try {
+        // create an inbox on which we will receive message directly to us
+        coherenceTopic = getTransport().getTopic(getCoherenceGroupName());
+        coherenceTopic.attach(this);
+      } catch (Exception e) {
+        running = false;
+        Log.error("Could not initialize the coherence group");
+      }
+    }
+  }
 
+  /**
+   * Services desiring to use coherence should override this method and return
+   * the name of the topic to use for coherence communications.
+   *
+   * @return The name of the topic to use for coherence communications.
+   */
+  protected String getCoherenceGroupName(){
+    return null;
   }
 
 
@@ -195,7 +224,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * InvalidTransport if the connection could not be opened for any reason.</p>
    *
    * @param cfg The configuration to use
-   * @return an opened transport, or an InvalidTransport if the connection could not be made.
+   * @return An opened transport, or an InvalidTransport if the connection could not be made.
    */
   private Transport createTransport(Config cfg) {
     Transport retval = null;
@@ -241,7 +270,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>The message group set inside the message will determine how the the
    * message will be routed.</p>
    *
-   * @param message the message to send
+   * @param message The message to send
    * @throws IOException if problems were encountered sending the message.
    */
   protected void send(Message message) throws IOException {
@@ -254,8 +283,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage  the message used to generate the response.
-   * @param responsePayload the payload to send in the response.
+   * @param requestMessage  The message used to generate the response.
+   * @param responsePayload The payload to send in the response.
    */
   protected void sendAck(Message requestMessage, DataFrame responsePayload) {
     sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, responsePayload, null, -1);
@@ -267,8 +296,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param message        text message to include in the response.
+   * @param requestMessage The message used to generate the response.
+   * @param message        The text message to include in the response.
    */
   protected void sendAck(Message requestMessage, String message) {
     sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, message, -1);
@@ -280,9 +309,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param message        text message to include in the response.
-   * @param resultCode     numeric result code.
+   * @param requestMessage The message used to generate the response.
+   * @param message        Text message to include in the response.
+   * @param resultCode     The numeric result code.
    */
   protected void sendAck(Message requestMessage, String message, int resultCode) {
     sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, message, resultCode);
@@ -294,8 +323,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param resultCode     numeric result code.
+   * @param requestMessage The message used to generate the response.
+   * @param resultCode     The numeric result code.
    */
   protected void sendAck(Message requestMessage, int resultCode) {
     sendResponse(KestrelProtocol.ACK_TYPE, requestMessage, null, null, resultCode);
@@ -307,8 +336,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param message        text message to include in the response.
+   * @param requestMessage The message used to generate the response.
+   * @param message        Text message to include in the response.
    */
   protected void sendNak(Message requestMessage, String message) {
     sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, message, -1);
@@ -320,9 +349,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param message        text message to include in the response.
-   * @param resultCode     numeric result code.
+   * @param requestMessage The message used to generate the response.
+   * @param message        Text message to include in the response.
+   * @param resultCode     The numeric result code.
    */
   protected void sendNak(Message requestMessage, String message, int resultCode) {
     sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, message, resultCode);
@@ -334,8 +363,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * <p>This is not a transport level protocol message. It is a response to
    * the Kestrel request/response protocol.</p>
    *
-   * @param requestMessage the message used to generate the response.
-   * @param resultCode     numeric result code.
+   * @param requestMessage The message used to generate the response.
+   * @param resultCode     The numeric result code.
    */
   protected void sendNak(Message requestMessage, int resultCode) {
     sendResponse(KestrelProtocol.NAK_TYPE, requestMessage, null, null, resultCode);
@@ -346,10 +375,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * the current message transport.
    *
    * @param type            The type (e.g. ACK, NAK) of message to send
-   * @param requestMessage  the message used to generate the response.
-   * @param responsePayload the optional payload for the message
-   * @param message         the optional text message to include in the response
-   * @param resultCode      the optional result code for the response
+   * @param requestMessage  The message used to generate the response.
+   * @param responsePayload The optional payload for the message
+   * @param message         The optional text message to include in the response
+   * @param resultCode      The optional result code for the response
    */
   private void sendResponse(String type, Message requestMessage, DataFrame responsePayload, String message, int resultCode) {
     Message response = KestrelProtocol.createResponse(requestMessage);

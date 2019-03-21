@@ -2,7 +2,7 @@ package coyote.kestrel.transport.amqp;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
-import coyote.kestrel.protocol.PayloadCodec;
+import coyote.kestrel.protocol.MessageCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageListener;
 import coyote.loader.log.Log;
@@ -38,7 +38,7 @@ public class SimpleConsumer extends DefaultConsumer implements Consumer {
 
     if (listener != null) {
       Message message = new Message();
-      message.merge(PayloadCodec.decode(body));
+      message.merge(MessageCodec.decode(body));
       message.setGroup(getName());
       try {
         listener.onMessage(message);

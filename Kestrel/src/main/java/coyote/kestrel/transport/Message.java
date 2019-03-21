@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public class Message extends DataFrame {
 
-  public static final String PAYLOAD_TAG = "PYLD";
   volatile long timestamp = 0L;
   private byte priority = 4;
   private String cachedGroup = null;
@@ -63,6 +62,14 @@ public class Message extends DataFrame {
     this.put(KestrelProtocol.REPLY_ID_FIELD, rid);
   }
 
+  public String getEncoding() {
+    return super.getAsString(KestrelProtocol.ENCODING_FIELD);
+  }
+
+  public void setEncoding(String enc) {
+    this.put(KestrelProtocol.ENCODING_FIELD, enc);
+  }
+
 
   /**
    * Retrieve a copy of the serialized payload.
@@ -83,11 +90,11 @@ public class Message extends DataFrame {
   public DataFrame getPayload() {
     DataFrame retval;
     try {
-      retval = getAsFrame(PAYLOAD_TAG);
+      retval = getAsFrame(KestrelProtocol.PAYLOAD_FIELD);
       if (retval == null) retval = new DataFrame();
     } catch (DataFrameException ignore) {
       retval = new DataFrame();
-      super.remove(PAYLOAD_TAG);
+      super.remove(KestrelProtocol.PAYLOAD_FIELD);
     }
     return retval;
   }
@@ -102,7 +109,7 @@ public class Message extends DataFrame {
    * @param frame the data frame to serialize into this message.
    */
   public void setPayload(DataFrame frame) {
-    put(PAYLOAD_TAG, frame);
+    put(KestrelProtocol.PAYLOAD_FIELD, frame);
   }
 
   public String generateId() {
