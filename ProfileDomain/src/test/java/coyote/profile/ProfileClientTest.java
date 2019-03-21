@@ -22,7 +22,6 @@ public class ProfileClientTest {
     StatBoard stats = client.getStatBoard();
     client.retrieveProfile("123");
     transport.close();
-    System.out.println(StatUtil.dump(client.getStatBoard()));
   }
 
 
