@@ -1,7 +1,9 @@
-package coyote.profile;
+package coyote.kestrel;
 
 
 import coyote.kestrel.proxy.ClientRegistry;
+import coyote.kestrel.proxy.TestClient;
+import coyote.kestrel.proxy.TestProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +17,9 @@ public class ClientRegistryTest {
   void testClientBuilder() {
     ClientRegistry registry = new ClientRegistry();
     registry.setURI("amqp://guest:guest@localhost:5672");
-    registry.addServiceProxyClass(ProfileProxy.class);
-    ProfileClient client = registry.locate(ProfileClient.class);
+    registry.addServiceProxyClass(TestProxy.class);
+    TestClient client = registry.locate(TestClient.class);
     assertNotNull(client);
-    client.retrieveProfile("123");
   }
 
 

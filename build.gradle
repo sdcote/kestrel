@@ -53,7 +53,16 @@ subprojects {
     ignoreFailures = true
     showProgress = true
   }
+  
+  jacocoTestReport {
+    reports {
+      xml.enabled true
+      html.enabled true
+    }
+  }
 
+  check.dependsOn jacocoTestReport
+  
   tasks.withType(com.github.spotbugs.SpotBugsTask) {
     reports {
       xml.enabled false

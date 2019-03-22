@@ -26,6 +26,7 @@ public abstract class KestrelServiceGroup implements MessageGroup {
     }
     return retval;
   }
+
   @Override
   public Message getNextMessage(int timeout) {
     long expiry = System.currentTimeMillis() + timeout;
@@ -49,7 +50,6 @@ public abstract class KestrelServiceGroup implements MessageGroup {
 
   @Override
   public void respond(Message response) {
-
   }
 
   @Override
@@ -59,9 +59,6 @@ public abstract class KestrelServiceGroup implements MessageGroup {
 
   @Override
   public void send(Message event) {
-
-
-
   }
 
   @Override
