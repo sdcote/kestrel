@@ -3,7 +3,7 @@ package coyote.kestrel;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.test.TestTransport;
 
-public class AbstractKestrelTest {
+public class KestrelTestBase {
 
   protected Transport createTestTransport() {
     Transport retval = null;
