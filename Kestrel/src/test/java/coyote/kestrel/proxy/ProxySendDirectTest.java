@@ -3,12 +3,11 @@ package coyote.kestrel.proxy;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-public class ProxySendDirectTest extends AbstractProxyTest {
+import java.io.IOException;
+
+public class ProxySendDirectTest extends ProxyTestBase {
 
   private ProxySendDirectTest() {
   }
@@ -23,17 +22,38 @@ public class ProxySendDirectTest extends AbstractProxyTest {
     System.out.println("@AfterAll - executed after all test methods.");
   }
 
-  @DisplayName("Single test successful")
+  @DisplayName("Simple send")
   @Test
-  void testSingleSuccessTest() {
+  void sendOne() throws IOException {
     TestClient client = new TestProxy();
     Transport transport = createTestTransport();
     transport.open();
     client.setTransport(transport);
     client.initialize();
-
-    client.sendDirect(new Message() );
+    client.sendDirect(new Message());
+    transport.close();
   }
 
+
+  /**
+   * Disabled test to allow running test cases in the IDE; will not run as part of the build
+   *
+   * @throws IOException
+   */
+  @Test
+  @Disabled("Send many requests")
+  void sendMany() throws IOException {
+    TestClient client = new TestProxy();
+    Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
+    transport.open();
+    client.setTransport(transport);
+    client.initialize();
+    int count = 100;
+    long start = System.currentTimeMillis();
+    client.sendMany("SVC.PROFILE", count);
+    long elapsed = System.currentTimeMillis() - start;
+    System.out.println("Send " + count + " messages in " + elapsed + " milliseconds");
+    transport.close();
+  }
 
 }

@@ -4,13 +4,26 @@ import coyote.dataframe.DataFrame;
 import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.Message;
 
+import java.io.IOException;
+
 public class TestProxy extends AbstractProxy implements TestClient {
 
 
   @Override
-  public void sendDirect(Message message) {
+  public void sendDirect(Message message) throws IOException {
     Message request = createMessage(TestProtocol.GROUP_NAME);
     request.setPayload(new DataFrame().set("CMD", "Get").set("ID", "123"));
-    ResponseFuture response = sendAndWait(request, 3000);
+    getTransport().sendDirect(request);
+  }
+
+  @Override
+  public void sendMany(String groupName,int count) throws IOException {
+    Message request = createMessage(groupName);
+    request.setPayload(new DataFrame().set("CMD", "Get").set("ID", "123"));
+
+    for(int x =0; x<count;x++){
+      send(request);
+    }
+
   }
 }
