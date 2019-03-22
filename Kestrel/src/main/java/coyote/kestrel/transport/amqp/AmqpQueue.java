@@ -12,6 +12,8 @@ import coyote.loader.log.Log;
 import java.io.IOException;
 import java.util.Map;
 
+import static coyote.kestrel.transport.amqp.AmqpTransport.DIRECT_EXCHANGE;
+
 /**
  * All queues are direct; messages are routed based on the name of the queue
  * with multiple consumers allowed on a single named queue.
@@ -23,7 +25,8 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
     setName(name);
     try {
       AMQP.Queue.DeclareOk response = getChannel().queueDeclare(name, durable, exclusive, autodelete, arguments);
-      Log.notice(response.getQueue() + " declared with " + response.getMessageCount() + " messages waiting and " + response.getConsumerCount() + " consumers");
+      getChannel().queueBind(name, DIRECT_EXCHANGE, name);
+      Log.notice("Queue '" + response.getQueue() + "' declared with " + response.getMessageCount() + " messages waiting and " + response.getConsumerCount() + " consumers");
     } catch (IOException e) {
       Log.error(e);
     }
@@ -79,7 +82,7 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
   @Override
   public void send(Message message) throws IOException {
     if (getChannel() != null) {
-      getChannel().basicPublish(AmqpTransport.DIRECT_EXCHANGE, getName(), null, MessageCodec.encode(message));
+      getChannel().basicPublish(DIRECT_EXCHANGE, getName(), null, MessageCodec.encode(message));
     } else {
       throw new IOException("No channel set");
     }
