@@ -23,11 +23,6 @@ public class TestTopic implements MessageTopic {
   }
 
   @Override
-  public void detach(MessageListener listener) {
-
-  }
-
-  @Override
   public void ackDelivery(Message message) {
 
   }

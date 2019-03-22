@@ -54,10 +54,12 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
     return null;
   }
 
+
   @Override
   public Message peek(long timeout) {
     return null;
   }
+
 
   @Override
   public void attach(MessageListener listener) {
@@ -65,20 +67,14 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
       SimpleConsumer consumer = new SimpleConsumer(getChannel());
       consumer.setListener(listener);
       consumer.setName(getName());
-
       try {
         getChannel().basicConsume(getName(), consumer);
       } catch (IOException e) {
         Log.error(e);
       }
-
     }
   }
 
-  @Override
-  public void detach(MessageListener listener) {
-
-  }
 
   @Override
   public void send(Message message) throws IOException {
@@ -88,4 +84,5 @@ public class AmqpQueue extends AmqpChannel implements MessageQueue {
       throw new IOException("No channel set");
     }
   }
+
 }

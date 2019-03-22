@@ -27,7 +27,6 @@ public interface MessageChannel {
   void setName(String name);
 
 
-
   /**
    * Join to this channel.
    *
@@ -36,14 +35,8 @@ public interface MessageChannel {
   void attach(MessageListener listener);
 
 
-  /**
-   * Leave this channel.
-   *
-   * @param listener the message listener to receive messages from this channel
-   */
-  void detach(MessageListener listener);
-
   void ackDelivery(Message message);
+
 
   void nakDelivery(Message message);
 

@@ -18,12 +18,10 @@ import java.io.IOException;
  */
 public abstract class AmqpChannel implements MessageChannel, RecoveryListener {
 
-  private Channel channel = null;
-  private String name = null;
-
   protected static final boolean AUTO_ACK = true;
   protected static final boolean MANUAL_ACK = false;
-
+  private Channel channel = null;
+  private String name = null;
 
   @Override
   public String getName() {
@@ -42,8 +40,6 @@ public abstract class AmqpChannel implements MessageChannel, RecoveryListener {
   public void setChannel(Channel channel) {
     this.channel = channel;
   }
-
-
 
 
   @Override

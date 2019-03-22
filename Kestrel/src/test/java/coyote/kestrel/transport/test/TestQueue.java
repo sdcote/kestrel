@@ -38,11 +38,6 @@ public class TestQueue implements MessageQueue {
   }
 
   @Override
-  public void detach(MessageListener listener) {
-
-  }
-
-  @Override
   public void ackDelivery(Message message) {
 
   }

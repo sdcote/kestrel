@@ -17,33 +17,33 @@ import java.io.IOException;
 public class AmqpTopic extends AmqpChannel implements MessageTopic {
 
 
-
   public AmqpTopic(Channel channel, String name) {
     setChannel(channel);
     setName(name);
   }
 
-  @Override
-  public void attach(MessageListener consumer) {
 
+  @Override
+  public void attach(MessageListener listener) {
     try {
       String queueName = getChannel().queueDeclare().getQueue();
       getChannel().queueBind(queueName, AmqpTransport.TOPIC_EXCHANGE, getName());
-
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-        String message = new String(delivery.getBody(), "UTF-8");
+        long deliveryTag = delivery.getEnvelope().getDeliveryTag();
+        Message message = new Message();
+        message.merge(MessageCodec.decode(delivery.getBody()));
+        message.setGroup(getName());
+        try {
+          listener.onMessage(message);
+        } catch (Exception e) {
+          Log.error("Message listener threw exception handling message " + deliveryTag + " on topic " + getName() + " - Reason: " + e.getLocalizedMessage());
+        }
       };
       getChannel().basicConsume(queueName, true, deliverCallback, consumerTag -> {
       });
     } catch (IOException e) {
-      Log.error(e);
+      Log.error("Problems attaching listener on topic " + getName() + " - Reason: " + e.getLocalizedMessage());
     }
-
-  }
-
-  @Override
-  public void detach(MessageListener consumer) {
-
   }
 
 
