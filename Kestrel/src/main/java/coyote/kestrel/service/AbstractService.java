@@ -89,6 +89,17 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     // default no-op implementation
   }
 
+  
+  /**
+   * Process messages which came in from some other channel.
+   *
+   * @param message the message sent to this consumer.
+   */
+  @Override
+  public void processUncategorizedMessage(Message message) {
+    // default no-op implementation
+  }
+
 
   /**
    * Retrieve the name of the group on which the service listens for requests.
@@ -155,7 +166,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * Start listening to coherence messages
    */
   protected void initializeCoherence() {
-    if( StringUtil.isNotBlank(getCoherenceGroupName())){
+    if (StringUtil.isNotBlank(getCoherenceGroupName())) {
       try {
         // create an inbox on which we will receive message directly to us
         coherenceTopic = getTransport().getTopic(getCoherenceGroupName());
@@ -173,7 +184,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    *
    * @return The name of the topic to use for coherence communications.
    */
-  protected String getCoherenceGroupName(){
+  protected String getCoherenceGroupName() {
     return null;
   }
 
@@ -255,9 +266,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     if (message != null) {
       if (inbox.getName().equals(message.getGroup())) {
         processInboxMessage(message);
-      } else {
-        // TODO: check for coherence channel
+      } else if (StringUtil.isNotBlank(getCoherenceGroupName()) && getCoherenceGroupName().equals(message.getGroup())) {
         processCoherenceMessage(message);
+      } else {
+        processUncategorizedMessage(message);
       }
       // What if this comes in with an unexpected group name?
     }

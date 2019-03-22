@@ -61,6 +61,13 @@ public interface KestrelService {
   void processCoherenceMessage(Message message);
 
   /**
+   * Process messages which came in from some other channel.
+   *
+   * @param message the message sent to this consumer.
+   */
+  void processUncategorizedMessage(Message message);
+
+  /**
    * Called when the JVM terminates giving the service a chance to perform any
    * last minute processing.
    */
