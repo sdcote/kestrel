@@ -37,7 +37,6 @@ public class StatUtil {
   private static final String VM_HEAP_PCT = "HeapPercentage";
   private static final String VM_MAX_HEAP = "MaxHeapSize";
   private static final String FIXTURE_ID = "InstanceId";
-  private static final String FIXTURE_NAME = "InstanceName";
   private static final String HOST_ADDRESS = "IpAddress";
   private static final String NAME = "Name";
   private static final String UPTIME = "Uptime";
@@ -97,10 +96,10 @@ public class StatUtil {
    * @return the statistics as a JSON string.
    */
   public static String dump(StatBoard stats) {
-    return JSONMarshaler.toFormattedString(createStatus(stats));
+    return JSONMarshaler.toFormattedString(createStatusFrame(stats));
   }
 
-  private static DataFrame createStatus(StatBoard statboard) {
+  public static DataFrame createStatusFrame(StatBoard statboard) {
 
     DataFrame retval = new DataFrame();
     retval.add(NAME, STATUS);
