@@ -1,4 +1,7 @@
 package coyote.kestrel.proxy;
 
-public interface TestClient {
+import coyote.kestrel.transport.Message;
+
+public interface TestClient extends KestrelProxy {
+  void sendDirect(Message message);
 }

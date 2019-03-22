@@ -89,7 +89,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     // default no-op implementation
   }
 
-  
+
   /**
    * Process messages which came in from some other channel.
    *
