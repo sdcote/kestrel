@@ -3,6 +3,8 @@ package coyote.kestrel.service;
 import coyote.commons.ExceptionUtil;
 import coyote.commons.StringUtil;
 import coyote.dataframe.DataFrame;
+import coyote.i13n.Timer;
+import coyote.kestrel.Kestrel;
 import coyote.kestrel.protocol.KestrelProtocol;
 import coyote.kestrel.protocol.MessageGroup;
 import coyote.kestrel.transport.*;
@@ -19,7 +21,16 @@ import java.io.IOException;
  */
 public abstract class AbstractService extends AbstractLoader implements KestrelService, MessageListener {
 
-  private static final int DEFAULT_HEARTBEAT_INTERVAL = 300;
+  private static final int DEFAULT_HEARTBEAT_INTERVAL = 60000;
+  private static final String PROCESSING_TIMER = "processing";
+  private static final String GROUP_NAME = "GroupName";
+  private static final String SERVICE_RUNNING = "Running";
+  private static final String SERVICE_TERMINATING = "Exiting";
+  private static final String SERVICE_STARTED = "Started";
+
+  /**
+   * Sentinel flag for our main run loop.
+   */
   private static volatile boolean running = true;
   /**
    * The message group we use to handle request/response protocol
@@ -121,20 +132,33 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   @Override
   public void start() {
+    stats.setState(LOADER, SERVICE_STARTED);
+    getStats().setVersion(Kestrel.PRODUCT_NAME, Kestrel.VERSION);
     Log.notice("Staring service on " + getGroupName());
 
+    initializeMetrics();
     initializeMessageGroup();
     initializeInbox();
     initializeCoherence();
 
     if (transport.isValid()) {
+      stats.setState(LOADER, SERVICE_RUNNING);
       while (running) {
         heartbeat();
         serviceGroupProcessing();
       }
+      stats.setState(LOADER, SERVICE_TERMINATING);
+      sendExitEvent();
     } else {
       Log.fatal("Could not connect to transport service");
     }
+  }
+
+
+  private void initializeMetrics() {
+    stats.enableArm(true);
+    stats.enableGauges(true);
+    stats.enableTiming(true);
   }
 
 
@@ -149,7 +173,9 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     Message message = serviceGroup.getNextMessage(100);
     if (message != null) {
       try {
+        Timer timer = stats.startTimer(PROCESSING_TIMER);
         process(message);
+        timer.stop();
         serviceGroup.ackDelivery(message);
       } catch (final Exception e) {
         serviceGroup.nakDelivery(message);
@@ -204,9 +230,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
   private void initializeInbox() {
     try {
-      // create an inbox on which we will receive message directly to us
       inbox = getTransport().createInbox();
-      // start receiving messages and send them to this listener
+      stats.setId(inbox.getName()); // correlate this instance to our inbox
       inbox.attach(this);
     } catch (Exception e) {
       running = false;
@@ -287,6 +312,19 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    */
   protected void send(Message message) throws IOException {
     getTransport().sendDirect(message);
+  }
+
+  /**
+   * Broadcast a message across the transport.
+   *
+   * <p>The message group set inside the message will determine how the the
+   * message will be routed.</p>
+   *
+   * @param message The message to send
+   * @throws IOException if problems were encountered sending the message.
+   */
+  protected void broadcast(Message message) throws IOException {
+    getTransport().broadcast(message);
   }
 
   /**
@@ -407,8 +445,41 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
 
   protected void heartbeat() {
-    // check heartbeat interval, send heartbeat if interval has elapsed
-    // Heartbeats send events to a message group for discovery and monitoring
+    long now = System.currentTimeMillis();
+    if (lastHeartbeat + heartbeatInterval <= now) {
+      DataFrame payload = StatUtil.createStatusFrame(stats);
+      payload.set(GROUP_NAME, getGroupName());
+
+      Message heartbeat = new Message();
+      heartbeat.setType(KestrelProtocol.HEARTBEAT_TYPE);
+      heartbeat.setPayload(payload);
+      heartbeat.setGroup(KestrelProtocol.HEARTBEAT_GROUP);
+
+      try {
+        broadcast(heartbeat);
+      } catch (IOException e) {
+        Log.error("Could not send heartbeat message: " + e.getLocalizedMessage());
+      }
+
+      lastHeartbeat = now;
+    }
+  }
+
+  /**
+   * Send a final heartbeat event on the OAM channel
+   */
+  private void sendExitEvent() {
+    Message heartbeat = new Message();
+    heartbeat.setType(KestrelProtocol.HEARTBEAT_TYPE);
+    heartbeat.setGroup(KestrelProtocol.HEARTBEAT_GROUP);
+    DataFrame payload = new DataFrame().set("Event", "Terminating").set("InstanceId", inbox.getName());
+    heartbeat.setPayload(payload);
+    try {
+      broadcast(heartbeat);
+    } catch (IOException e) {
+      Log.error("Could not send final heartbeat event message: " + e.getLocalizedMessage());
+    }
+    Log.notice("Exit event for " + inbox.getName());
   }
 
 

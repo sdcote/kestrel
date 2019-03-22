@@ -30,3 +30,7 @@ The requester can then listen for any and all responses to request and correlate
 
 The framework will generate/overwrite the "ENC" encoding field when a message is received to give the receiver an indication as to the type of response to send. The framework will attempt to support the encoding of responses using this field. For example, if the ENC of a message specifies JSON, the framework will serialize the message using JSON formatted strings using ISO-8859-1 encoding. This should allow non-framework components to participate in the exchange by sending and receiving JSON strings at the expense of bandwidth and processing.
 
+# Operations, Administration and Maintenance
+
+## OAM.SERVICE
+This is a topic here service heartbeats are sent. This allows components to discover what services are currently running in the system. By correlating the instance identifiers, it is possible to determine how many instances are servicing each channel.  

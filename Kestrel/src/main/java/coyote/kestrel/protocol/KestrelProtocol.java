@@ -1,6 +1,5 @@
 package coyote.kestrel.protocol;
 
-import coyote.commons.Version;
 import coyote.dataframe.DataFrameException;
 import coyote.kestrel.transport.Message;
 
@@ -13,7 +12,7 @@ public class KestrelProtocol {
 
   // Standardized field names
   public static final String IDENTIFIER_FIELD = "MID"; // Kestrel protocol specific message identifier
-  public static final String ID_FIELD= "ID"; // transport specific identifier for the message
+  public static final String ID_FIELD = "ID"; // transport specific identifier for the message
   public static final String REPLY_ID_FIELD = "RID"; // message/packet for which this message is a reply
   public static final String GROUP_FIELD = "GRP"; // the name of the group the message traveled
   public static final String REPLY_GROUP_FIELD = "RPY"; // name of the group to which replies should be sent
@@ -36,9 +35,6 @@ public class KestrelProtocol {
   public static final String HEARTBEAT_TYPE = "HBT"; // Heartbeats
   public static final String EVENT_TYPE = "EVT"; // Events
 
-  // The version of this protocol
-  public static final Version VERSION = new Version(0,1,0);
-
   // Name of the payload field which contains the service command
   public static final String COMMAND_FIELD = "CMD";
 
@@ -49,11 +45,11 @@ public class KestrelProtocol {
   public static final String UNKNOWN_ENCODING = "UNKN";
 
 
+  public static final String HEARTBEAT_GROUP = "OAM.SERVICES";
+
+
   private KestrelProtocol() {
   }
-
-
-
 
 
   public static Message createResponse(Message request) {
@@ -67,7 +63,7 @@ public class KestrelProtocol {
         retval.setReplyId(request.getId());
       }
 
-      if( request.getEncoding()!= null){
+      if (request.getEncoding() != null) {
         retval.setEncoding(request.getEncoding());
       }
 
@@ -80,14 +76,11 @@ public class KestrelProtocol {
   }
 
 
-
   public static Message createAck(Message cmd) {
     Message retval = createResponse(cmd);
     retval.setType(ACK_TYPE);
     return retval;
   }
-
-
 
 
   public static Message createNak(String replyGroup, String replyId, String requestId, String failureMessage, Integer errorCode) {
@@ -118,8 +111,6 @@ public class KestrelProtocol {
   }
 
 
-
-
   public static Message createNak(Message message, String msg) {
     Message retval = createResponse(message);
     retval.setType(NAK_TYPE);
@@ -131,16 +122,12 @@ public class KestrelProtocol {
   }
 
 
-
-
   public static Message createNak(Message message, int code) {
     Message retval = createResponse(message);
     retval.setType(NAK_TYPE);
     retval.put(RESULT_CODE_FIELD, code);
     return retval;
   }
-
-
 
 
   public static Message createNak(Message message, int code, String msg) {
@@ -151,8 +138,6 @@ public class KestrelProtocol {
 
     return retval;
   }
-
-
 
 
   public static void checkForException(Message p) throws RequestException {
