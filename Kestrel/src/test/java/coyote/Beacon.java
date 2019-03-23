@@ -1,6 +1,3 @@
-/*
- * Copyright Stephan D. Cote' 2008 - All rights reserved.
- */
 package coyote;
 
 import coyote.dataframe.DataFrame;
