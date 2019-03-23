@@ -4,7 +4,5 @@ mainClassName = 'coyote.loader.BootStrap'
 dependencies {
     compile("coyote:Loader:0.7.18")
     compile('com.rabbitmq:amqp-client:5.6.0')
-    compile('org.slf4j:slf4j-api:1.7.25')
-
 }
 
