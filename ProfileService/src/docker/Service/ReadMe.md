@@ -1,0 +1,1 @@
+This is a template for containerized services running on the Kestrel framework. Each container is a small Java process running on Alpine Linux and connecting to a remote message broker. Everything required to process the requests are contained in this image. 
