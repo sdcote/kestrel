@@ -1,11 +1,8 @@
 {
 	"Class": "coyote.profile.ProfileService",
 
-	"Transport": {
-		"Uri": "amqp://[#$username#]:[#$password#]@[#$hostname#]:[#$port#]/[#$vhost#]",
-		"AutoAck": false
-	},
-		
+	"Transport": { "Uri": "[#$transportUri#]" },
+
 	"Logging": {
 		"StandardOutput": { "categories": "info, notice, warn" },
 		"StandardError": { "categories": "error, fatal" },
