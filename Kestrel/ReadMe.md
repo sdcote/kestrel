@@ -33,4 +33,9 @@ The framework will generate/overwrite the "ENC" encoding field when a message is
 # Operations, Administration and Maintenance
 
 ## OAM.SERVICE
-This is a topic here service heartbeats are sent. This allows components to discover what services are currently running in the system. By correlating the instance identifiers, it is possible to determine how many instances are servicing each channel.  
+This is a topic here service heartbeats are sent. This allows components to discover what services are currently running in the system. By correlating the instance identifiers, it is possible to determine how many instances are servicing each channel.
+
+
+# Throughput
+
+Single blocking clients get roughly 70 requests per second, about 14ms per request. Of that 14ms, 3ms of that is framework overhead on the client, 6ms of that is on framework overhead service and 2m of that is broker overhead. The service take about 1ms to process the request and generate a response. This traffic profile involves the client sending a request and waiting for a response before sending another request.  
