@@ -3,3 +3,22 @@ mainClassName = 'coyote.loader.BootStrap'
 dependencies {
     compile project(':ProfileDomain')
 }
+
+installDist {
+    doLast {
+        println 'Copying service files into the Docker build directory'
+        new File("${buildDir}/install/ProfileService/lib").eachFile { println it }
+
+        copy {
+            from "${buildDir}/install/ProfileService/lib"
+            into "src/docker/Service/opt/kestrel/lib"
+        }
+        copy {
+            from ("${buildDir}/install/ProfileService/bin/ProfileService")
+            into('src/docker/Service/opt/kestrel/bin')
+            rename 'ProfileService', 'service'
+        }
+    }
+}
+
+

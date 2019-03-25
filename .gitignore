@@ -63,3 +63,4 @@ test.zip
 !gradle/wrapper/gradle-wrapper.jar
 !**/dist/bin
 
+*.jar
