@@ -1,6 +1,7 @@
 package coyote.kestrel.protocol;
 
 import coyote.commons.StringUtil;
+import coyote.i13n.Timer;
 import coyote.kestrel.transport.Message;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class ResponseFuture {
   private long started = System.currentTimeMillis();
   private long expiry = Long.MAX_VALUE;
   private int timeout = DEFAULT_ACTIVE_TIMEOUT;
+  private Timer timer = null;
 
   /**
    * Create a response future with the given request message and no timeout.
@@ -89,6 +91,7 @@ public class ResponseFuture {
     synchronized (responses) {
       responses.add(message);
     }
+    if(timer!=null)timer.stop();
     return this;
   }
 
@@ -113,4 +116,7 @@ public class ResponseFuture {
     return retval;
   }
 
+  public void setTimer(Timer timer) {
+    this.timer = timer;
+  }
 }

@@ -195,6 +195,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     if (!isInitialized()) {
       initialize();
     }
+    retval.setTimer(stats.startTimer(message.getGroup()));
     message.setReplyGroup(inbox.getName());
     message.setType(KestrelProtocol.REQUEST_TYPE);
     getTransport().sendDirect(message);
