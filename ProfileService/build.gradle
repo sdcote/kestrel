@@ -13,11 +13,13 @@ installDist {
             from "${buildDir}/install/ProfileService/lib"
             into "src/docker/Service/opt/kestrel/lib"
         }
-        copy {
-            from ("${buildDir}/install/ProfileService/bin/ProfileService")
-            into('src/docker/Service/opt/kestrel/bin')
-            rename 'ProfileService', 'service'
-        }
+        // this will over-write the existing service script - use only if the 
+        // application plugin creates something more efficient.
+//        copy {
+//            from ("${buildDir}/install/ProfileService/bin/ProfileService")
+//            into('src/docker/Service/opt/kestrel/bin')
+//            rename 'ProfileService', 'service'
+//        }
     }
 }
 
