@@ -1,7 +1,7 @@
 {
   "Class": "coyote.kestrel.http.Server",
 
-  "Transport": { "Uri": "[#$transport#]" },
+  "Transport": { "Uri": "[#$transportUri#]" },
 
   "Endpoints": {
     "/api/profile/:id": { "Class": "coyote.profile.ProfileWebService", "timeout": "5000" }
@@ -9,7 +9,7 @@
 
   "Logging": {
     "StandardOutput": {"categories": "notice, info, httpd"},
-    "FileAppender": {  "target": "debug.log", "categories": "debug, trace" },
+    "FileAppender": {  "target": "debug.log", "categories": "debug, trace", "enabled": false },
     "StandardError": {"categories": "warn, error, fatal"}
   }
 

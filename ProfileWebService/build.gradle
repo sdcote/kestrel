@@ -3,3 +3,18 @@ mainClassName = 'coyote.loader.BootStrap'
 dependencies {
     compile project(':ProfileDomain')
 }
+
+installDist {
+    doLast {
+        copy {
+            from "${buildDir}/install/ProfileWebService/lib"
+            into "src/docker/Service/opt/kestrel/lib"
+        }
+        copy {
+            from ("${buildDir}/install/ProfileWebService/bin/ProfileWebService")
+            into('src/docker/Service/opt/kestrel/bin')
+            rename 'ProfileWebService', 'service'
+        }
+    }
+}
+
