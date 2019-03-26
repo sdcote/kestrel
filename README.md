@@ -5,16 +5,27 @@ This library allows a developer to create micro services over message exchanges 
 
 This is not a generic messaging library. It is a framework which uses messaging to exchange data with the goal of implementing micro services and client API stubs which can be used in any environment an application. The API has been designed for use as a request-reply infrastructure with some eventing for monitoring and management.
 
+## Design Goals
+The primary design goal is to implement services in a very rapid manner. Developers should concentrate on business logic more than enabling technologies. The Kestrel Service Framework enables a developer to create and deploy a new service in minutes using the current technology stacks and infrastructures.
+
 ## Projects
+This project is composed of four sub-projects or modules.
 
 ### Kestrel
 This is the core library which contains the messaging abstraction, service protocol, and many abstract base classes for simplifying development. Extend the abstract classes and override a few methods to implement your service and clients.
 
 ### Profile Service
-An example service showing how to use the dranework to implement message-driven micro services.
+An example service showing how to use the framework to implement message-driven micro services.
+
+The Profile Service is designed to run in any Java environment, and has an example Docker container included in the project. It leverages the Coyote Loader framework to make loading and configuring the service easy. This allows for the immediate horizontal scaling of the service in any container environment such as any of the popular cloud services.
 
 ### Profile Domain
-This is the domain model of the service and the implementation of a client (service proxy). Use this project as a template for your on client and domain model.
+This is the domain model of the service and the implementation of a client (service proxy). Use this project as a template for your own client and domain model.
+
+### Profile Web Service
+This is an implementation of an Adapter pattern to expose the profile service as a HTTP REST service. It is a very thin veneer which simply marshals HTTP requests to API requests using the Profile client. 
+
+Just like the service, it is implemented in a container for easy deployment and scaling. 
 
 # Design Notes
 This framework is designed to support multiple transport technologies. The Default is AMQP, but others are possible including JMS and Tibco Rendezvous. This is why the the underlying class model uses different nomenclature than some developers may be familiar.
