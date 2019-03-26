@@ -91,7 +91,7 @@ public class ResponseFuture {
     synchronized (responses) {
       responses.add(message);
     }
-    if(timer!=null)timer.stop();
+    if (timer != null) timer.stop();
     return this;
   }
 
