@@ -4,8 +4,7 @@ import coyote.dataframe.DataFrame;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageTest {
 
@@ -35,6 +34,16 @@ public class MessageTest {
     message.setPayload(payload);
     assertTrue(message.getFieldCount() == 1, "Message should have one field when payload is set");
 
+  }
+
+  @Test
+  void isExpired() {
+    Message message = new Message();
+    assertFalse(message.isExpired());
+    message.setExpiry(System.currentTimeMillis()/1000+10);
+    assertFalse(message.isExpired());
+    message.setExpiry(System.currentTimeMillis()/1000-10);
+    assertTrue(message.isExpired());
   }
 
 }

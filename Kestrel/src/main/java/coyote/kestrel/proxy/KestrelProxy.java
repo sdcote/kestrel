@@ -11,6 +11,8 @@ import coyote.loader.cfg.ConfigurationException;
  */
 public interface KestrelProxy {
 
+  String SEND_EXPIRY_TAG = "SendExpiry";
+
   void configure(Config cfg) throws ConfigurationException;
 
   Transport getTransport();

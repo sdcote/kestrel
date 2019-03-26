@@ -39,7 +39,7 @@ public class Message extends DataFrame {
   }
 
   public String getReplyGroup() {
-    return this.getObject(KestrelProtocol.REPLY_GROUP_FIELD) != null ? this.getObject(KestrelProtocol.REPLY_GROUP_FIELD).toString() : null;
+    return this.getObject(KestrelProtocol.REPLY_GROUP_FIELD) != null ? getObject(KestrelProtocol.REPLY_GROUP_FIELD).toString() : null;
   }
 
   public void setReplyGroup(String name) {
@@ -51,7 +51,7 @@ public class Message extends DataFrame {
   }
 
   public void setId(String id) {
-    this.put(KestrelProtocol.IDENTIFIER_FIELD, id);
+    put(KestrelProtocol.IDENTIFIER_FIELD, id);
   }
 
   public String getReplyId() {
@@ -59,7 +59,7 @@ public class Message extends DataFrame {
   }
 
   public void setReplyId(String rid) {
-    this.put(KestrelProtocol.REPLY_ID_FIELD, rid);
+    put(KestrelProtocol.REPLY_ID_FIELD, rid);
   }
 
   public String getEncoding() {
@@ -67,9 +67,34 @@ public class Message extends DataFrame {
   }
 
   public void setEncoding(String enc) {
-    this.put(KestrelProtocol.ENCODING_FIELD, enc);
+    put(KestrelProtocol.ENCODING_FIELD, enc);
   }
 
+  /**
+   * The Unix time when this message should be considered expired and not
+   * processed.
+   *
+   * @return Unix time (epoch time in seconds) when the message is
+   * considered stale and should not be serviced.
+   */
+  public long getExpiry() {
+    try {
+      return super.getAsLong(KestrelProtocol.EXPIRY_FIELD);
+    } catch (DataFrameException e) {
+      return 0L;
+    }
+  }
+
+  /**
+   * Set the Unix time when this message is to expire.
+   *
+   * @param seconds the number of seconds past 00:00:00 Thursday, 1 January 1970 when this message is to expire.
+   */
+  public void setExpiry(Long seconds) {
+    if (seconds > 0) {
+      put(KestrelProtocol.EXPIRY_FIELD, seconds);
+    }
+  }
 
   /**
    * Retrieve a copy of the serialized payload.
@@ -138,5 +163,21 @@ public class Message extends DataFrame {
   }
 
 
+  /**
+   * Check to see if the current time is greater than the messages expiration time.
+   *
+   * <p>The message may contain a timestamp in Unix time</p>
+   *
+   * @return true if the message is expired and should not be processed, false
+   * if the message is still "fresh" or there is no expiry timestamp.
+   */
+  public boolean isExpired() {
+    boolean retval = false;
+    if (contains(KestrelProtocol.EXPIRY_FIELD) && getExpiry() > 0) {
+      long expiry = getExpiry();
+      retval = expiry > 0 && System.currentTimeMillis() / 1000 > expiry;
+    }
+    return retval;
+  }
 }
 

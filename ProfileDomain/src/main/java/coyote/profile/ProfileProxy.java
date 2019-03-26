@@ -6,6 +6,7 @@ import coyote.kestrel.proxy.AbstractProxy;
 import coyote.kestrel.transport.Message;
 import coyote.loader.log.Log;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -32,6 +33,17 @@ public class ProfileProxy extends AbstractProxy implements ProfileClient {
     } else {
       Log.debug("profile '" + id + "' was not found");
     }
+    return retval;
+  }
+
+  public ResponseFuture retrieveProfileFuture(String id) {
+    ResponseFuture retval = null;
+    Message request = createMessage(ProfileProtocol.PROFILE_GROUP);
+    request.setPayload(new DataFrame().set("CMD", "Get").set("ID", id));
+    try {
+      retval = send(request);
+    } catch (IOException e) {
+      Log.error(e);    }
     return retval;
   }
 

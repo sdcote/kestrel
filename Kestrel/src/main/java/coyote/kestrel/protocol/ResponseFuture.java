@@ -11,13 +11,11 @@ import java.util.List;
  * A Future object representing a collection point for responses to requests.
  */
 public class ResponseFuture {
-  private static final int DEFAULT_ACTIVE_TIMEOUT = 15000;
   private String identifier = null;
   private Message request;
   private List<Message> responses = new ArrayList<>();
-  private long started = System.currentTimeMillis();
-  private long expiry = Long.MAX_VALUE;
-  private int timeout = DEFAULT_ACTIVE_TIMEOUT;
+  private long started;
+  private long expiry = Long.MAX_VALUE; // epoch time im milliseconds when the future expires
   private Timer timer = null;
 
   /**
@@ -26,7 +24,9 @@ public class ResponseFuture {
    * @param request the request message this response will correlate.
    */
   public ResponseFuture(Message request) {
+    started = System.currentTimeMillis();
     if (request != null) {
+      this.request = request;
       if (StringUtil.isNotBlank(request.getId())) {
         identifier = request.getId();
       } else {
@@ -46,12 +46,6 @@ public class ResponseFuture {
     setTimeout(timeout);
   }
 
-  /**
-   * @return the number of milliseconds the response future is considered active.
-   */
-  public int getTimeout() {
-    return timeout;
-  }
 
   /**
    * Set how long the response future is considered active.
@@ -60,13 +54,10 @@ public class ResponseFuture {
    * messages. Inactive response futures should be considered stale and
    * removed from caches.</p>
    *
-   * @param millis the number of milliseconds the response future remains active.
+   * @param timestamp the time in the future when the response future expires
    */
-  public ResponseFuture setTimeout(int millis) {
-    if (millis > 0)
-      expiry = started + millis;
-    else
-      expiry = started;
+  public ResponseFuture setExpiry(long timestamp) {
+    expiry = timestamp;
     return this;
   }
 
@@ -74,10 +65,6 @@ public class ResponseFuture {
     return identifier;
   }
 
-  public ResponseFuture setIdentifier(String identifier) {
-    this.identifier = identifier;
-    return this;
-  }
 
   public boolean hasResponses() {
     return responses.size() > 0;
@@ -119,4 +106,17 @@ public class ResponseFuture {
   public void setTimer(Timer timer) {
     this.timer = timer;
   }
+
+
+  /**
+   * Add the given number of milliseconds to the started time
+   * @param age
+   */
+  public void setTimeout(int age) {
+    if (age > 0)
+      setExpiry(started + age);
+    else
+      setExpiry(started);
+  }
+
 }

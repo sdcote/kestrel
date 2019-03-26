@@ -22,6 +22,7 @@ public class KestrelProtocol {
   public static final String GENERIC_DATA_FIELD = "DATA"; // generate data filed name
   public static final String PAYLOAD_FIELD = "PLD"; // name of the payload field
   public static final String ENCODING_FIELD = "ENC"; // how the message was/should be encoded on the transport
+  public static final String EXPIRY_FIELD = "XPY"; // epoch time in seconds when the message should be considered stale
   public static final String SOURCE_FIELD = "SRC";
   public static final String TARGET_FIELD = "TGT";
   public static final String FLAGS_FIELD = "FLG";
@@ -46,6 +47,8 @@ public class KestrelProtocol {
 
 
   public static final String HEARTBEAT_GROUP = "OAM.SERVICES";
+
+  public static final long DEFAULT_REQUEST_TIMEOUT = 5; // number of seconds the request is considered valid
 
 
   private KestrelProtocol() {

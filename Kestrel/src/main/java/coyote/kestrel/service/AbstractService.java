@@ -156,6 +156,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
 
 
   private void initializeMetrics() {
+    // TODO: Make i13n configurable
     stats.enableArm(true);
     stats.enableGauges(true);
     stats.enableTiming(true);
@@ -170,7 +171,8 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * is not sent and the message is re-queued for delivery.</p>
    */
   private void serviceGroupProcessing() {
-    Message message = serviceGroup.getNextMessage(100);
+    //Message message = serviceGroup.getNextMessage(10);
+    Message message = getNextUnexpiredMessage();
     if (message != null) {
       try {
         Timer timer = stats.startTimer(PROCESSING_TIMER);
@@ -187,6 +189,14 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     }
   }
 
+  private Message getNextUnexpiredMessage() {
+    Message retval = serviceGroup.getNextMessage(10);
+    while (retval != null && retval.isExpired()) {
+      if (Log.isLogging(Log.NOTICE_EVENTS)) Log.notice("Ignoring message (" + retval.getId() + ") - expired");
+      retval = serviceGroup.getNextMessage(10);
+    }
+    return retval;
+  }
 
   /**
    * Start listening to coherence messages

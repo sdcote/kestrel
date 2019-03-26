@@ -1,5 +1,6 @@
 package coyote.kestrel.proxy;
 
+import coyote.dataframe.DataFrameException;
 import coyote.i13n.StatBoard;
 import coyote.i13n.StatBoardImpl;
 import coyote.kestrel.protocol.KestrelProtocol;
@@ -30,9 +31,9 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   private static MessageQueue inbox = null;
   private static Transport transport = null;
   protected Config configuration = null;
+  protected boolean sendExpiry = false;
   private boolean initializedFlag = false;
   private Map<String, ResponseFuture> responseCache = new HashMap<>();
-
 
   @Override
   public Transport getTransport() {
@@ -80,6 +81,13 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   public void configure(Config cfg) throws ConfigurationException {
     configuration = cfg;
     onConfiguration();
+    if (configuration.containsIgnoreCase(SEND_EXPIRY_TAG)) {
+      try {
+        sendExpiry = configuration.getAsBoolean(SEND_EXPIRY_TAG);
+      } catch (DataFrameException e) {
+        Log.error("Invalid boolean value in " + SEND_EXPIRY_TAG + " configuration option");
+      }
+    }
   }
 
 
@@ -195,9 +203,10 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     if (!isInitialized()) {
       initialize();
     }
-    retval.setTimer(stats.startTimer(message.getGroup()));
     message.setReplyGroup(inbox.getName());
     message.setType(KestrelProtocol.REQUEST_TYPE);
+    if (sendExpiry) message.setExpiry(System.currentTimeMillis() / 1000 + KestrelProtocol.DEFAULT_REQUEST_TIMEOUT);
+    retval.setTimer(stats.startTimer(message.getGroup()));
     getTransport().sendDirect(message);
     return retval;
   }
@@ -220,7 +229,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     ResponseFuture retval = null;
     try {
       retval = send(request);
-      retval.setTimeout(timeout);
+      retval.setExpiry(timeout);
       while (retval.isWaiting()) {
         try {
           Thread.sleep(10);
