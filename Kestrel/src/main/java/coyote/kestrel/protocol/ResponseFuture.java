@@ -17,6 +17,7 @@ public class ResponseFuture {
   private long started;
   private long expiry = Long.MAX_VALUE; // epoch time im milliseconds when the future expires
   private Timer timer = null;
+  private volatile boolean open;
 
   /**
    * Create a response future with the given request message and no timeout.
@@ -25,6 +26,7 @@ public class ResponseFuture {
    */
   public ResponseFuture(Message request) {
     started = System.currentTimeMillis();
+    open = true;
     if (request != null) {
       this.request = request;
       if (StringUtil.isNotBlank(request.getId())) {
@@ -74,19 +76,38 @@ public class ResponseFuture {
     return System.currentTimeMillis() > expiry;
   }
 
+  /**
+   * Add the response message to the list of responses.
+   *
+   * <p>If the future is closed, the message is silently ignored.</p>
+   *
+   * @param message the message to add
+   * @return this future for chaining.
+   */
   public ResponseFuture addResponse(Message message) {
-    synchronized (responses) {
-      responses.add(message);
+    if (open) {
+      synchronized (responses) {
+        responses.add(message);
+      }
+      if (timer != null) timer.stop();
     }
-    if (timer != null) timer.stop();
     return this;
   }
 
   /**
-   * @return true if there are no response and the response time out has not expired.
+   * Indicates if the future is accepting response messages and the timer is running.
+   *
+   * @return true if open false if closed.
+   */
+  public boolean isOpen() {
+    return open;
+  }
+
+  /**
+   * @return true if there are no response, is open, and the response time out has not expired.
    */
   public boolean isWaiting() {
-    return (responses.size() == 0 && System.currentTimeMillis() < expiry);
+    return (responses.size() == 0 && open && System.currentTimeMillis() < expiry);
   }
 
 
@@ -110,6 +131,7 @@ public class ResponseFuture {
 
   /**
    * Add the given number of milliseconds to the started time
+   *
    * @param age
    */
   public void setTimeout(int age) {
@@ -119,4 +141,11 @@ public class ResponseFuture {
       setExpiry(started);
   }
 
+  /**
+   * Stop the future from collecting responses, and stop the timer.
+   */
+  public void close() {
+    open = false;
+    if (timer != null) timer.stop();
+  }
 }

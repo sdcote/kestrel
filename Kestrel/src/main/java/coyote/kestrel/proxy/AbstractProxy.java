@@ -151,6 +151,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
       for (Iterator<Map.Entry<String, ResponseFuture>> it = responseCache.entrySet().iterator(); it.hasNext(); ) {
         Map.Entry<String, ResponseFuture> entry = it.next();
         if (entry.getValue().isExpired()) {
+          entry.getValue().close();
           it.remove();
         }
       }
@@ -195,7 +196,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    *
    * @param message the (request) message to send
    * @return the response future object where responses will be recorded.
-   * @throws IOException
+   * @throws IOException if there are problems sending the message
    */
   protected ResponseFuture send(Message message) throws IOException {
     ResponseFuture retval = new ResponseFuture(message);
@@ -214,6 +215,14 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
 
   /**
    * Send the request and wait up to the time-out interval for responses.
+   *
+   * <p>After the timout period the future will be closed to prevent anymore
+   * responses from being added and to stop any timers associated with the
+   * future.</p>
+   *
+   * <p>The future is closed when the first response is received. This may not
+   * prevent more than one response from being recorded in the future due to
+   * timing of delivery in multi-threaded environments.</p>
    *
    * <p>This method will remove the response future from the response cache
    * before returning to help keep the response cache clean. This means only
@@ -242,6 +251,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
 
     // clear this future from the response cache
     if (retval != null) {
+      retval.close();
       responseCache.remove(retval.getIdentifier());
     }
 

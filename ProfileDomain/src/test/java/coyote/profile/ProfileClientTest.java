@@ -63,6 +63,7 @@ public class ProfileClientTest {
       while (i.hasNext()) {
         ResponseFuture response = i.next();
         if (!response.isWaiting() || response.isExpired()) {
+          response.close();
           i.remove();
         }
         try {
