@@ -1,0 +1,39 @@
+sourceSets {
+    // Defines the name of the new source set.
+    integration {
+        // Includes the compiled main code and (unit) test compilation dependencies when compiling integration tests.
+        compileClasspath += sourceSets.main.output + configurations.testCompile
+        // Includes the compiled integration test code, the previous inclusions, and test runtime dependencies when running integration tests.
+        runtimeClasspath += output + compileClasspath + configurations.testRuntime
+    }
+}
+
+idea {
+    module {
+        // Correctly marks the integration test’s Java source directories for Intellij IDEA’s configuration.
+        testSourceDirs += sourceSets.integration.java.srcDirs
+        // Correctly marks the integration test’s resource directories for Intellij IDEA’s configuration.
+        testResourceDirs += sourceSets.integration.resources.srcDirs
+        // Configures Intellij IDEA to scope the integration tests as TEST.
+        scopes.TEST.plus += [configurations.integrationCompile]
+    }
+}
+
+// Creates a new Gradle task called integration. You can think of this task as an instance of the Gradle Test class.
+task integration(type: Test) {
+    // Describes this task for reports and user interfaces such as when running ./gradlew tasks.
+    description = 'Runs the integration tests.'
+    // Groups this task under Verification for reports and user interfaces such as when running ./gradlew tasks.
+    group = 'verification'
+    // Sets the code to test as the compiled code from the integration source set.
+    testClassesDirs = sourceSets.integration.output.classesDirs
+    // Sets the runtime classpath to be as defined in the integration source set.
+    classpath = sourceSets.integration.runtimeClasspath
+    // Forces Gradle to always run the integration tests when asked to. By default, Gradle attempts to optimize task execution by not re-running tasks whose inputs have not changed. Since integration tests may fail due to external systems, we want to run them even if no code has changed.
+    outputs.upToDateWhen { false }
+    // Enforces task ordering, not task dependency. Unit tests run fast, so we want to avoid running integration tests if unit tests fail. However, we use mustRunAfter test rather than dependsOn test because we do not always want to run unit tests when we run integration tests.
+    mustRunAfter test
+}
+
+// Enforces that integration tests will be run when  ./gradlew check is run. Semantically, I expect the check task to verify all systems (including integrations) are working.
+check.dependsOn integration
