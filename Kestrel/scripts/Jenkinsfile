@@ -1,0 +1,20 @@
+node {
+    stage('Preparation') {
+        // Get code from repository - its public, so no credentials needed
+        git branch: 'master', url: 'https://github.com/sdcote/kestrel.git'
+
+        // anything else to prep the system
+    }
+    stage('Build') {
+        // Run the gradle build using the wrapper
+        if (isUnix()) {
+            sh label: '', script: 'gradlew'
+        } else {
+            bat label: '', script: 'gradlew.bat'
+        }
+    }
+    stage('Results') {
+        //junit '**/target/surefire-reports/TEST-*.xml'
+        archive 'build/*.jar'
+    }
+}
