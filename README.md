@@ -41,3 +41,8 @@ docker run -d --restart unless-stopped --hostname rabbit --name rabbit -p 5672:5
 ```
 The above will keep a broker running in the background on the localhost with the management console running on http://localhost:15672. The login of `guest:guest` will allow management of the broker and connection via the API.
 
+# Build Notes
+Everything is built with Gradle. This project included the Gradle 5 wrapper to make it easier for new developers to compile
+
+## Integration Tests
+The integration tests expect a RabbitMQ broker running on the localhost bound to port 5672, with a user of guest:guest. Many will find using Docker to run the broker the easiest way to satisfy this requirement. Automated builds should execute a broker before running the tests.
