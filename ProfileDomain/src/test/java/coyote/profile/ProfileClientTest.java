@@ -54,7 +54,7 @@ public class ProfileClientTest {
     List<ResponseFuture> responses = new ArrayList<>();
     for (int x = 0; x < 10; x++) {
       ResponseFuture future = client.retrieveProfileFuture("123");
-      future.setTimeout(10000); // expire after a few seconds
+      future.setTimeout(5000); // expire after a few seconds
       responses.add(future);
     }
     System.out.println(responses.size() + " requests sent, collecting responses...");
@@ -66,11 +66,11 @@ public class ProfileClientTest {
           response.close();
           i.remove();
         }
-        try {
-          Thread.sleep(10);
-        } catch (InterruptedException ignore) {
-          // ignore
-        }
+      }
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException ignore) {
+        // ignore
       }
     }
     System.out.println("Done.");
