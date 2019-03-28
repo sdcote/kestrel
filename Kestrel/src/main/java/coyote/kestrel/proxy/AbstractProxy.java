@@ -136,6 +136,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
    */
   @Override
   public void onMessage(Message message) {
+    if(Log.isLogging(Log.DEBUG_EVENTS)) Log.debug("Proxy.OnMessage: "+message);
     if (!recordResponse(message)) {
       processMessage(message);
     }
@@ -175,6 +176,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     boolean retval = false;
     ResponseFuture future = getResponse(message);
     if (future != null) {
+      if( Log.isLogging(Log.DEBUG_EVENTS)) Log.debug("Correlated response ("+message.getReplyId()+") to request "+future.getIdentifier());
       future.addResponse(message);
       retval = true;
     }
@@ -209,6 +211,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     if (sendExpiry) message.setExpiry(System.currentTimeMillis() / 1000 + KestrelProtocol.DEFAULT_REQUEST_TIMEOUT);
     retval.setTimer(stats.startTimer(message.getGroup()));
     getTransport().sendDirect(message);
+    if(Log.isLogging(Log.DEBUG_EVENTS))Log.debug("Sent request "+retval.getIdentifier());
     return retval;
   }
 
@@ -238,7 +241,7 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
     ResponseFuture retval = null;
     try {
       retval = send(request);
-      retval.setExpiry(timeout);
+      retval.setTimeout(timeout);
       while (retval.isWaiting()) {
         try {
           Thread.sleep(10);
