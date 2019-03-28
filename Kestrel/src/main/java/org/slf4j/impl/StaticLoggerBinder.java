@@ -1,9 +1,8 @@
 package org.slf4j.impl;
 
+import coyote.loader.log.CategoryLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
-
-import coyote.loader.log.CategoryLoggerFactory;
 
 
 /**

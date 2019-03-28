@@ -1,7 +1,6 @@
 package coyote.kestrel.proxy;
 
 import coyote.dataframe.DataFrame;
-import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.Message;
 
 import java.io.IOException;
