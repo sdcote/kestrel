@@ -18,6 +18,7 @@ public class ProfileClientTest {
 
   @DisplayName("Simple performance test")
   @Disabled("no running broker to use")
+  //@Test
   void testClient() {
     ProfileClient client = new ProfileProxy();
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
@@ -31,7 +32,7 @@ public class ProfileClientTest {
     // run several requests, one after another
     for (int x = 0; x < 10; x++) {
       Profile profile = client.retrieveProfile("123");
-      //System.out.println(profile);
+      System.out.println(profile);
     }
 
     // show the performance statistics
@@ -40,7 +41,7 @@ public class ProfileClientTest {
   }
 
   @DisplayName("Parallelized performance test")
-  @Test
+  @Disabled("no running broker to use")
   void testClientFutures() {
     ProfileProxy client = new ProfileProxy();
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();

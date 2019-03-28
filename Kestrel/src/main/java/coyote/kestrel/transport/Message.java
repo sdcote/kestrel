@@ -179,5 +179,9 @@ public class Message extends DataFrame {
     }
     return retval;
   }
+
+  public void setSource(String text) {
+    this.put(KestrelProtocol.SOURCE_FIELD, text);
+  }
 }
 

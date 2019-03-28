@@ -58,6 +58,10 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   private volatile long lastHeartbeat = 0;
 
 
+  private boolean sendingSource = true;
+  private String cachedSourceName = null;
+
+
   /**
    * After the base class is configured and logging initialized, this method
    * is called to give loader a chance to initialize.
@@ -134,12 +138,11 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   public void start() {
     stats.setState(LOADER, SERVICE_STARTED);
     getStats().setVersion(Kestrel.PRODUCT_NAME, Kestrel.VERSION);
-    Log.notice("Staring service on " + getGroupName());
-
     initializeMetrics();
     initializeMessageGroup();
     initializeInbox();
     initializeCoherence();
+    logStartPreamble();
 
     if (transport.isValid()) {
       stats.setState(LOADER, SERVICE_RUNNING);
@@ -152,6 +155,41 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     } else {
       Log.fatal("Could not connect to transport service");
     }
+  }
+
+
+  /**
+   * Logs a notice that the service is starting
+   */
+  private void logStartPreamble() {
+    StringBuilder sb = new StringBuilder("Staring service on ");
+    if (StringUtil.isNotBlank(getHostname())) {
+      sb.append(getHostname());
+      sb.append("(");
+      sb.append(getIpAddress());
+      sb.append(")");
+    } else {
+      sb.append(getIpAddress());
+    }
+    sb.append(" listening on ");
+    sb.append(getGroupName());
+    sb.append(" - Instance: ");
+    sb.append(inbox.getName());
+    Log.notice(sb);
+  }
+
+  /**
+   * The name of this host
+   */
+  protected String getHostname() {
+    return stats.getHostname();
+  }
+
+  /**
+   * The IP address of this host
+   */
+  protected String getIpAddress() {
+    return stats.getHostIpAddress().getHostAddress();
   }
 
 
@@ -446,11 +484,28 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     if (responsePayload != null) response.setPayload(responsePayload);
     if (message != null) response.setMessage(message);
     if (resultCode > 0) response.setResultCode(resultCode);
+    if (isSendingSource()) {
+      response.setSource(getSource());
+    }
     try {
       send(response);
     } catch (IOException e) {
       Log.error("Could not send '" + type + "' response: " + e.getMessage());
     }
+  }
+
+  private String getSource() {
+    if (cachedSourceName == null) {
+      if (StringUtil.isNotBlank(getHostname())) {
+        cachedSourceName = getHostname();
+      } else {
+        cachedSourceName = getIpAddress();
+      }
+      if (inbox != null) {
+        cachedSourceName = cachedSourceName.concat(":").concat(inbox.getName());
+      }
+    }
+    return cachedSourceName;
   }
 
 
@@ -521,5 +576,16 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
     }
   }
 
-}
+  public boolean isSendingSource() {
+    return sendingSource;
+  }
 
+  public void enableSendingSource() {
+    this.sendingSource = true;
+  }
+
+  public void disableSendingSource() {
+    this.sendingSource = false;
+  }
+
+}

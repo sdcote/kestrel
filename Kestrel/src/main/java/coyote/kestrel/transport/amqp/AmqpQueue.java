@@ -20,6 +20,15 @@ import static coyote.kestrel.transport.amqp.AmqpTransport.DIRECT_EXCHANGE;
  */
 public class AmqpQueue extends AmqpChannel implements MessageQueue {
 
+  /**
+   *
+   * @param channel the channel on which to declare the queue
+   * @param name the name of the queue
+   * @param durable true if we are declaring a durable queue (the queue will survive a server restart)
+   * @param exclusive true if we are declaring an exclusive queue (restricted to this connection)
+   * @param autodelete true if we are declaring an autodelete queue (server will delete it when no longer in use)
+   * @param arguments other properties (construction arguments) for the queue
+   */
   public AmqpQueue(Channel channel, String name, boolean durable, boolean exclusive, boolean autodelete, Map<String, Object> arguments) {
     setChannel(channel);
     setName(name);
