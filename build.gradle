@@ -44,7 +44,7 @@ subprojects {
     useJUnitPlatform()
   }
 
-  apply from: "$rootDir/integration-test.gradle"
+  //apply from: "$rootDir/integration-test.gradle"
 
   check.dependsOn jacocoTestCoverageVerification
   check.dependsOn dependencyCheckAnalyze
