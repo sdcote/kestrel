@@ -5,8 +5,11 @@ import coyote.kestrel.protocol.ResponseFuture;
 import coyote.kestrel.transport.StatUtil;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
+import coyote.loader.log.ConsoleAppender;
+import coyote.loader.log.Log;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +22,8 @@ public class ProfileClientTest {
   @Disabled("no running broker to use")
   //@Test
   void testClient() {
+   // Log.addLogger( "Test", new ConsoleAppender( Log.TRACE_EVENTS | Log.DEBUG_EVENTS | Log.INFO_EVENTS | Log.WARN_EVENTS | Log.ERROR_EVENTS | Log.FATAL_EVENTS ) );
+
     ProfileClient client = new ProfileProxy();
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
     transport.open();
@@ -29,9 +34,9 @@ public class ProfileClientTest {
     client.getStatBoard().enableTiming(true);
 
     // run several requests, one after another
-    for (int x = 0; x < 10; x++) {
+    for (int x = 0; x < 5; x++) {
       Profile profile = client.retrieveProfile("123");
-      System.out.println(profile);
+      //System.out.println(profile);
     }
 
     // show the performance statistics
@@ -41,6 +46,7 @@ public class ProfileClientTest {
 
   @DisplayName("Parallelized performance test")
   @Disabled("no running broker to use")
+  //@Test
   void testClientFutures() {
     ProfileProxy client = new ProfileProxy();
     Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
