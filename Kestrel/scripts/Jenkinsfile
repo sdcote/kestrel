@@ -8,10 +8,13 @@ node {
     stage('Build') {
         // Run the gradle build using the wrapper
         if (isUnix()) {
-            sh label: '', script: 'gradlew'
+            sh label: '', script: './gradlew'
         } else {
-            bat label: '', script: 'gradlew.bat'
+            bat label: '', script: './gradlew.bat'
         }
+    }
+    stage('Testing'){
+
     }
     stage('Results') {
         //junit '**/target/surefire-reports/TEST-*.xml'
