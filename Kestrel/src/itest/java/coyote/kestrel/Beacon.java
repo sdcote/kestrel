@@ -1,4 +1,4 @@
-package coyote;
+package coyote.kestrel;
 
 import coyote.dataframe.DataFrame;
 import coyote.kestrel.transport.Message;

@@ -46,3 +46,13 @@ Everything is built with Gradle. This project included the Gradle 5 wrapper to m
 
 ## Integration Tests
 The integration tests expect a RabbitMQ broker running on the localhost bound to port 5672, with a user of guest:guest. Many will find using Docker to run the broker the easiest way to satisfy this requirement. Automated builds should execute a broker before running the tests.
+
+To run just the unit tests, call gradle with `-x itest` argument:
+```
+gradlew -x itest
+```
+
+To run just the integration tests:
+```
+gradlew itest
+```

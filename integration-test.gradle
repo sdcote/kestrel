@@ -19,6 +19,12 @@ idea {
     }
 }
 
+dependencies {
+    // make sure the JUnit libraries are available in this implementation
+    itestImplementation ("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    itestRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+}
+
 // Creates a new Gradle task called integration. You can think of this task as an instance of the Gradle Test class.
 task itest(type: Test) {
     // Describes this task for reports and user interfaces such as when running ./gradlew tasks.
