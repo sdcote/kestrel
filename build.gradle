@@ -8,6 +8,7 @@ buildscript {
   dependencies {
     classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
     classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
+    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1"
   }
 }
 
@@ -25,6 +26,7 @@ subprojects {
   apply plugin: "com.github.spotbugs"
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'maven-publish'
+  apply plugin: 'com.jfrog.bintray'
   apply plugin: 'application'
   apply plugin: 'eclipse'
   apply plugin: 'idea'

@@ -6,3 +6,57 @@ dependencies {
     compile('com.rabbitmq:amqp-client:5.6.0')
 }
 
+
+
+// custom tasks for creating source/javadoc jars
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
+
+bintray {
+    // these are defined in gradle.properties ... in gradle_home 
+    user = bintrayUser
+    key = bintrayKey
+    publications = ['mavenJava']
+    pkg {
+        repo = 'maven'
+        name = 'Kestrel'
+        desc = 'Message-driven services framework.'
+        licenses = ['MIT']
+        labels = ['Java', 'Component']
+        vcsUrl = 'https://github.com/sdcote/Kestrel.git'
+    }
+}
