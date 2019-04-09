@@ -1,5 +1,5 @@
 # Kestrel Services
-This project is a framework for creating event-based microservices. Kestrel services are highly scalable, fault tolerant and provide automatic fail-over and fall-back as a result of using common messaging patterns.
+This project is a framework for creating message-driven microservices. Kestrel services are highly scalable, fault tolerant and provide automatic fail-over and fall-back as a result of using common messaging patterns.
 
 This library allows a developer to create micro services over message exchanges using popular message brokers such as AMQP in a matter of minutes. All the messaging has been encapsulated in the framework allowing the developer to concentrate on the service implementation.
 
