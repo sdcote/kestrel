@@ -32,6 +32,8 @@ public interface Transport {
    * service instance, instruct it to perform a backup, enter a message into its
    * logging stream or perform other processing outside of the service it
    * provides.</p>
+   *
+   * @return A private message queue
    */
   MessageQueue createInbox();
 
@@ -61,9 +63,9 @@ public interface Transport {
    * for service implementations.</p>
    *
    * <p>Service queues operate on the competing consumer principle, so the
-   * service must retrieve a message, process it, then< acknowledge it so it
+   * service must retrieve a message, process it, then acknowledge it so it
    * is removed from the queue. If there is no acknowledgement, the message
-   * is marked for re-delivery and another consumer can retrieve it./p>
+   * is marked for re-delivery and another consumer can retrieve it.<p>
    *
    * @param name the name of the queue to create in the broker.
    * @return a queue from which to retrieve messages.
@@ -77,8 +79,8 @@ public interface Transport {
    * <p>Message will not start flowing until the topic is started and a
    * listener is attached.</p>
    *
-   * @param name
-   * @return
+   * @param name the name of the topic to retrieve
+   * @return the message topic with this name or null if not found
    */
   MessageTopic getTopic(String name);
 

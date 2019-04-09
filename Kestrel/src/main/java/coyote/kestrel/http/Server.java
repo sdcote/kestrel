@@ -38,6 +38,7 @@ public class Server extends WebServer {
    * Allow responders to find proxies to their services.
    *
    * @param type the service interface class to locate
+   * @param <E> the type of the class
    * @return an instance of a proxy implementing that class or null if none were found.
    */
   public <E> E locateProxy(Class<E> type) {

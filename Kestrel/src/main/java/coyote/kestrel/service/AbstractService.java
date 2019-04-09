@@ -66,7 +66,7 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
    * After the base class is configured and logging initialized, this method
    * is called to give loader a chance to initialize.
    *
-   * @ see coyote.loader.AbstractLoader#onConfiguration()
+   * @see coyote.loader.AbstractLoader#onConfiguration()
    */
   @Override
   public void onConfiguration() throws ConfigurationException {
@@ -179,14 +179,14 @@ public abstract class AbstractService extends AbstractLoader implements KestrelS
   }
 
   /**
-   * The name of this host
+   * @return The name of this host
    */
   protected String getHostname() {
     return stats.getHostname();
   }
 
   /**
-   * The IP address of this host
+   * @return the IP Address of this host as a string.
    */
   protected String getIpAddress() {
     return stats.getHostIpAddress().getHostAddress();

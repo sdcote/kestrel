@@ -60,7 +60,7 @@ public class ClientRegistry {
    * replies and OAM, and starts a dispatch thread running to handle all inbox
    * messages.
    *
-   * @throws IOException if there were problems connection to the message transport.
+   * @throws IllegalStateException if there were problems connection to the message transport.
    */
   public void connect() throws IllegalStateException {
     if (transport == null) {
@@ -104,6 +104,7 @@ public class ClientRegistry {
    * instances are ready to use.</p>
    *
    * @param type the service interface to locate
+   * @param <E> the type of the class to locate
    * @return the first type which implements the given interface type
    */
   public <E> E locate(Class<E> type) {
@@ -190,6 +191,7 @@ public class ClientRegistry {
    * registry's inbox for all reply-to headers.</p>
    *
    * @param proxyClass the class to be instantiated
+   * @return this registry for command chaining
    */
   public ClientRegistry addServiceProxyClass(Class proxyClass) {
     return addServiceProxyClass(proxyClass, null);
@@ -206,6 +208,7 @@ public class ClientRegistry {
    *
    * @param proxyClass the class to be instantiated
    * @param cfg        the configuration to use for the proxy (if applicable)
+   * @return this registry for command chaining
    */
   public ClientRegistry addServiceProxyClass(Class proxyClass, Config cfg) {
     if (proxyClass != null) {

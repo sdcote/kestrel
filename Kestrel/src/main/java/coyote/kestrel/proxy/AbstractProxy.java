@@ -108,6 +108,8 @@ public abstract class AbstractProxy implements KestrelProxy, MessageListener {
   /**
    * This method is called when the configuration is set to the subclass can
    * perform its own configuration processing
+   *
+   * @throws ConfigurationException if there were problems configuring the proxy
    */
   protected void onConfiguration() throws ConfigurationException {
     // no-op implementation

@@ -43,6 +43,7 @@ public class StatUtil {
 
 
   /**
+   * @param stats the stats board from which data is to be retrieved
    * @return All counters as attributes of a data frame.
    */
   public static DataFrame getCounterDataFrame(StatBoard stats) {
@@ -60,6 +61,7 @@ public class StatUtil {
   }
 
   /**
+   * @param stats the stats board from which data is to be retrieved
    * @return All states as attributes of a data frame.
    */
   public static DataFrame getStateDataFrame(StatBoard stats) {
@@ -77,6 +79,7 @@ public class StatUtil {
   }
 
   /**
+   * @param stats the stats board from which data is to be retrieved
    * @return All timers as attributes of a data frame.
    */
   public static DataFrame getTimerDataFrame(StatBoard stats) {

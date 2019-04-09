@@ -73,6 +73,7 @@ public class AmqpTransport implements Transport {
 
   /**
    * timeout in milliseconds; zero for infinite
+   * @param connectionTimeout number of seconds to wait
    */
   public void setConnectionTimeout(int connectionTimeout) {
     this.connectionTimeout = connectionTimeout;

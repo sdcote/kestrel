@@ -57,6 +57,7 @@ public class ResponseFuture {
    * removed from caches.</p>
    *
    * @param timestamp the time in the future when the response future expires
+   * @return this future for chaining.
    */
   public ResponseFuture setExpiry(long timestamp) {
     expiry = timestamp;
@@ -132,7 +133,7 @@ public class ResponseFuture {
   /**
    * Add the given number of milliseconds to the started time
    *
-   * @param age
+   * @param age number of milliseconds to add
    */
   public void setTimeout(int age) {
     if (age > 0)
