@@ -21,6 +21,9 @@ public class LogStepper {
 
     // SLF4J
     Logger LOG = LoggerFactory.getLogger( LogStepper.class );
+
+    // The LOG reference should be a category logger with a NullAppender, by default.
+
     LOG.trace( "trace" );
     LOG.debug( "debug" );
     LOG.info( "info" );
@@ -74,6 +77,8 @@ public class LogStepper {
    * @param args
    */
   public static void main( String[] args ) {
+    stepOne();
+    stepTwo();
 
   }
 }
