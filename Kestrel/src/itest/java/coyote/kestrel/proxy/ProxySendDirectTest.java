@@ -1,5 +1,6 @@
 package coyote.kestrel.proxy;
 
+import coyote.TestProperties;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.Transport;
 import coyote.kestrel.transport.TransportBuilder;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 
 public class ProxySendDirectTest extends ProxyTestBase {
+
+  private static final String BROKER_URI = "brokerUri";
 
   private ProxySendDirectTest() {
   }
@@ -44,7 +47,7 @@ public class ProxySendDirectTest extends ProxyTestBase {
   @Disabled("Send many requests")
   void sendMany() throws IOException {
     TestClient client = new TestProxy();
-    Transport transport = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672").build();
+    Transport transport = new TransportBuilder().setURI(TestProperties.getProperty(BROKER_URI)).build();
     transport.open();
     client.setTransport(transport);
     client.initialize();
