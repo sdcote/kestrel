@@ -47,54 +47,16 @@ public interface ScopeManager {
    */
   Scope activate(Span span);
 
-  /**
-   * @return the {@link Scope active scope}, or null if none could be found.
-   * @deprecated use {@link #activeSpan()} instead.
-   * Return the currently active {@link Scope} which can be used to deactivate the currently active
-   * {@link Span}.
-   *
-   * <p>
-   * Observe that {@link Scope} is expected to be used only in the same thread where it was
-   * created, and thus should not be passed across threads.
-   *
-   * <p>
-   * Because both {@link #active()} and {@link #activeSpan()} reference the current
-   * active state, they both will be either null or non-null.
-   */
-  @Deprecated
-  Scope active();
 
   /**
    * Return the currently active {@link Span}.
    *
    * <p>
-   * Because both {@link #active()} and {@link #activeSpan()} reference the current
+   * Because both active() and {@link #activeSpan()} reference the current
    * active state, they both will be either null or non-null.
    *
    * @return the {@link Span active span}, or null if none could be found.
    */
   Span activeSpan();
 
-  /**
-   * @param span              the {@link Span} that should become the {@link #activeSpan()}
-   * @param finishSpanOnClose whether span should automatically be finished when {@link Scope#close()} is called
-   * @return a {@link Scope} instance to control the end of the active period for the {@link Span}. It is a
-   * programming error to neglect to call {@link Scope#close()} on the returned instance.
-   * @deprecated use {@link #activate(Span)} instead.
-   * Set the specified {@link Span} as the active instance for the current
-   * context (usually a thread).
-   *
-   * <p>
-   * Finishing the {@link Span} upon {@link Scope#close()} is discouraged,
-   * as reporting errors becomes impossible:
-   * <pre><code>
-   *     try (Scope scope = tracer.scopeManager().activate(span, true)) {
-   *     } catch (Exception e) {
-   *         // Not possible to report errors, as
-   *         // the span has been already finished.
-   *     }
-   * </code></pre>
-   */
-  @Deprecated
-  Scope activate(Span span, boolean finishSpanOnClose);
 }

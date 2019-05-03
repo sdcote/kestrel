@@ -13,20 +13,12 @@ public interface NoopScopeManager extends ScopeManager {
  * A noop (i.e., cheap-as-possible) implementation of an ScopeManager.
  */
 class NoopScopeManagerImpl implements NoopScopeManager {
-  @Override
-  public Scope activate(Span span, boolean finishOnClose) {
-    return NoopScope.INSTANCE;
-  }
 
   @Override
   public Scope activate(Span span) {
     return NoopScope.INSTANCE;
   }
 
-  @Override
-  public Scope active() {
-    return NoopScope.INSTANCE;
-  }
 
   @Override
   public Span activeSpan() {
@@ -38,9 +30,5 @@ class NoopScopeManagerImpl implements NoopScopeManager {
     public void close() {
     }
 
-    @Override
-    public Span span() {
-      return NoopSpan.INSTANCE;
-    }
   }
 }
