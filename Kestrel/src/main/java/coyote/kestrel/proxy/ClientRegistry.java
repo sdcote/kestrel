@@ -62,7 +62,7 @@ public class ClientRegistry {
    *
    * @throws IllegalStateException if there were problems connection to the message transport.
    */
-  public void connect() throws IllegalStateException {
+  protected void connect() throws IllegalStateException {
     if (transport == null) {
       transport = transportBuilder.build();
       if (transport instanceof InvalidTransport) {

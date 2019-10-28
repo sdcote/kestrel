@@ -4,8 +4,8 @@ import java.io.IOException;
 
 /**
  * A transport is an adapter to the various messaging transports.
- * <p>
- * Transports must be opened before using them.
+ *
+ * <p>Transports must be opened before using them.</p>
  */
 public interface Transport {
 
