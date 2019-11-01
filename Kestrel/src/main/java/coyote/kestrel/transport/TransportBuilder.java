@@ -1,12 +1,15 @@
 package coyote.kestrel.transport;
 
 import coyote.commons.StringUtil;
+import coyote.commons.UriUtil;
 import coyote.kestrel.transport.amqp.AmqpTransport;
 import coyote.loader.log.Log;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 public class TransportBuilder {
@@ -18,9 +21,10 @@ public class TransportBuilder {
   private String host = null;
   private String query = null;
   private int connectionTimeout = 60000;
+  private List<URI> failoverUri = new ArrayList<>();
 
 
-  public  String getQuery() {
+  public String getQuery() {
     return query;
   }
 
@@ -90,13 +94,17 @@ public class TransportBuilder {
 
   public Transport createAmqpTransport() {
     AmqpTransport retval = new AmqpTransport();
-    retval.setHostname(getHostname());
-    retval.setPort(getPort());
-    retval.setUsername(getUsername());
-    retval.setPassword(getPassword());
-    retval.setVirtualHost(getQuery());
+    URI brokerUri = null;
+
+    // Craft a URI from our data
+
+    retval.AddUri(brokerUri);
+    for (URI uri : failoverUri) {
+      retval.AddUri(uri);
+    }
     return retval;
   }
+
 
   public TransportBuilder setURI(String uri) throws IllegalArgumentException {
     if (StringUtil.isNotEmpty(uri)) {
@@ -146,6 +154,30 @@ public class TransportBuilder {
       retval = new InvalidTransport();
     }
     return retval;
+  }
+
+  public TransportBuilder addFailover(String uri) {
+    if (StringUtil.isNotEmpty(uri)) {
+      try {
+        URI brokerURI = new URI(uri);
+        addFailover(brokerURI);
+      } catch (URISyntaxException e) {
+        throw new IllegalArgumentException("The broker URI string is invalid: '" + e.getMessage() + "'");
+      }
+    } // ignore null/empty uri strings
+    return this;
+
+  }
+
+
+  public TransportBuilder addFailover(URI uri) {
+    for (URI furi : failoverUri) {
+      if (furi.equals(uri)) {
+        return this;
+      }
+    }
+    failoverUri.add(uri);
+    return this;
   }
 
 }

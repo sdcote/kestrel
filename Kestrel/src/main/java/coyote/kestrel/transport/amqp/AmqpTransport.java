@@ -5,6 +5,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Recoverable;
 import coyote.commons.StringUtil;
+import coyote.commons.UriUtil;
 import coyote.kestrel.protocol.MessageCodec;
 import coyote.kestrel.transport.Message;
 import coyote.kestrel.transport.MessageQueue;
@@ -13,9 +14,8 @@ import coyote.kestrel.transport.Transport;
 import coyote.loader.log.Log;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.net.URI;
+import java.util.*;
 
 
 /**
@@ -33,17 +33,20 @@ public class AmqpTransport implements Transport {
   private static final boolean AUTO_DELETE = true;
   private static final boolean MANUAL_DELETE = false;
   private static final Map<String, Object> NO_ARGUMENTS = new HashMap<>();
-  private static final String DEFAULT_HOSTNAME = "localhost";
-  private static final int DEFAULT_PORT = 5672;
-  private static final String DEFAULT_USERNAME = "guest";
-  private static final String DEFAULT_PASSWORD = "guest";
   private static final String DIRECT = "direct";
   private static final String TOPIC = "topic";
-  private String hostname = DEFAULT_HOSTNAME;
-  private int port = DEFAULT_PORT;
-  private String username = DEFAULT_USERNAME;
-  private String password = DEFAULT_PASSWORD;
   private int connectionTimeout = com.rabbitmq.client.ConnectionFactory.DEFAULT_CONNECTION_TIMEOUT;
+
+
+  /**
+   * List of URI we use for fail-over and fall-back operations
+   */
+  private List<URI> brokers = new ArrayList<>();
+  /**
+   * Currently active broker URI
+   */
+  private int brokerInUse = 0;
+
   /**
    * The connection abstracts the socket connection, and takes care of protocol version negotiation and authentication and so on for us.
    */
@@ -57,12 +60,7 @@ public class AmqpTransport implements Transport {
 
 
   public String getHostname() {
-    return hostname;
-  }
-
-
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
+    return brokers.size() > 0 ? brokers.get(brokerInUse).getHost() : null;
   }
 
 
@@ -73,6 +71,7 @@ public class AmqpTransport implements Transport {
 
   /**
    * timeout in milliseconds; zero for infinite
+   *
    * @param connectionTimeout number of seconds to wait
    */
   public void setConnectionTimeout(int connectionTimeout) {
@@ -81,42 +80,22 @@ public class AmqpTransport implements Transport {
 
 
   public String getPassword() {
-    return password;
-  }
-
-
-  public void setPassword(String password) {
-    this.password = password;
+    return brokers.size() > 0 ? UriUtil.getUser(brokers.get(brokerInUse)) : null;
   }
 
 
   public String getUsername() {
-    return username;
-  }
-
-
-  public void setUsername(String username) {
-    this.username = username;
+    return brokers.size() > 0 ? UriUtil.getPassword(brokers.get(brokerInUse)) : null;
   }
 
 
   public int getPort() {
-    return port;
-  }
-
-
-  public void setPort(int port) {
-    this.port = port;
+    return brokers.size() > 0 ? brokers.get(brokerInUse).getPort() : -1;
   }
 
 
   public String getVirtualHost() {
     return virtualHost;
-  }
-
-
-  public void setVirtualHost(String virtualHoat) {
-    this.virtualHost = virtualHoat;
   }
 
 
@@ -237,6 +216,14 @@ public class AmqpTransport implements Transport {
     } else {
       throw new IOException("No outbound transport channel set");
     }
+  }
+
+
+  public AmqpTransport AddUri(URI uri) {
+    if (uri != null) {
+      brokers.add(uri);
+    }
+    return this;
   }
 
 

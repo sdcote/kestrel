@@ -45,7 +45,7 @@ public class ProfileClientTest {
   }
 
   @DisplayName("Parallelized performance test")
-  @Disabled("no running broker to use")
+  @Disabled("no running broker to use - no clean way to get futures from clients")
   //@Test
   void testClientFutures() {
     ProfileProxy client = new ProfileProxy();
@@ -58,11 +58,11 @@ public class ProfileClientTest {
     client.getStatBoard().enableTiming(true);
 
     List<ResponseFuture> responses = new ArrayList<>();
-    for (int x = 0; x < 10; x++) {
-      ResponseFuture future = client.retrieveProfileFuture("123");
-      future.setTimeout(5000); // expire after a few seconds
-      responses.add(future);
-    }
+//    for (int x = 0; x < 10; x++) {
+//      ResponseFuture future = client.retrieveProfileFuture("123"); // HOW DO WE EXPOSE THIS CLEANLY?
+//      future.setTimeout(5000); // expire after a few seconds
+//      responses.add(future);
+//    }
     System.out.println(responses.size() + " requests sent, collecting responses...");
     while (responses.size() > 0) {
       Iterator<ResponseFuture> i = responses.iterator();

@@ -60,5 +60,12 @@ public class TransportBuilderTest {
 
   }
 
+  @DisplayName("String URI configuration")
+  @Test
+  void addFailover() {
+    TransportBuilder builder = new TransportBuilder().setURI("amqp://guest:guest@localhost:5672");
+    builder.addFailover("amqp://guest:guest@127.0.0.1:5672");
+    builder.addFailover("amqp://guest:guest@192.168.10.20:5672");
 
+  }
 }
