@@ -1,7 +1,6 @@
 package coyote.commons;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -43,16 +42,6 @@ public class MultimapTest {
     assertEquals(m1.flatEntryList().get(0), newEntry("a", "1"));
     assertEquals(m1.flatEntryList().get(1), newEntry("b", "2"));
     assertEquals(m1.flatEntryList().get(2), newEntry("c", "3"));
-  }
-
-  @Test()
-  public void mutateImmutableParameterMap() {
-    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-      final UrlParameterMultimap m1 = UrlParameterMultimap.newMultimap();
-      m1.add("a", "1").add("b", "2").add("c", "3");
-      final UrlParameterMultimap.Immutable i1 = m1.immutable();
-      i1.add("d", "4");
-    });
   }
 
   @Test

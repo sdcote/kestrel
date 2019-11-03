@@ -48,14 +48,14 @@ public class TransportBuilderTest {
             .setHost("localhost")
             .setPort(5672)
             .setConnectionTimeout(500)
-            .setQuery("/vhost");
+            .setPath("/vhost");
 
     assertTrue(StringUtil.isNotEmpty(builder.getScheme()));
     assertTrue(StringUtil.isNotEmpty(builder.getUsername()));
     assertTrue(StringUtil.isNotEmpty(builder.getPassword()));
     assertTrue(StringUtil.isNotEmpty(builder.getHostname()));
     assertTrue(builder.getPort() == 5672);
-    assertTrue(StringUtil.isNotEmpty(builder.getQuery()));
+    assertTrue(StringUtil.isNotEmpty(builder.getPath()));
     assertTrue(builder.getConnectionTimeout() == 500);
 
   }

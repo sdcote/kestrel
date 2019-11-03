@@ -11,7 +11,7 @@ public class UrlParameterMultimap implements Map<String, List<String>> {
 
   public static final class Immutable extends UrlParameterMultimap {
     Immutable(final List<Entry<String, String>> data) {
-      super(Collections.unmodifiableList(new LinkedList<>(data)));
+      super(new LinkedList<>(data));
     }
   }
 

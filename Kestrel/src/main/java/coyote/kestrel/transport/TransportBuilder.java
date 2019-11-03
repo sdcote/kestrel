@@ -1,7 +1,7 @@
 package coyote.kestrel.transport;
 
 import coyote.commons.StringUtil;
-import coyote.commons.UriUtil;
+import coyote.commons.UrlBuilder;
 import coyote.kestrel.transport.amqp.AmqpTransport;
 import coyote.loader.log.Log;
 
@@ -19,17 +19,17 @@ public class TransportBuilder {
   private String password = null;
   private int port = 0;
   private String host = null;
-  private String query = null;
+  private String path = null;
   private int connectionTimeout = 60000;
   private List<URI> failoverUri = new ArrayList<>();
 
 
-  public String getQuery() {
-    return query;
+  public String getPath() {
+    return path;
   }
 
-  public TransportBuilder setQuery(String path) {
-    this.query = path;
+  public TransportBuilder setPath(String path) {
+    this.path = path;
     return this;
   }
 
@@ -94,11 +94,19 @@ public class TransportBuilder {
 
   public Transport createAmqpTransport() {
     AmqpTransport retval = new AmqpTransport();
-    URI brokerUri = null;
+    UrlBuilder builder = UrlBuilder.empty();
+    builder.setScheme(getScheme());
+    builder.setHost(getHostname());
+    if (StringUtil.isNotBlank(getUsername())) {
+      if (StringUtil.isNotBlank(getPassword())) {
+        builder.setUserInfo(getUsername() + ":" + getPassword());
+      } else {
+        builder.setUserInfo(getUsername());
+      }
+    }
+    builder.setPath(getPath());
 
-    // Craft a URI from our data
-
-    retval.AddUri(brokerUri);
+    retval.AddUri(builder.toUri());
     for (URI uri : failoverUri) {
       retval.AddUri(uri);
     }
@@ -108,11 +116,29 @@ public class TransportBuilder {
 
   public TransportBuilder setURI(String uri) throws IllegalArgumentException {
     if (StringUtil.isNotEmpty(uri)) {
+      List<String> uris = new ArrayList<>();
+
+      if (uri.contains(";")) {
+        String[] uriArray = uri.split(";");
+        for (int x = 0; x < uriArray.length; x++) {
+          uris.add(uriArray[x]);
+        }
+      } else {
+        uris.add(uri);
+      }
+
       try {
-        URI brokerURI = new URI(uri);
+        URI brokerURI = new URI(uris.get(0));
         setURI(brokerURI);
       } catch (URISyntaxException e) {
         throw new IllegalArgumentException("The broker URI string is invalid: '" + e.getMessage() + "'");
+      }
+
+      // The rest are for fail-over
+      if (uri.length() > 1) {
+        for (int x = 1; x < uris.size(); x++) {
+          addFailover(uris.get(x));
+        }
       }
     } // ignore null/empty uri strings
     return this;
@@ -133,7 +159,7 @@ public class TransportBuilder {
       }
       setHost(uri.getHost());
       setPort(uri.getPort());
-      setQuery(uri.getPath());
+      setPath(uri.getPath());
     }
 
     return this;

@@ -397,7 +397,7 @@ public final class UrlBuilder {
    * Removes all query parameters with this key.
    */
   public UrlBuilder removeParameters(final String key) {
-    this.queryParametersMultimap = queryParametersMultimap.deepCopy().removeAllValues(key);
+    queryParametersMultimap.removeAllValues(key);
     return this;
   }
 

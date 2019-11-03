@@ -6,7 +6,6 @@ import coyote.kestrel.transport.TransportBuilder;
 import coyote.loader.cfg.Config;
 import coyote.loader.log.Log;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -233,11 +232,11 @@ public class ClientRegistry {
   }
 
   public String getQuery() {
-    return transportBuilder.getQuery();
+    return transportBuilder.getPath();
   }
 
   public ClientRegistry setQuery(String path) {
-    transportBuilder.setQuery(path);
+    transportBuilder.setPath(path);
     return this;
   }
 
