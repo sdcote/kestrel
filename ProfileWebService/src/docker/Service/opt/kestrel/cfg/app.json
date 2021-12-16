@@ -8,8 +8,7 @@
   },
 
   "Logging": {
-    "StandardOutput": {"categories": "notice, info, httpd"},
-    "FileAppender": {  "target": "debug.log", "categories": "debug, trace", "enabled": false },
+    "StandardOutput": {"categories": "debug, trace, notice, info, httpd"},
     "StandardError": {"categories": "warn, error, fatal"}
   }
 

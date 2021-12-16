@@ -20,6 +20,8 @@ import java.util.List;
  *
  * <p>This example uses the {@senAndWait(DataFrame,int)} method in the superclass to block for at least one response
  * before returning.</p>
+ *
+ * <p>Just create an instance of this class in your runtime to implement a local reference to a remote service.</p>
  */
 public class ProfileProxy extends AbstractProxy implements ProfileClient {
 
@@ -42,6 +44,24 @@ public class ProfileProxy extends AbstractProxy implements ProfileClient {
     } else {
       Log.debug("profile '" + id + "' was not found");
     }
+    return retval;
+  }
+
+
+  /**
+   * This method is only used for testing and not strictly required.
+   *
+   * @param id the identifier of the profile to retrieve
+   * @return the ResponseFuture representing the sent request.
+   */
+  public ResponseFuture retrieveProfileFuture(String id) {
+    ResponseFuture retval = null;
+    Message request = createMessage(ProfileProtocol.PROFILE_GROUP);
+    request.setPayload(new DataFrame().set("CMD", "Get").set("ID", id));
+    try {
+      retval = send(request);
+    } catch (IOException e) {
+      Log.error(e);    }
     return retval;
   }
 
