@@ -2,9 +2,9 @@ sourceSets {
     // Defines the name of the new source set.
     itest {
         // Includes the compiled main code and (unit) test compilation dependencies when compiling integration tests.
-        compileClasspath += sourceSets.main.output + configurations.testCompile
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeOnly
         // Includes the compiled integration test code, the previous inclusions, and test runtime dependencies when running integration tests.
-        runtimeClasspath += output + compileClasspath + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath + configurations.testRuntimeOnly
     }
 }
 
@@ -15,7 +15,7 @@ idea {
         // Correctly marks the integration test’s resource directories for Intellij IDEA’s configuration.
         testResourceDirs += sourceSets.itest.resources.srcDirs
         // Configures Intellij IDEA to scope the integration tests as TEST.
-        scopes.TEST.plus += [configurations.itestCompile]
+        //scopes.TEST.plus += [configurations.itestCompile]
     }
 }
 

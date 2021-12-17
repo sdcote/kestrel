@@ -2,8 +2,8 @@
 mainClassName = 'coyote.loader.BootStrap'
 
 dependencies {
-    compile("coyote:Loader:0.7.20")
-    compile('com.rabbitmq:amqp-client:5.6.0')
+    compileOnly("coyote:Loader:0.7.23")
+    compileOnly('com.rabbitmq:amqp-client:5.6.0')
 }
 
 
@@ -43,20 +43,5 @@ publishing {
 
     repositories {
         mavenLocal()
-    }
-}
-
-bintray {
-    // these are defined in gradle.properties ... in gradle_home 
-    user = bintrayUser
-    key = bintrayKey
-    publications = ['mavenJava']
-    pkg {
-        repo = 'maven'
-        name = 'Kestrel'
-        desc = 'Message-driven services framework.'
-        licenses = ['MIT']
-        labels = ['Java', 'Component']
-        vcsUrl = 'https://github.com/sdcote/Kestrel.git'
     }
 }

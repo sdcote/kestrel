@@ -6,9 +6,8 @@ buildscript {
     }
   }
   dependencies {
-    classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
-    classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
-    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1"
+    classpath "com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.3"
+    classpath 'org.owasp:dependency-check-gradle:6.5.0.1'
   }
 }
 
@@ -23,23 +22,22 @@ subprojects {
   
   apply plugin: 'java'
   apply plugin: 'jacoco'
-  apply plugin: "com.github.spotbugs"
+//  apply plugin: "com.github.spotbugs"
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'maven-publish'
-  apply plugin: 'com.jfrog.bintray'
   apply plugin: 'application'
   apply plugin: 'eclipse'
   apply plugin: 'idea'
 
   repositories {
-    jcenter()
     mavenCentral()
+    mavenLocal()
   }
   
   dependencies {
     testImplementation ("org.junit.jupiter:junit-jupiter-api:5.3.2")
     testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.3.2")
-    spotbugsPlugins ("com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0")
+//    spotbugsPlugins ("com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0")
   }
 
   tasks.withType(Test) {
@@ -51,12 +49,28 @@ subprojects {
   check.dependsOn jacocoTestCoverageVerification
   check.dependsOn dependencyCheckAnalyze
 
-  spotbugs {
-    effort = "max"
-    reportLevel = "low"
-    ignoreFailures = true
-    showProgress = true
-  }
+//  spotbugs {
+//    effort = "max"
+//    reportLevel = "low"
+//    ignoreFailures = true
+//    showProgress = true
+//
+//    ignoreFailures = false
+//    showStackTraces = true
+//    showProgress = true
+//    effort = 'default'
+//    reportLevel = 'default'
+//    visitors = [ 'FindSqlInjection', 'SwitchFallthrough' ]
+//    omitVisitors = [ 'FindNonShortCircuit' ]
+//    reportsDir = file("$buildDir/spotbugs")
+//    includeFilter = file("include.xml")
+//    excludeFilter = file("exclude.xml")
+//    baselineFile = file("baseline.xml")
+//    onlyAnalyze = [ 'com.foobar.MyClass', 'com.foobar.mypkg.*' ]
+//    maxHeapSize = '1g'
+//    extraArgs = [ '-nested:false' ]
+//    jvmArgs = [ '-Duser.language=ja' ]
+//  }
   
   jacocoTestReport {
     reports {
@@ -67,11 +81,11 @@ subprojects {
 
   check.dependsOn jacocoTestReport
   
-  tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    reports {
-      xml.enabled false
-      html.enabled true
-    }
-  }
+//  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//    reports {
+//      xml.enabled false
+//      html.enabled true
+//    }
+//  }
   
 }
