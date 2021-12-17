@@ -7,6 +7,10 @@ import coyote.kestrel.service.KestrelService;
 import coyote.loader.cfg.Config;
 import coyote.loader.cfg.ConfigurationException;
 
+/**
+ * This is a subclass of a simple web server that contains a Service Proxy cache.
+ *
+ */
 public class Server extends WebServer {
   private ClientRegistry registry = null;
 
@@ -16,6 +20,8 @@ public class Server extends WebServer {
   @Override
   public void configure(Config config) throws ConfigurationException {
     super.configure(config);
+
+    // This is the ServiceProxy cache. We look up service proxies here.
     registry = new ClientRegistry();
 
     // We need a transport section to configure our connection to the message transport

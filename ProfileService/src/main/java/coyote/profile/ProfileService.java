@@ -14,6 +14,11 @@ public class ProfileService extends AbstractService {
   private static final String GROUP_NAME = ProfileProtocol.PROFILE_GROUP;
 
 
+  /**
+   * This is where we specify what channel this service listens for request messages.
+   *
+   * @return The name of the channel to which this service subscribes.
+   */
   @Override
   public String getGroupName() {
     return GROUP_NAME;
@@ -40,14 +45,17 @@ public class ProfileService extends AbstractService {
 
     // Each service can support any number of commands
     if (cmd != null) {
+
+      // Commands are specified in the ProfileProtocol is all uppercase to aid matching
       switch (cmd.toUpperCase()) {
-        case "GET":
+        case ProfileProtocol.GET_CMD:
           sendAck(message, getProfile(request));
           break;
         default:
           sendNak(message, "unsupported command");
           break;
       }
+
     } else {
       sendNak(message, "No command found in request");
     }
