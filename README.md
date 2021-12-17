@@ -19,13 +19,19 @@ An example service showing how to use the framework to implement message-driven 
 
 The Profile Service is designed to run in any Java environment, and includes an example Docker container to illustrate containerization principles. This service leverages the Coyote Loader framework to make loading and configuration easy. This allows for the immediate horizontal scaling of the service in any container environment such as any of the popular cloud services.
 
+It should be noted that the service implementations can evolve independently of the clients. If developers are careful, the Service can continue to evolve without every updating existing deployments of the service proxies. Services can remain backward compatible, sensing differences in the request and handling them as appropriate.
+
 ### Profile Domain
 This is the domain model of the service and the implementation of a client (service proxy). Use this project as a template for your own client and domain model.
 
-### Profile Web Service
-This is an implementation of an Adapter pattern to expose the profile service as a HTTP REST service. It is a very thin veneer which simply marshals HTTP requests to API requests using the Profile client. 
+Because the service proxy is decoupled from the service implementation, it is possible to achieve significant stability. The service can be evolved in such a manner to allow complete backward compatibility of clients (service proxies).
 
-Just like the service, it is implemented in a container for easy deployment and scaling. 
+Any system that need to access the profile service can simply include the Profile Domain and Kestrel packages in their projects along with the packages required for the messaging transport.
+
+### Profile Web Service
+This is an implementation of an Adapter pattern to expose the profile service as a HTTP REST service. It is a very thin veneer which simply marshals HTTP requests to API requests using the `ProfileClient` interface. The `ProfileClient` is implemented by the `ProfileProxy` class that contains the logic for marshaling method calls into request messages and return values from response messages.
+
+Just like the service, it is deployable as a container. 
 
 # Design Notes
 This framework is designed to support multiple transport technologies. The Default is AMQP, but others are possible including JMS and Tibco Rendezvous. This is why the the underlying class model uses different nomenclature than what some developers may be familiar.
